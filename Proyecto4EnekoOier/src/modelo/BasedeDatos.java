@@ -614,7 +614,7 @@ public class BasedeDatos {
 		if (importar) {
 
 			int idLista = conseguirIDLista(nombreLista, usuarioIniciado.getIdUsuario());
-
+			insertarCancionesaPlaylist(numeros, idLista);
 		}
 	}
 
@@ -634,6 +634,22 @@ public class BasedeDatos {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 		return idLista;
+	}
+
+	private void insertarCancionesaPlaylist(int[] numeros, int idLista) {
+		int i = 0;
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consultaridLista = "SELECT idList FROM PlayList Where idCliente =" + idLista +" and Titulo = '" +numeros[i] + "';";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consultaridLista);
+			ResultSet rs = preparedStatement.executeQuery();
+			conexion.close();
+			idLista = rs.getInt("idList");
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
 	}
 
 }
