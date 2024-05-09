@@ -47,6 +47,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
 
 public class Reto4Grupo5 extends JFrame {
 
@@ -57,11 +58,11 @@ public class Reto4Grupo5 extends JFrame {
 	private boolean premium = false;
 	private JFormattedTextField txtFRegistroFecNac;
 	private JPasswordField pswFRegistroContra, pswFRegistroConfContra;
-	private JTextField txtFRegistroNombre, txtFRegistroUsuario, txtFRegistroApellido;
+	private JTextField txtFRegistroNombre, txtFRegistroUsuario, txtFRegistroApellido, txtFNombreCancionMenu;
 	private JButton btnRegistroGuardar, btnRegistroEditar, btnReproducir, btnAdelanteCancion, btnAtrasCancion;
 	private JPanel panelArtistas, panelAlbumes, panelCanciones, panelReproduccion, panelPlaylist, panelMenu;
 	private JLabel lblReproduciendoSelec, lblAlbumSelec;
-	private JList<String> listaPlaylist;
+	private JList<String> listaPlaylist, listaMenu;
 	private int cambioX = 0, cambioY = 0, cont = 0, cont2 = 0;
 	private static Clip clip;
 	private static long clipTimePosition = 0; // Almacena la posición de la canción al detenerla
@@ -72,6 +73,8 @@ public class Reto4Grupo5 extends JFrame {
 	private Musico musicoElegido = new Musico();
 	private Album albumElegido = new Album();
 	private int posicionArtista = -1, posicionAlbum = -1, audioElegido = -1, posicionPodcast = -1, opcionEscogida = -1;
+	private Image imgPredeterminada = new ImageIcon(
+			Paths.get("").toAbsolutePath().toString() + "\\img\\predeterminado.jpg").getImage();
 
 	/**
 	 * Launch the application.
@@ -101,7 +104,7 @@ public class Reto4Grupo5 extends JFrame {
 		String idMenu = "Menu", idAlbum = "Album", idCanciones = "Canciones", idPlaylist = "Playlist",
 				idReproducir = "Reproducir";
 		String idGestion = "Gestion", idGestMusica = "Gestion Musica", idMenuGestMusica = "Menu Gestion Musica";
-
+		String idbtnMenu = "btnMenu";
 		LocalDate fecha_registro = LocalDate.now();
 		LocalDate fecha_finpremium = fecha_registro.plusYears(1);
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -215,6 +218,7 @@ public class Reto4Grupo5 extends JFrame {
 		panel_FotosFondo.add(lblDescubre);
 
 		JLabel lblFondo = new JLabel("");
+
 		lblFondo.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "\\img\\categorias.jpg"));
 		lblFondo.setBounds(0, 0, 339, 425);
 		panel_FotosFondo.add(lblFondo);
@@ -335,8 +339,15 @@ public class Reto4Grupo5 extends JFrame {
 							musicoElegido = musicos.get(Integer.parseInt(lblFoto.getToolTipText()));
 							do {
 								JLabel lblalbumFoto = new JLabel();
-								lblalbumFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
-										+ musicoElegido.getAlbumes().get(cont).getImagen()));
+								try {
+									lblalbumFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
+											+ "/img/" + musicoElegido.getAlbumes().get(cont).getImagen()));
+								} catch (Exception e1) {
+									// Si no se encuentra la imagen, establece una imagen predeterminada
+									ImageIcon iconoPredeterminado = new ImageIcon(
+											imgPredeterminada.getScaledInstance(65, 63, Image.SCALE_SMOOTH));
+									lblalbumFoto.setIcon(iconoPredeterminado);
+								}
 								lblalbumFoto.addMouseListener(new MouseAdapter() {
 									public void mouseClicked(MouseEvent e) {
 										cont = 0;
@@ -357,7 +368,14 @@ public class Reto4Grupo5 extends JFrame {
 													audioElegido = Integer.parseInt(lblFotoCancion.getToolTipText());
 												}
 											});
-											lblFotoCancion.setIcon(img2);
+											try {
+												lblFotoCancion.setIcon(img2);
+											} catch (Exception e1) {
+												// Si no se encuentra la imagen, establece una imagen predeterminada
+												ImageIcon iconoPredeterminado = new ImageIcon(imgPredeterminada
+														.getScaledInstance(108, 117, Image.SCALE_SMOOTH));
+												lblFotoCancion.setIcon(iconoPredeterminado);
+											}
 											lblFotoCancion.setToolTipText(String.valueOf(cont));
 											lblFotoCancion.setBounds(122 + cambioX, 90 + cambioY, 108, 117);
 											panelCanciones.add(lblFotoCancion);
@@ -401,8 +419,16 @@ public class Reto4Grupo5 extends JFrame {
 							cambioY = 0;
 							cont = 0;
 							JLabel lblfotoDescripcion = new JLabel("");
-							lblfotoDescripcion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
-									+ musicoElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
+							try {
+								lblfotoDescripcion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
+										+ "/img/" + musicoElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
+							} catch (Exception e1) {
+
+								// Si no se encuentra la imagen, establece una imagen predeterminada
+								ImageIcon iconoPredeterminado = new ImageIcon(
+										imgPredeterminada.getScaledInstance(188, 176, Image.SCALE_SMOOTH));
+								lblfotoDescripcion.setIcon(iconoPredeterminado);
+							}
 							lblfotoDescripcion.setBounds(405, 11, 188, 176);
 							panelAlbumes.add(lblfotoDescripcion);
 
@@ -419,8 +445,15 @@ public class Reto4Grupo5 extends JFrame {
 
 						}
 					});
-					lblFoto.setIcon(new ImageIcon(
-							Paths.get("").toAbsolutePath().toString() + "/img/" + musicos.get(cont).getImagen()));
+					try {
+						lblFoto.setIcon(new ImageIcon(
+								Paths.get("").toAbsolutePath().toString() + "/img/" + musicos.get(cont).getImagen()));
+					} catch (Exception e1) {
+						// Si no se encuentra la imagen, establece una imagen predeterminada
+						ImageIcon iconoPredeterminado = new ImageIcon(
+								imgPredeterminada.getScaledInstance(147, 131, Image.SCALE_SMOOTH));
+						lblFoto.setIcon(iconoPredeterminado);
+					}
 					lblFoto.setBounds(49 + cambioX, 30 + cambioY, 147, 131);
 					lblFoto.setToolTipText(String.valueOf(cont));
 					panelArtistas.add(lblFoto);
@@ -492,8 +525,15 @@ public class Reto4Grupo5 extends JFrame {
 							cont = 0;
 
 							JLabel lblfotoArtista = new JLabel("");
-							lblfotoArtista.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
-									+ podcasterElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
+							try {
+								lblfotoArtista.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
+										+ podcasterElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
+							} catch (Exception e1) {
+								// Si no se encuentra la imagen, establece una imagen predeterminada
+								ImageIcon iconoPredeterminado = new ImageIcon(
+										imgPredeterminada.getScaledInstance(188, 176, Image.SCALE_SMOOTH));
+								lblfotoArtista.setIcon(iconoPredeterminado);
+							}
 							lblfotoArtista.setBounds(405, 60, 188, 176);
 							panelAlbumes.add(lblfotoArtista);
 
@@ -510,8 +550,15 @@ public class Reto4Grupo5 extends JFrame {
 						}
 					});
 					System.out.println(podcasters.get(cont).getImagen());
-					lblFoto.setIcon(new ImageIcon(
-							Paths.get("").toAbsolutePath().toString() + "/img/" + podcasters.get(cont).getImagen()));
+					try {
+						lblFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
+								+ podcasters.get(cont).getImagen()));
+					} catch (Exception e1) {
+						// Si no se encuentra la imagen, establece una imagen predeterminada
+						ImageIcon iconoPredeterminado = new ImageIcon(
+								imgPredeterminada.getScaledInstance(147, 147, Image.SCALE_SMOOTH));
+						lblFoto.setIcon(iconoPredeterminado);
+					}
 					lblFoto.setBounds(49 + cambioX, 56 + cambioY, 147, 147);
 					lblFoto.setToolTipText(String.valueOf(cont));
 					panelArtistas.add(lblFoto);
@@ -790,8 +837,13 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnMenu = new JButton("Menu");
 		btnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				metodos.cambiardePantalla(layeredPane, idPlaylist);
-				basededatos.obtenerYActualizarPlaylist(btnPerfil.getText(), listaPlaylist);
+				metodos.cambiardePantalla(layeredPane, idbtnMenu);
+				txtFNombreCancionMenu.setText(albumElegido.getCanciones().get(audioElegido).getNombre());
+				DefaultListModel<String> listModel = new DefaultListModel<>();
+				listaMenu.setModel(listModel); // Establecer el modelo de lista en el JList
+				for (int i = 0; i != usuarioIniciado.getPlaylists().size(); i++) {
+					listModel.addElement(usuarioIniciado.getPlaylists().get(i).getTitulo());
+				}
 			}
 		});
 		btnMenu.setFont(new Font("Book Antiqua", Font.BOLD, 13));
@@ -965,12 +1017,10 @@ public class Reto4Grupo5 extends JFrame {
 							file = new File(Paths.get("").toAbsolutePath().toString() + "\\musica\\"
 									+ albumElegido.getCanciones().get(audioElegido).getAudio());
 							lblAlbumSelec.setText(albumElegido.getTitulo().toUpperCase());
-
 							lblDuracionSelec.setText(albumElegido.getCanciones().get(audioElegido).getDuracion());
-
 							lblFotoReproduccion.setIcon(img2);
 							lblReproduciendoSelec.setText(albumElegido.getCanciones().get(audioElegido).getNombre());
-
+							basededatos.audioReproducido(albumElegido.getCanciones().get(audioElegido).getIdAudio());
 						} else {
 							lblAlbum.setText("Podcast:");
 							btnX05.setVisible(true);
@@ -981,7 +1031,9 @@ public class Reto4Grupo5 extends JFrame {
 							lblFotoReproduccion.setBounds(251, 129, 275, 210);
 							lblFotoReproduccion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
 									+ "/img/" + podcasterElegido.getImagen()));
+							basededatos.audioReproducido(podcasterElegido.getPodcasts().get(audioElegido).getIdAudio());
 						}
+
 						AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
 						clip = AudioSystem.getClip();
 						clip.open(audioInputStream);
@@ -1106,6 +1158,7 @@ public class Reto4Grupo5 extends JFrame {
 		panelPlaylist.add(listaPlaylist);
 
 		JPanel panelMenuGestMusica = new JPanel();
+		panelMenuGestMusica.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelMenuGestMusica, idMenuGestMusica);
 		panelMenuGestMusica.setLayout(null);
 
@@ -1120,6 +1173,7 @@ public class Reto4Grupo5 extends JFrame {
 		panelMenuGestMusica.add(btnGestCanciones);
 
 		JPanel panelGestMusica = new JPanel();
+		panelGestMusica.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelGestMusica, idGestMusica);
 		panelGestMusica.setLayout(null);
 
@@ -1176,6 +1230,41 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		btnAñadir.setBounds(397, 77, 89, 23);
 		panelGestMusica.add(btnAñadir);
+
+		JPanel panelBtnMenu = new JPanel();
+		panelBtnMenu.setBackground(new Color(215, 223, 234));
+		layeredPane.add(panelBtnMenu, "btnMenu");
+		panelBtnMenu.setLayout(null);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(230, 130, 220, 220);
+		panelBtnMenu.add(scrollPane);
+
+		listaMenu = new JList<String>();
+		scrollPane.setViewportView(listaMenu);
+
+		txtFNombreCancionMenu = new JTextField();
+		txtFNombreCancionMenu.setHorizontalAlignment(SwingConstants.CENTER);
+		txtFNombreCancionMenu.setEditable(false);
+		txtFNombreCancionMenu.setBounds(230, 99, 220, 20);
+		panelBtnMenu.add(txtFNombreCancionMenu);
+		txtFNombreCancionMenu.setColumns(10);
+
+		JButton btnAnadirPlayList = new JButton("Añadir");
+		btnAnadirPlayList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnAnadirPlayList.setBounds(120, 374, 220, 27);
+		panelBtnMenu.add(btnAnadirPlayList);
+
+		JButton btnExportarCancion = new JButton("Exportar");
+		btnExportarCancion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnExportarCancion.setBounds(342, 374, 220, 27);
+		panelBtnMenu.add(btnExportarCancion);
 
 	}
 }

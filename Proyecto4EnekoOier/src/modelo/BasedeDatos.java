@@ -8,12 +8,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 
 public class BasedeDatos {
 
-	static String url = "jdbc:mysql://127.0.0.1:33060/reto4grupo5_m";
-	static String contrasenabdd = "elorrieta";
-	static String usuariobdd = "mañana";
+	static String url = "jdbc:mysql://localhost:3306/reto4grupo5_m";
+	static String contrasenabdd = "eneko";
+	static String usuariobdd = "root";
 	static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellidos = "Apellido",
 			clienteFechaNacimiento = "FechaNacimiento", clienteFechaRegistro = "FechaRegistro",
 			clienteContrasena = "Contrasena", clienteTipo = "TipoCliente";
@@ -626,8 +627,10 @@ public class BasedeDatos {
 					+ nombreLista + "';";
 			PreparedStatement preparedStatement = conexion.prepareStatement(consultaridLista);
 			ResultSet rs = preparedStatement.executeQuery();
+			if (rs.next()) {
+				idLista = rs.getInt("idList");
+			}
 			conexion.close();
-			idLista = rs.getInt("idList");
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
@@ -638,13 +641,71 @@ public class BasedeDatos {
 
 	private void insertarCancionesaPlaylist(int[] numeros, int idLista) {
 		int i = 0;
+		int ultimoAudio = sacarUltimoIdAudio();
+		boolean repetido = false;
+		ArrayList<Integer> numerosInsertados = new ArrayList<Integer>();
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consultaridLista = "SELECT idList FROM PlayList Where idCliente =" + idLista +" and Titulo = '" +numeros[i] + "';";
-			PreparedStatement preparedStatement = conexion.prepareStatement(consultaridLista);
-			ResultSet rs = preparedStatement.executeQuery();
+			while (i != numeros.length) {
+				for (int o = 0; o != numerosInsertados.size(); o++) {
+					if (numerosInsertados.get(o) == numeros[i]) {
+						repetido = true;
+					}
+				}
+				if (numeros[i] <= ultimoAudio && numeros[i] > 0 && repetido == false) {
+					String consulta = "INSERT INTO Playlist_Canciones (IDList, IDAudio, fechaPlaylist_Cancion) VALUES ("
+							+ idLista + ", " + numeros[i] + ", CURRENT_DATE())";
+
+					PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+					preparedStatement.executeUpdate();
+					numerosInsertados.add(numeros[i]);
+				} else {
+					JOptionPane.showMessageDialog(null, "No se ha podido insertar la cancion con el id: " + numeros[i],
+							"Error", JOptionPane.ERROR_MESSAGE);
+				}
+				i++;
+				repetido = false;
+			}
 			conexion.close();
-			idLista = rs.getInt("idList");
+
+		} catch (
+
+		SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+	private int sacarUltimoIdAudio() {
+		int ultimo = 0;
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "SELECT MAX(IDAudio) AS UltimoID FROM Audio;";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			ResultSet rs = preparedStatement.executeQuery();
+			if (rs.next()) {
+				ultimo = rs.getInt("UltimoID");
+			}
+			conexion.close();
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return ultimo;
+	}
+
+	public void audioReproducido(int idAudio) {
+		// TODO Auto-generated method stub
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "UPDATE Estadisticas SET MasEscuchados = MasEscuchados + 1 WHERE IDAudio =" + idAudio
+					+ ";";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.executeUpdate();
+			conexion.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
