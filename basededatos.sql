@@ -1,4 +1,4 @@
-drop database reto4grupo5_m;
+drop database if exists reto4grupo5_m;
 create database reto4grupo5_m;
 use reto4grupo5_m;
 
@@ -93,16 +93,6 @@ CREATE TABLE Gustos (
     FOREIGN KEY (IDAudio) REFERENCES Audio(IDAudio) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY (IDCliente, IDAudio)
 );
-
-CREATE TABLE Reproducciones (
-    IDCliente INT AUTO_INCREMENT NOT NULL,
-    IDAudio INT NOT NULL,
-    FechaReproduccion DATE NOT NULL,
-    FOREIGN KEY (IDCliente) REFERENCES Cliente(IDCliente) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (IDAudio) REFERENCES Audio(IDAudio) ON DELETE CASCADE ON UPDATE CASCADE,
-    PRIMARY KEY (IDCliente, IDAudio)
-);
-
 CREATE TABLE Estadisticas (
     IDAudio INT AUTO_INCREMENT PRIMARY KEY,
     TopCanciones INT,
@@ -432,10 +422,4 @@ INSERT INTO `reto4grupo5_m`.`playlist_canciones` (`IDList`, `IDAudio`, `fechaPla
 INSERT INTO `reto4grupo5_m`.`gustos` (`IDCliente`, `IDAudio`) VALUES ('1', '12');
 INSERT INTO `reto4grupo5_m`.`gustos` (`IDCliente`, `IDAudio`) VALUES ('1', '46');
 INSERT INTO `reto4grupo5_m`.`gustos` (`IDCliente`, `IDAudio`) VALUES ('1', '53');
-
-
-INSERT INTO `reto4grupo5_m`.`reproducciones` (`IDCliente`, `IDAudio`, `FechaReproduccion`) VALUES ('1', '1', '2024-04-24');
-INSERT INTO `reto4grupo5_m`.`reproducciones` (`IDCliente`, `IDAudio`, `FechaReproduccion`) VALUES ('1', '12', '2024-04-24');
-INSERT INTO `reto4grupo5_m`.`reproducciones` (`IDCliente`, `IDAudio`, `FechaReproduccion`) VALUES ('1', '55', '2024-04-24');
-INSERT INTO `reto4grupo5_m`.`reproducciones` (`IDCliente`, `IDAudio`, `FechaReproduccion`) VALUES ('1', '33', '2024-04-24');
 
