@@ -60,4 +60,10 @@ public class PlayList {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public String toString() {
+		return "PlayList [titulo=" + titulo + ", fec_registro=" + fec_registro + ", canciones=" + canciones
+				+ ", idPlayList=" + idPlayList + "]";
+	}
+
 }

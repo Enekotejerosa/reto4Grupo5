@@ -72,9 +72,11 @@ public class Reto4Grupo5 extends JFrame {
 	private Podcaster podcasterElegido = new Podcaster();
 	private Musico musicoElegido = new Musico();
 	private Album albumElegido = new Album();
-	private int posicionArtista = -1, posicionAlbum = -1, audioElegido = -1, posicionPodcast = -1, opcionEscogida = -1;
+	private int audioElegido = -1, posicionPodcast = -1, opcionEscogida = -1;
 	private Image imgPredeterminada = new ImageIcon(
 			Paths.get("").toAbsolutePath().toString() + "\\img\\predeterminado.jpg").getImage();
+	private JTextField txtFNombreArtista;
+	private JTextField txtFDescripcionArtista;
 
 	/**
 	 * Launch the application.
@@ -283,14 +285,22 @@ public class Reto4Grupo5 extends JFrame {
 		btnIniciarSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("hola");
+
 				usuarioIniciado = basededatos.inicioSesion(txtFUsuario.getText(), new String(pswFContra.getPassword()));
+
 				if (usuarioIniciado != null
 						|| (cmbxTipo.getSelectedItem().equals("ADMINISTRADOR") && txtFUsuario.getText().equals("admin")
 								&& new String(pswFContra.getPassword()).equals("123"))) {
 					JOptionPane.showMessageDialog(null, "Sesión iniciada correctamente");
-					metodos.cambiardePantalla(layeredPane, "Menu");
-					btnPerfil.setText(usuarioIniciado.getUsuario());
-					btnPerfil.setEnabled(true);
+
+					if ((!cmbxTipo.getSelectedItem().equals("ADMINISTRADOR"))) {
+						btnPerfil.setText(usuarioIniciado.getUsuario());
+						btnPerfil.setEnabled(true);
+						metodos.cambiardePantalla(layeredPane, "Menu");
+					} else {
+						metodos.cambiardePantalla(layeredPane, idGestion);
+					}
+
 					btnAtras.setEnabled(true);
 				} else {
 					JOptionPane.showMessageDialog(null,
@@ -861,11 +871,13 @@ public class Reto4Grupo5 extends JFrame {
 					if (opcionEscogida == 0) {
 						basededatos.anadirCancionLike(usuarioIniciado,
 								albumElegido.getCanciones().get(audioElegido).getIdAudio());
-						basededatos.anadirEstadisticasLike(albumElegido.getCanciones().get(audioElegido).getIdAudio(),opcionEscogida);
+						basededatos.anadirEstadisticasLike(albumElegido.getCanciones().get(audioElegido).getIdAudio(),
+								opcionEscogida);
 					} else {
 						basededatos.anadirCancionLike(usuarioIniciado,
 								podcasterElegido.getPodcasts().get(audioElegido).getIdAudio());
-						basededatos.anadirEstadisticasLike(podcasterElegido.getPodcasts().get(audioElegido).getIdAudio(), opcionEscogida);
+						basededatos.anadirEstadisticasLike(
+								podcasterElegido.getPodcasts().get(audioElegido).getIdAudio(), opcionEscogida);
 					}
 					JOptionPane.showMessageDialog(null, "¡Canción añadida a Me gusta!");
 				} else {
@@ -1125,7 +1137,7 @@ public class Reto4Grupo5 extends JFrame {
 		btnNuevaPlaylist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				metodos.crearPlayList(usuarioIniciado, listaPlaylist);
+				usuarioIniciado = metodos.crearPlayList(usuarioIniciado, listaPlaylist);
 			}
 		});
 		btnNuevaPlaylist.setBounds(379, 44, 120, 23);
@@ -1189,7 +1201,7 @@ public class Reto4Grupo5 extends JFrame {
 		panelGestMusica.setLayout(null);
 
 		JList<String> lista = new JList<String>();
-		lista.setBounds(77, 46, 211, 304);
+		lista.setBounds(77, 46, 211, 321);
 		panelGestMusica.add(lista);
 
 		JButton btnGestArtistas = new JButton("Gestionar artistas");
@@ -1234,13 +1246,67 @@ public class Reto4Grupo5 extends JFrame {
 		btnModificar.setBounds(397, 43, 89, 23);
 		panelGestMusica.add(btnModificar);
 
+		JLabel lblNombreArtista = new JLabel("Nombre Artista:");
+		lblNombreArtista.setVisible(false);
+		lblNombreArtista.setBounds(397, 145, 150, 14);
+		panelGestMusica.add(lblNombreArtista);
+
+		JLabel lblDescripcionArtista = new JLabel("Descripción:");
+		lblDescripcionArtista.setVisible(false);
+		lblDescripcionArtista.setBounds(397, 193, 74, 14);
+		panelGestMusica.add(lblDescripcionArtista);
+
+		JLabel lblCaracteristicaArtista = new JLabel("Caracteristica:");
+		lblCaracteristicaArtista.setVisible(false);
+		lblCaracteristicaArtista.setBounds(397, 327, 89, 14);
+		panelGestMusica.add(lblCaracteristicaArtista);
+
+		txtFNombreArtista = new JTextField();
+		txtFNombreArtista.setVisible(false);
+		txtFNombreArtista.setBounds(397, 162, 259, 20);
+		panelGestMusica.add(txtFNombreArtista);
+		txtFNombreArtista.setColumns(10);
+
+		txtFDescripcionArtista = new JTextField();
+		txtFDescripcionArtista.setVisible(false);
+		txtFDescripcionArtista.setBounds(397, 207, 259, 109);
+		panelGestMusica.add(txtFDescripcionArtista);
+		txtFDescripcionArtista.setColumns(10);
+
+		JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox.setVisible(false);
+		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] { "Solista", "Grupo" }));
+		comboBox.setBounds(397, 345, 259, 22);
+		panelGestMusica.add(comboBox);
+
 		JButton btnAñadir = new JButton("Añadir");
 		btnAñadir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				lblNombreArtista.setVisible(true);
+				lblDescripcionArtista.setVisible(true);
+				lblCaracteristicaArtista.setVisible(true);
+				txtFNombreArtista.setVisible(true);
+				txtFDescripcionArtista.setVisible(true);
+				comboBox.setVisible(true);
 			}
 		});
 		btnAñadir.setBounds(397, 77, 89, 23);
 		panelGestMusica.add(btnAñadir);
+
+		JButton btnArtistaAceptar = new JButton("ACEPTAR");
+		btnArtistaAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i <= lista.getModel().getSize(); i++) {
+					if (lista.getModel().getElementAt(i).equals(txtFNombreArtista.getText())) {
+						JOptionPane.showMessageDialog(null, "El artista que deseas isertar ya existe");
+					} else
+						basededatos.añadirArtista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
+								comboBox.getSelectedItem(), lista);
+				}
+			}
+		});
+		btnArtistaAceptar.setBounds(397, 378, 89, 23);
+		panelGestMusica.add(btnArtistaAceptar);
 
 		JPanel panelBtnMenu = new JPanel();
 		panelBtnMenu.setBackground(new Color(215, 223, 234));
@@ -1264,6 +1330,8 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnAnadirPlayList = new JButton("Añadir");
 		btnAnadirPlayList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				metodos.comprobarInsertarCancionPlaylist(albumElegido.getCanciones().get(audioElegido).getIdAudio(),
+						listaMenu, usuarioIniciado);
 			}
 		});
 		btnAnadirPlayList.setBounds(120, 374, 220, 27);

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 
@@ -690,11 +691,9 @@ public class BasedeDatos {
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 			if (opcionEscogida == 0) {
-				 consulta = "UPDATE Estadisticas SET TopCanciones = TopCanciones + 1 WHERE IDAudio =" + idAudio
-						+ ";";
+				consulta = "UPDATE Estadisticas SET TopCanciones = TopCanciones + 1 WHERE IDAudio =" + idAudio + ";";
 			} else {
-				 consulta = "UPDATE Estadisticas SET TopPodcast = TopPodcast + 1 WHERE IDAudio =" + idAudio
-						+ ";";
+				consulta = "UPDATE Estadisticas SET TopPodcast = TopPodcast + 1 WHERE IDAudio =" + idAudio + ";";
 			}
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 			preparedStatement.executeUpdate();
@@ -706,4 +705,43 @@ public class BasedeDatos {
 		}
 	}
 
+	public void anadirCancionPlaylist(int idAudio, JList<String> listaMenu, int idLista) {
+		// TODO Auto-generated method stub
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "INSERT INTO Playlist_Canciones (IDList, IDAudio, fechaPlaylist_Cancion) VALUES ("
+					+ idLista + ", " + idAudio + ", CURRENT_DATE())";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			System.out.println("se ha metiu");
+			preparedStatement.executeUpdate();
+			conexion.close();
+		} catch (
+
+		SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+	}
+
+	public void añadirArtista(String nombreArtista, String descripcionArtista, Object selectedItem, JList<String> lista) {
+	    try {
+	        Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+	        String consulta = "INSERT INTO Musico (NombreArtistico, Imagen, Descripcion, Caracteristica) VALUES (?, ?, ?, ?)";
+	        PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+	        preparedStatement.setString(1, nombreArtista);
+	        preparedStatement.setString(2, nombreArtista.toLowerCase() + ".jpg");
+	        preparedStatement.setString(3, descripcionArtista);
+	        preparedStatement.setString(4, selectedItem.toString()); // Convertimos selectedItem a String
+	        DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
+			model.addElement(nombreArtista);
+	        preparedStatement.executeUpdate();
+	        conexion.close();
+	    } catch (SQLException ex) {
+	        System.out.println("SQLException: " + ex.getMessage());
+	        System.out.println("SQLState: " + ex.getSQLState());
+	        System.out.println("VendorError: " + ex.getErrorCode());
+	    }
+	}
 }

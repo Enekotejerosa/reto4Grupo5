@@ -157,7 +157,7 @@ public class Metodos {
 
 	}
 
-	public void crearPlayList(Usuarios usuarioIniciado, JList<String> listaPlaylist) {
+	public Usuarios crearPlayList(Usuarios usuarioIniciado, JList<String> listaPlaylist) {
 		// TODO Auto-generated method stub
 		String nombreLista = JOptionPane.showInputDialog("Por favor, introduce un texto:");
 		System.out.println(nombreLista);
@@ -177,7 +177,7 @@ public class Metodos {
 			String diaString = fecha_creacion.format(formato);
 			usuarioIniciado.getPlaylists().add(new PlayList(nombreLista, diaString));
 		}
-
+		return usuarioIniciado;
 	}
 
 	public void exportarPlayList(Usuarios usuarioIniciado, int posicionSeleccionada) {
@@ -302,13 +302,40 @@ public class Metodos {
 			}
 			// Escribir el título de la playlist en el archivo
 			fic.write("Nombre: " + podcast.getNombre() + "\nDuracion: " + podcast.getDuracion() + "\nID: "
-					+ podcast.getIdAudio() + "\nURL: " + podcast.getAudio()+"\nColaboradores: "+podcast.getColaboradores());
+					+ podcast.getIdAudio() + "\nURL: " + podcast.getAudio() + "\nColaboradores: "
+					+ podcast.getColaboradores());
 
 			// Escribir los ID de las canciones en la playlist
 
 			System.out.println("Se ha creado el archivo exitosamente: " + podcast.getNombre());
 		} catch (IOException e) {
 			System.err.println("Error al escribir en el archivo: " + e.getMessage());
+		}
+	}
+
+	public void comprobarInsertarCancionPlaylist(int idAudio, JList<String> listaMenu, Usuarios usuarioIniciado) {
+		if (!listaMenu.isSelectionEmpty()) {
+			int playListElegida = listaMenu.getSelectedIndex();
+			boolean repetido = false;
+
+			for (int i = 0; i != usuarioIniciado.getPlaylists().get(playListElegida).getCanciones().size()
+					&& !repetido; i++) {
+
+				if (usuarioIniciado.getPlaylists().get(playListElegida).getCanciones().get(i).getIdAudio() == idAudio) {
+					repetido = true;
+
+				}
+			}
+			if (!repetido) {
+				basededatos.anadirCancionPlaylist(idAudio, listaMenu,
+						usuarioIniciado.getPlaylists().get(playListElegida).getIdPlayList());
+			} else {
+				JOptionPane.showMessageDialog(null, "Esta cancion ya se encuentra en esta playList", "Añadir Cancion",
+						JOptionPane.ERROR_MESSAGE, null);
+			}
+		} else {
+			JOptionPane.showMessageDialog(null, "Escoge una playList", "Añadir Cancion", JOptionPane.ERROR_MESSAGE,
+					null);
 		}
 	}
 
