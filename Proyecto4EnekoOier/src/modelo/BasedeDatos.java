@@ -12,10 +12,10 @@ import javax.swing.JOptionPane;
 
 public class BasedeDatos {
 
-	static String url = "jdbc:mysql://localhost:3306/reto4grupo5_m";
-	static String contrasenabdd = "eneko";
-	static String usuariobdd = "root";
-	static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellidos = "Apellido",
+	final static String url = "jdbc:mysql://reto4grupo5.duckdns.org:3306/reto4grupo5_m";
+	final static String contrasenabdd = "Elorrieta2024+";
+	final static String usuariobdd = "grupo05";
+	final static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellidos = "Apellido",
 			clienteFechaNacimiento = "FechaNacimiento", clienteFechaRegistro = "FechaRegistro",
 			clienteContrasena = "Contrasena", clienteTipo = "TipoCliente";
 
@@ -61,8 +61,8 @@ public class BasedeDatos {
 								rs3.getString("Duracion"), rs3.getString("Audio"));
 						canciones.add(cancion);
 					}
-					PlayList playlist = new PlayList(rs2.getString("Titulo"), rs2.getString("FechaCreacion"),
-							canciones);
+					PlayList playlist = new PlayList(rs2.getString("Titulo"), rs2.getString("FechaCreacion"), canciones,
+							rs2.getInt("idList"));
 					playlists.add(playlist);
 				}
 				usuarioIniciado = new Usuarios(rs.getInt("IDCliente"), rs.getString(clienteNombre),
@@ -380,59 +380,30 @@ public class BasedeDatos {
 		return podcasters;
 	}
 
-	public void anadirCancionLike(String usuario, String cancion) {
+	public void anadirCancionLike(Usuarios usuarioIniciado, int idAudio) {
 		// TODO Auto-generated method stub
-		int idLista = 0, idAudio = 0;
+		int idLista = 0;
+		for (int i = 0; i != usuarioIniciado.getPlaylists().size(); i++) {
+			if (usuarioIniciado.getPlaylists().get(i).getTitulo().equals("Me gusta")) {
+				idLista = usuarioIniciado.getPlaylists().get(i).getIdPlayList();
+			}
+		}
 		try {
 			// Conexión con la base de datos
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			// Crear la consulta SQL
-			String consulta1 = "SELECT p.IDList " + "FROM Playlist AS p "
-					+ "INNER JOIN Cliente AS c ON p.IDCliente = c.IDCliente " + "WHERE c.Usuario = '" + usuario + "' "
-					+ "AND p.Titulo = 'Me Gusta'; ";
-			String consulta2 = "SELECT IDAudio From Audio WHERE Nombre ='" + cancion + "'; ";
+			// Crear la consulta SQL para insertar en Playlist_Canciones
+			String consulta = "INSERT INTO Playlist_Canciones (IDList, IDAudio, fechaPlaylist_Cancion) " + "VALUES ("
+					+ idLista + "," + idAudio + ", CURDATE());";
 			// Crea el PreparedStatement
-			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
-			PreparedStatement preparedStatement2 = conexion.prepareStatement(consulta2);
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 			// Ejecutar la consulta y obtener el resultado
-			ResultSet rs1 = preparedStatement1.executeQuery();
-			ResultSet rs2 = preparedStatement2.executeQuery();
+			preparedStatement.executeUpdate();
 
-			// Leer el resultado
-
-			if (rs1.next()) {
-				idLista = rs1.getInt("IDList");
-			}
-			if (rs2.next()) {
-				idAudio = rs2.getInt("IDAudio");
-			}
 			conexion.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
-
-		}
-		if (idLista != 0 && idAudio != 0) {
-			try {
-				// Conexión con la base de datos
-				Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-				// Crear la consulta SQL para insertar en Playlist_Canciones
-				String consulta = "INSERT INTO Playlist_Canciones (IDList, IDAudio, fechaPlaylist_Cancion) "
-						+ "VALUES (" + idLista + "," + idAudio + ", CURDATE());";
-				// Crea el PreparedStatement
-				PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-				// Ejecutar la consulta y obtener el resultado
-				preparedStatement.executeUpdate();
-
-				conexion.close();
-			} catch (SQLException ex) {
-				System.out.println("SQLException: " + ex.getMessage());
-				System.out.println("SQLState: " + ex.getSQLState());
-				System.out.println("VendorError: " + ex.getErrorCode());
-			}
-		} else {
-			System.out.println("No se encontraron valores correspondientes para idLista e idAudio.");
 		}
 	}
 
@@ -703,6 +674,28 @@ public class BasedeDatos {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 			String consulta = "UPDATE Estadisticas SET MasEscuchados = MasEscuchados + 1 WHERE IDAudio =" + idAudio
 					+ ";";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.executeUpdate();
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+	public void anadirEstadisticasLike(int idAudio, int opcionEscogida) {
+		// TODO Auto-generated method stub
+		String consulta = "";
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			if (opcionEscogida == 0) {
+				 consulta = "UPDATE Estadisticas SET TopCanciones = TopCanciones + 1 WHERE IDAudio =" + idAudio
+						+ ";";
+			} else {
+				 consulta = "UPDATE Estadisticas SET TopPodcast = TopPodcast + 1 WHERE IDAudio =" + idAudio
+						+ ";";
+			}
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 			preparedStatement.executeUpdate();
 			conexion.close();

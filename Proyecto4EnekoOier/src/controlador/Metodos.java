@@ -25,7 +25,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import modelo.Usuarios;
 import modelo.BasedeDatos;
+import modelo.Cancion;
 import modelo.PlayList;
+import modelo.Podcast;
 
 public class Metodos {
 	BasedeDatos basededatos = new BasedeDatos();
@@ -212,7 +214,7 @@ public class Metodos {
 		if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			String rutaArchivo = fileChooser.getSelectedFile().getAbsolutePath();
 			try (BufferedReader reader = new BufferedReader(new FileReader(rutaArchivo))) {
-				String tituloPlaylist = reader.readLine();
+				String tituloPlaylist = reader.readLine().trim();
 				String segundaLinea = reader.readLine();
 				int i = 0;
 				boolean repetido = false;
@@ -266,6 +268,48 @@ public class Metodos {
 			return new int[0];
 		}
 		return numeros;
+	}
+
+	public void exportarCancion(Cancion cancion) {
+		// TODO Auto-generated method stub
+		File fichero = new File(
+				Paths.get("").toAbsolutePath().toString() + "\\src\\" + cancion.getNombre().replace(" ", "") + ".txt");
+
+		try (FileWriter fic = new FileWriter(fichero)) {
+			if (!fichero.exists()) {
+				fichero.createNewFile();
+			}
+			// Escribir el título de la playlist en el archivo
+			fic.write("Nombre: " + cancion.getNombre() + "\nDuracion: " + cancion.getDuracion() + "\nID: "
+					+ cancion.getIdAudio() + "\nURL: " + cancion.getAudio());
+
+			// Escribir los ID de las canciones en la playlist
+
+			System.out.println("Se ha creado el archivo exitosamente: " + cancion.getNombre());
+		} catch (IOException e) {
+			System.err.println("Error al escribir en el archivo: " + e.getMessage());
+		}
+	}
+
+	public void exportarPodcast(Podcast podcast) {
+		// TODO Auto-generated method stub
+		File fichero = new File(
+				Paths.get("").toAbsolutePath().toString() + "\\src\\" + podcast.getNombre().replace(" ", "") + ".txt");
+
+		try (FileWriter fic = new FileWriter(fichero)) {
+			if (!fichero.exists()) {
+				fichero.createNewFile();
+			}
+			// Escribir el título de la playlist en el archivo
+			fic.write("Nombre: " + podcast.getNombre() + "\nDuracion: " + podcast.getDuracion() + "\nID: "
+					+ podcast.getIdAudio() + "\nURL: " + podcast.getAudio()+"\nColaboradores: "+podcast.getColaboradores());
+
+			// Escribir los ID de las canciones en la playlist
+
+			System.out.println("Se ha creado el archivo exitosamente: " + podcast.getNombre());
+		} catch (IOException e) {
+			System.err.println("Error al escribir en el archivo: " + e.getMessage());
+		}
 	}
 
 }

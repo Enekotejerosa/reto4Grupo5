@@ -838,7 +838,11 @@ public class Reto4Grupo5 extends JFrame {
 		btnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiardePantalla(layeredPane, idbtnMenu);
-				txtFNombreCancionMenu.setText(albumElegido.getCanciones().get(audioElegido).getNombre());
+				if (opcionEscogida == 0) {
+					txtFNombreCancionMenu.setText(albumElegido.getCanciones().get(audioElegido).getNombre());
+				} else {
+					txtFNombreCancionMenu.setText(podcasterElegido.getPodcasts().get(audioElegido).getNombre());
+				}
 				DefaultListModel<String> listModel = new DefaultListModel<>();
 				listaMenu.setModel(listModel); // Establecer el modelo de lista en el JList
 				for (int i = 0; i != usuarioIniciado.getPlaylists().size(); i++) {
@@ -854,8 +858,15 @@ public class Reto4Grupo5 extends JFrame {
 		btnMeGusta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (clip != null && clip.isRunning()) {
-					basededatos.anadirCancionLike(usuarioIniciado.getUsuario(), musicos.get(posicionArtista)
-							.getAlbumes().get(posicionAlbum).getCanciones().get(audioElegido).getNombre());
+					if (opcionEscogida == 0) {
+						basededatos.anadirCancionLike(usuarioIniciado,
+								albumElegido.getCanciones().get(audioElegido).getIdAudio());
+						basededatos.anadirEstadisticasLike(albumElegido.getCanciones().get(audioElegido).getIdAudio(),opcionEscogida);
+					} else {
+						basededatos.anadirCancionLike(usuarioIniciado,
+								podcasterElegido.getPodcasts().get(audioElegido).getIdAudio());
+						basededatos.anadirEstadisticasLike(podcasterElegido.getPodcasts().get(audioElegido).getIdAudio(), opcionEscogida);
+					}
 					JOptionPane.showMessageDialog(null, "¡Canción añadida a Me gusta!");
 				} else {
 					JOptionPane.showMessageDialog(null, "No hay ninguna canción reproduciéndose actualmente.");
@@ -1261,6 +1272,12 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnExportarCancion = new JButton("Exportar");
 		btnExportarCancion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (opcionEscogida == 0) {
+					metodos.exportarCancion(albumElegido.getCanciones().get(audioElegido));
+				} else {
+					metodos.exportarPodcast(podcasterElegido.getPodcasts().get(audioElegido));
+				}
+
 			}
 		});
 		btnExportarCancion.setBounds(342, 374, 220, 27);
