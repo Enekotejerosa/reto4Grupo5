@@ -15,12 +15,14 @@ import java.util.TimerTask;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import modelo.Usuarios;
@@ -337,6 +339,16 @@ public class Metodos {
 			JOptionPane.showMessageDialog(null, "Escoge una playList", "Añadir Cancion", JOptionPane.ERROR_MESSAGE,
 					null);
 		}
+	}
+
+	public void mostrarComponentes(JLabel lblNombreArtista, JLabel lblDescripcionArtista, JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista, JComboBox<String> comboBox) {
+		// TODO Auto-generated method stub
+		lblNombreArtista.setVisible(true);
+	    lblDescripcionArtista.setVisible(true);
+	    lblCaracteristicaArtista.setVisible(true);
+	    txtFNombreArtista.setVisible(true);
+	    txtFDescripcionArtista.setVisible(true);
+	    comboBox.setVisible(true);
 	}
 
 }

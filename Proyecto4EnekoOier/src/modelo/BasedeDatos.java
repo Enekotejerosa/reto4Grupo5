@@ -13,9 +13,9 @@ import javax.swing.JOptionPane;
 
 public class BasedeDatos {
 
-	final static String url = "jdbc:mysql://reto4grupo5.duckdns.org:3306/reto4grupo5_m";
-	final static String contrasenabdd = "Elorrieta2024+";
-	final static String usuariobdd = "grupo05";
+	static String url = "jdbc:mysql://localhost:33060/reto4grupo5_m";
+	static String contrasenabdd = "elorrieta";
+	static String usuariobdd = "root";
 	final static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellidos = "Apellido",
 			clienteFechaNacimiento = "FechaNacimiento", clienteFechaRegistro = "FechaRegistro",
 			clienteContrasena = "Contrasena", clienteTipo = "TipoCliente";
@@ -725,23 +725,66 @@ public class BasedeDatos {
 
 	}
 
-	public void añadirArtista(String nombreArtista, String descripcionArtista, Object selectedItem, JList<String> lista) {
+	public void añadirArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
+			JList<String> lista) {
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "INSERT INTO Musico (NombreArtistico, Imagen, Descripcion, Caracteristica) VALUES (?, ?, ?, ?)";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, nombreArtista);
+			preparedStatement.setString(2, nombreArtista.toLowerCase() + ".jpg");
+			preparedStatement.setString(3, descripcionArtista);
+			preparedStatement.setString(4, selectedItem.toString());
+			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
+			model.addElement(nombreArtista);
+			preparedStatement.executeUpdate();
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+	public void modificarArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
+			JList<String> lista) {
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "UPDATE Musico SET Descripcion=?, Caracteristica=? WHERE NombreArtistico=?";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, descripcionArtista);
+			preparedStatement.setString(2, selectedItem.toString());
+			preparedStatement.setString(3, nombreArtista);
+			preparedStatement.executeUpdate();
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+	public Musico obtenerArtista(String nombreArtista) {
+	    Musico artista = null;
 	    try {
 	        Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-	        String consulta = "INSERT INTO Musico (NombreArtistico, Imagen, Descripcion, Caracteristica) VALUES (?, ?, ?, ?)";
+	        String consulta = "SELECT * FROM Musico WHERE NombreArtistico=?";
 	        PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 	        preparedStatement.setString(1, nombreArtista);
-	        preparedStatement.setString(2, nombreArtista.toLowerCase() + ".jpg");
-	        preparedStatement.setString(3, descripcionArtista);
-	        preparedStatement.setString(4, selectedItem.toString()); // Convertimos selectedItem a String
-	        DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
-			model.addElement(nombreArtista);
-	        preparedStatement.executeUpdate();
+	        ResultSet resultSet = preparedStatement.executeQuery();
+	        if (resultSet.next()) {
+	            String nombre = resultSet.getString("NombreArtistico");
+	            String descripcion = resultSet.getString("Descripcion");
+	            String imagen = resultSet.getString("Imagen");
+	            Caracteristica caracteristica = Caracteristica.valueOf(resultSet.getString("Caracteristica"));
+	            artista = new Musico(nombre, descripcion, imagen, caracteristica, null);
+	        }
 	        conexion.close();
 	    } catch (SQLException ex) {
 	        System.out.println("SQLException: " + ex.getMessage());
 	        System.out.println("SQLState: " + ex.getSQLState());
 	        System.out.println("VendorError: " + ex.getErrorCode());
 	    }
+	    return artista;
 	}
 }

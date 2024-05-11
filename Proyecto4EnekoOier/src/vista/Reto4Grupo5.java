@@ -73,6 +73,7 @@ public class Reto4Grupo5 extends JFrame {
 	private Musico musicoElegido = new Musico();
 	private Album albumElegido = new Album();
 	private int audioElegido = -1, posicionPodcast = -1, opcionEscogida = -1;
+	private int gestionarArtista =  0;
 	private Image imgPredeterminada = new ImageIcon(
 			Paths.get("").toAbsolutePath().toString() + "\\img\\predeterminado.jpg").getImage();
 	private JTextField txtFNombreArtista;
@@ -1215,37 +1216,6 @@ public class Reto4Grupo5 extends JFrame {
 		btnGestArtistas.setBounds(43, 141, 178, 94);
 		panelMenuGestMusica.add(btnGestArtistas);
 
-		JButton btnBorrar = new JButton("Borrar");
-		btnBorrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (lista.isSelectionEmpty()) {
-					JOptionPane.showMessageDialog(null, "Debes seleccionar algo");
-				} else {
-					basededatos.borrarElementosLista(lista);
-				}
-			}
-		});
-		btnBorrar.setBounds(397, 111, 89, 23);
-		panelGestMusica.add(btnBorrar);
-
-		JButton btnModificar = new JButton("Modificar");
-		btnModificar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (lista.isSelectionEmpty()) {
-					JOptionPane.showMessageDialog(null, "Debes seleccionar algo");
-				} else {
-					String nuevoNombre = JOptionPane.showInputDialog("Introduce el nuevo nombre:");
-					if (nuevoNombre != null && !nuevoNombre.isEmpty()) {
-						basededatos.modificarElementosLista(lista, nuevoNombre);
-					} else {
-						JOptionPane.showMessageDialog(null, "Debes ingresar un nuevo nombre");
-					}
-				}
-			}
-		});
-		btnModificar.setBounds(397, 43, 89, 23);
-		panelGestMusica.add(btnModificar);
-
 		JLabel lblNombreArtista = new JLabel("Nombre Artista:");
 		lblNombreArtista.setVisible(false);
 		lblNombreArtista.setBounds(397, 145, 150, 14);
@@ -1282,32 +1252,79 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnAñadir = new JButton("Añadir");
 		btnAñadir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				lblNombreArtista.setVisible(true);
-				lblDescripcionArtista.setVisible(true);
-				lblCaracteristicaArtista.setVisible(true);
-				txtFNombreArtista.setVisible(true);
-				txtFDescripcionArtista.setVisible(true);
-				comboBox.setVisible(true);
+				metodos.mostrarComponentes(lblNombreArtista, lblDescripcionArtista, lblCaracteristicaArtista,
+						txtFNombreArtista, txtFDescripcionArtista, comboBox);
+				gestionarArtista = 1;
 			}
 		});
 		btnAñadir.setBounds(397, 77, 89, 23);
 		panelGestMusica.add(btnAñadir);
 
-		JButton btnArtistaAceptar = new JButton("ACEPTAR");
-		btnArtistaAceptar.addActionListener(new ActionListener() {
+		JButton btnModificar = new JButton("Modificar");
+		btnModificar.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        int i = lista.getSelectedIndex();
+		        if (i != -1) {
+		            String nombreArtistaSeleccionado = lista.getModel().getElementAt(i);
+		            Musico artistaSeleccionado = basededatos.obtenerArtista(nombreArtistaSeleccionado);
+		            txtFNombreArtista.setText(artistaSeleccionado.getNombreArtista());
+		            txtFDescripcionArtista.setText(artistaSeleccionado.getDescripcion());
+		            comboBox.setSelectedItem(artistaSeleccionado.getCaracteristica());
+		            
+		            metodos.mostrarComponentes(lblNombreArtista, lblDescripcionArtista, lblCaracteristicaArtista,
+		                                        txtFNombreArtista, txtFDescripcionArtista, comboBox);
+		            
+		            
+		        } else {
+		            JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
+		        }
+		    }
+		});
+		btnModificar.setBounds(397, 43, 89, 23);
+		panelGestMusica.add(btnModificar);
+
+		JButton btnBorrar = new JButton("Borrar");
+		btnBorrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				for (int i = 0; i <= lista.getModel().getSize(); i++) {
-					if (lista.getModel().getElementAt(i).equals(txtFNombreArtista.getText())) {
-						JOptionPane.showMessageDialog(null, "El artista que deseas isertar ya existe");
-					} else
-						basededatos.añadirArtista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
-								comboBox.getSelectedItem(), lista);
+				if (lista.isSelectionEmpty()) {
+					JOptionPane.showMessageDialog(null, "Debes seleccionar algo");
+				} else {
+					basededatos.borrarElementosLista(lista);
 				}
 			}
 		});
+		btnBorrar.setBounds(397, 111, 89, 23);
+		panelGestMusica.add(btnBorrar);
+
+		JButton btnArtistaAceptar = new JButton("ACEPTAR");
+		btnArtistaAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        if (gestionarArtista == 1) { 
+		            boolean artistaRepetido = false;
+		            for (int i = 0; i < lista.getModel().getSize(); i++) {
+		                if (lista.getModel().getElementAt(i).equals(txtFNombreArtista.getText())) {
+		                    artistaRepetido = true;
+		                    break;
+		                }
+		            }
+		            if (artistaRepetido) {
+		                JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
+		            } else {
+		                basededatos.añadirArtista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
+		                                            comboBox.getSelectedItem(), lista);
+		            }
+		        } else if (gestionarArtista == 2) { 
+		            if (lista.isSelectionEmpty()) {
+		                JOptionPane.showMessageDialog(null, "Debes seleccionar algo");
+		            } else {
+		                basededatos.modificarArtista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
+		                                              comboBox.getSelectedItem(), lista);
+		            }
+		        }
+		    }
+		});
 		btnArtistaAceptar.setBounds(397, 378, 89, 23);
 		panelGestMusica.add(btnArtistaAceptar);
-
 		JPanel panelBtnMenu = new JPanel();
 		panelBtnMenu.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelBtnMenu, "btnMenu");
