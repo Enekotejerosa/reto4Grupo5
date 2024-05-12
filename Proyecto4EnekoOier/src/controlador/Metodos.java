@@ -351,4 +351,16 @@ public class Metodos {
 	    comboBox.setVisible(true);
 	}
 
+	public void ocultarComponentes(JLabel lblNombreArtista, JLabel lblDescripcionArtista,
+			JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista,
+			JComboBox<String> comboBox) {
+		// TODO Auto-generated method stub
+		lblNombreArtista.setVisible(false);
+	    lblDescripcionArtista.setVisible(false);
+	    lblCaracteristicaArtista.setVisible(false);
+	    txtFNombreArtista.setVisible(false);
+	    txtFDescripcionArtista.setVisible(false);
+	    comboBox.setVisible(false);
+	}
+
 }
