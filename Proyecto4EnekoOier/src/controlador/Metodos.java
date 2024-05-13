@@ -1,3 +1,4 @@
+
 package controlador;
 
 import java.awt.CardLayout;
@@ -15,6 +16,7 @@ import java.util.TimerTask;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -144,7 +146,7 @@ public class Metodos {
 	}
 
 	/**
-	 * borra todos los elementos de un panel
+	 * Borra todos los elementos de un panel
 	 * 
 	 * @param panel es el panel enviado
 	 */
@@ -159,6 +161,14 @@ public class Metodos {
 
 	}
 
+	/**
+	 * Crea una nueva lista de reproducción y la añade al usuario iniciado.
+	 * 
+	 * @param usuarioIniciado usuario que está iniciado en el sistema.
+	 * @param listaPlaylist   lista de reproducción donde se añadirá el nombre de la
+	 *                        nueva lista.
+	 * @return El usuario actualizado con la nueva lista de reproducción.
+	 */
 	public Usuarios crearPlayList(Usuarios usuarioIniciado, JList<String> listaPlaylist) {
 		// TODO Auto-generated method stub
 		String nombreLista = JOptionPane.showInputDialog("Por favor, introduce un texto:");
@@ -182,6 +192,13 @@ public class Metodos {
 		return usuarioIniciado;
 	}
 
+	/**
+	 * Exporta una lista de reproducción a un archivo CSV.
+	 * 
+	 * @param usuarioIniciado      usuario que está iniciado en el sistema.
+	 * @param posicionSeleccionada posición de la lista de reproducción
+	 *                             seleccionada.
+	 */
 	public void exportarPlayList(Usuarios usuarioIniciado, int posicionSeleccionada) {
 		// TODO Auto-generated method stub
 		PlayList playlist = usuarioIniciado.getPlaylists().get(posicionSeleccionada);
@@ -207,6 +224,13 @@ public class Metodos {
 		}
 	}
 
+	/**
+	 * Importa una lista de reproducción desde un archivo CSV.
+	 *
+	 * @param usuarioIniciado usuario que está iniciado en el sistema.
+	 * @param listaPlaylist   lista de reproducción.
+	 * @return usuario con la lista de reproducción importada.
+	 */
 	public Usuarios importarPlayList(Usuarios usuarioIniciado, JList<String> listaPlaylist) {
 		// TODO Auto-generated method stub
 		JFileChooser fileChooser = new JFileChooser();
@@ -256,6 +280,13 @@ public class Metodos {
 		return usuarioIniciado;
 	}
 
+	/**
+	 * Valida la segunda línea del archivo CSV para obtener los IDs de las
+	 * canciones.
+	 *
+	 * @param segundaLinea segunda línea del archivo CSV.
+	 * @return arreglo de enteros que representa los IDs de las canciones.
+	 */
 	public static int[] validarSegundaLinea(String segundaLinea) {
 
 		// Verificar si la segunda línea contiene números separados por ;
@@ -272,6 +303,11 @@ public class Metodos {
 		return numeros;
 	}
 
+	/**
+	 * Exporta los detalles de una canción a un archivo de texto.
+	 * 
+	 * @param cancion canción que se exportará.
+	 */
 	public void exportarCancion(Cancion cancion) {
 		// TODO Auto-generated method stub
 		File fichero = new File(
@@ -293,6 +329,11 @@ public class Metodos {
 		}
 	}
 
+	/**
+	 * Exporta los detalles de un podcast a un archivo de texto.
+	 * 
+	 * @param podcast podcast que se exportará.
+	 */
 	public void exportarPodcast(Podcast podcast) {
 		// TODO Auto-generated method stub
 		File fichero = new File(
@@ -315,6 +356,14 @@ public class Metodos {
 		}
 	}
 
+	/**
+	 * Comprueba si la canción ya está en la playlist seleccionada y, de no estarlo,
+	 * la añade.
+	 * 
+	 * @param idAudio         ID de la canción que se quiere añadir a la playlist.
+	 * @param listaMenu       lista de playlists.
+	 * @param usuarioIniciado usuario que inició sesión.
+	 */
 	public void comprobarInsertarCancionPlaylist(int idAudio, JList<String> listaMenu, Usuarios usuarioIniciado) {
 		if (!listaMenu.isSelectionEmpty()) {
 			int playListElegida = listaMenu.getSelectedIndex();
@@ -341,26 +390,52 @@ public class Metodos {
 		}
 	}
 
-	public void mostrarComponentes(JLabel lblNombreArtista, JLabel lblDescripcionArtista, JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista, JComboBox<String> comboBox) {
+	/**
+	 * Muestra los componentes necesarios para añadir o modificar un artista.
+	 * 
+	 * @param lblNombreArtista
+	 * @param lblDescripcionArtista
+	 * @param lblCaracteristicaArtista
+	 * @param txtFNombreArtista
+	 * @param txtFDescripcionArtista
+	 * @param comboBox
+	 * @param btnArtistaAceptar
+	 */
+	public void mostrarComponentes(JLabel lblNombreArtista, JLabel lblDescripcionArtista,
+			JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista,
+			JComboBox<String> comboBox, JButton btnArtistaAceptar) {
 		// TODO Auto-generated method stub
 		lblNombreArtista.setVisible(true);
-	    lblDescripcionArtista.setVisible(true);
-	    lblCaracteristicaArtista.setVisible(true);
-	    txtFNombreArtista.setVisible(true);
-	    txtFDescripcionArtista.setVisible(true);
-	    comboBox.setVisible(true);
+		lblDescripcionArtista.setVisible(true);
+		lblCaracteristicaArtista.setVisible(true);
+		txtFNombreArtista.setVisible(true);
+		txtFDescripcionArtista.setVisible(true);
+		comboBox.setVisible(true);
+		btnArtistaAceptar.setVisible(true);
 	}
 
+	/**
+	 * Esconde los componentes necesarios para añadir o modificar un artista.
+	 * 
+	 * @param lblNombreArtista
+	 * @param lblDescripcionArtista
+	 * @param lblCaracteristicaArtista
+	 * @param txtFNombreArtista
+	 * @param txtFDescripcionArtista
+	 * @param comboBox
+	 * @param btnArtistaAceptar
+	 */
 	public void ocultarComponentes(JLabel lblNombreArtista, JLabel lblDescripcionArtista,
 			JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista,
-			JComboBox<String> comboBox) {
+			JComboBox<String> comboBox, JButton btnArtistaAceptar) {
 		// TODO Auto-generated method stub
 		lblNombreArtista.setVisible(false);
-	    lblDescripcionArtista.setVisible(false);
-	    lblCaracteristicaArtista.setVisible(false);
-	    txtFNombreArtista.setVisible(false);
-	    txtFDescripcionArtista.setVisible(false);
-	    comboBox.setVisible(false);
+		lblDescripcionArtista.setVisible(false);
+		lblCaracteristicaArtista.setVisible(false);
+		txtFNombreArtista.setVisible(false);
+		txtFDescripcionArtista.setVisible(false);
+		comboBox.setVisible(false);
+		btnArtistaAceptar.setVisible(false);
 	}
 
 }

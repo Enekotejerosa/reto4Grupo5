@@ -1,5 +1,6 @@
 package modelo;
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,11 +13,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+
 public class BasedeDatos {
 	// Conexion Base de datos
 	final static String url = "jdbc:mysql://reto4grupo5.duckdns.org:3306/reto4grupo5_m";
 	final static String contrasenabdd = "Elorrieta2024+";
 	final static String usuariobdd = "grupo05";
+
+
 	// Tabla Cliente
 	final static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellido = "Apellido",
 			clienteFechaNacimiento = "FechaNacimiento", clienteFechaRegistro = "FechaRegistro",
@@ -53,8 +57,9 @@ public class BasedeDatos {
 					+ clienteContrasena + "," + clienteUsuario + "," + clienteFechaNacimiento + ","
 					+ clienteFechaRegistro + "," + clienteTipo + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
 
+
 	/**
-	 * 1 Comprueba si el usuario y la contraseña son correctos y si ambos son del
+	 * Comprueba si el usuario y la contraseña son correctos y si ambos son del
 	 * mismo usuario
 	 * 
 	 * @param usuario    el texto introducido en el JTextField de usuario
@@ -69,12 +74,15 @@ public class BasedeDatos {
 			// Conexión con la base de datos
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 
+
 			// Consulta
 			PreparedStatement preparedStatement = (PreparedStatement) conexion.prepareStatement(consultaObtenerUsuario);
+
 
 			preparedStatement.setString(1, usuario);
 			preparedStatement.setString(2, contrasena);
 			ResultSet rs = preparedStatement.executeQuery();
+
 
 			// Condición para comprobar si el usuario y la contraseña son correctos
 			if (rs.next()) {
@@ -105,18 +113,21 @@ public class BasedeDatos {
 						rs.getString(clienteFechaNacimiento), rs.getString(clienteFechaRegistro),
 						rs.getString(clienteTipo), playlists);
 
+
 			}
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 
+
 		}
 		return usuarioIniciado;
 	}
 
+
 	/**
-	 * inserta un usuario nuevo a la base de datos
+	 * Inserta un usuario nuevo a la base de datos
 	 * 
 	 * @param usuarionuevo objeto usuario con todos los datos del mismo
 	 * @param fecPremium   fecha en la que se acaba el premium
@@ -124,11 +135,15 @@ public class BasedeDatos {
 	public void insertarUsuario(Usuarios usuarionuevo, String fecPremium) {
 		// TODO Auto-generated method stub
 
+
 		try {
+
 
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 
+
 			PreparedStatement preparedStatement = conexion.prepareStatement(consultaInsertarUsaurio);
+
 
 			preparedStatement.setString(1, usuarionuevo.getNombre());
 			preparedStatement.setString(2, usuarionuevo.getApellido());
@@ -138,8 +153,10 @@ public class BasedeDatos {
 			preparedStatement.setString(6, usuarionuevo.getFec_registro());
 			preparedStatement.setNString(7, usuarionuevo.getTipoCliente());
 
+
 			preparedStatement.executeUpdate();
 			preparedStatement.close();
+
 
 			conexion.close();
 		} catch (SQLException ex) {
@@ -151,7 +168,9 @@ public class BasedeDatos {
 			registrarPremium(usuarionuevo.getUsuario(), fecPremium);
 		}
 
+
 	}
+
 
 	/**
 	 * Registra al usuario y su respectiva fecha limite de premium en la base de
@@ -164,15 +183,19 @@ public class BasedeDatos {
 		// TODO Auto-generated method stub
 		int id = 0;
 
+
 		try {
 			// Conexión con la base de datos
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+
 
 			// Consulta
 			PreparedStatement preparedStatement = (PreparedStatement) conexion.prepareStatement("SELECT " + clienteId
 					+ " from " + tablaCliente + " where " + clienteUsuario + "= '" + usuario + "'");
 
+
 			ResultSet rs = preparedStatement.executeQuery();
+
 
 			// Condición para comprobar si el usuario y la contraseña son correctos
 			if (rs.next()) {
@@ -183,6 +206,7 @@ public class BasedeDatos {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 
+
 		}
 		try {
 			// Conexión con la base de datos
@@ -191,11 +215,14 @@ public class BasedeDatos {
 					+ ") VALUES (?, ?)";
 			PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
+
 			preparedStatement.setInt(1, id);
 			preparedStatement.setString(2, fecPremium);
 
+
 			preparedStatement.executeUpdate();
 			preparedStatement.close();
+
 
 			conexion.close();
 		} catch (SQLException ex) {
@@ -203,8 +230,10 @@ public class BasedeDatos {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 
+
 		}
 	}
+
 
 	/**
 	 * Comprueba si el usuario introducido al registrarse existe o no
@@ -221,20 +250,24 @@ public class BasedeDatos {
 			// Conexión con la base de datos
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 
+
 			// Consulta
 			PreparedStatement sentencia = (PreparedStatement) conexion
 					.prepareStatement("SELECT " + clienteUsuario + " from " + tablaCliente);
 			ResultSet rs = sentencia.executeQuery();
+
 
 			// Añade los Usuarios al ArrayList
 			while (rs.next()) {
 				usuarios.add(rs.getString(clienteUsuario));
 			}
 
+
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
+
 
 		}
 		do {
@@ -247,6 +280,7 @@ public class BasedeDatos {
 		} while (cont != usuarios.size() && !error);
 		return error;
 	}
+
 
 	/**
 	 * Actualiza los datos del cliente al darle al perfil
@@ -264,6 +298,7 @@ public class BasedeDatos {
 			// Conexión con la base de datos
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 
+
 			String sql = "UPDATE " + tablaCliente + " " + "SET " + clienteNombre + " = ?, " + clienteApellido + " = ?, "
 					+ "    " + clienteFechaNacimiento + " = ?, " + clienteContrasena + " = ? " + "WHERE "
 					+ clienteUsuario + " = ?";
@@ -277,15 +312,19 @@ public class BasedeDatos {
 			declaracion.executeUpdate();
 			declaracion.close();
 
+
 			conexion.close();
+
 
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 
+
 		}
 	}
+
 
 	/**
 	 * Recoge de la base de datos los nombres de los artistas y cuantos hay
@@ -300,17 +339,21 @@ public class BasedeDatos {
 			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
 			ResultSet rs1 = preparedStatement1.executeQuery();
 
+
 			while (rs1.next()) {
 				ArrayList<Album> albumes = new ArrayList<Album>(); // Nueva lista de álbumes para cada músico
 				Caracteristica caracteristica = null;
+
 
 				String consulta2 = "SELECT * FROM " + tablaAlbum + " WHERE " + musicoId + " =" + rs1.getInt(musicoId)
 						+ ";";
 				PreparedStatement preparedStatement2 = conexion.prepareStatement(consulta2);
 				ResultSet rs2 = preparedStatement2.executeQuery();
 
+
 				while (rs2.next()) {
 					ArrayList<Cancion> canciones = new ArrayList<Cancion>(); // Nueva lista de canciones para cada álbum
+
 
 					String consulta3 = "SELECT " + tablaAudio + ".* FROM " + tablaAudio + " " + "JOIN " + tablaCancion
 							+ " ON " + tablaAudio + "." + audioId + " = " + tablaCancion + "." + audioId + " " + "JOIN "
@@ -319,22 +362,26 @@ public class BasedeDatos {
 					PreparedStatement preparedStatement3 = conexion.prepareStatement(consulta3);
 					ResultSet rs3 = preparedStatement3.executeQuery();
 
+
 					while (rs3.next()) {
 						Cancion cancion = new Cancion(rs3.getString(audioNombre), rs3.getInt(audioId),
 								rs3.getString(audioDuracion), rs3.getString(audioAudio));
 						canciones.add(cancion); // Agregar la canción a la lista de canciones del álbum
 					}
 
+
 					Album album = new Album(rs2.getString(albumTitulo), rs2.getInt(albumAnyo),
 							rs2.getString(albumGenero), rs2.getString(albumImagen), canciones);
 					albumes.add(album); // Agregar el álbum a la lista de álbumes del músico
 				}
+
 
 				if (rs1.getString(musicoCaracteristica).equals("solista")) {
 					caracteristica = Caracteristica.solista;
 				} else {
 					caracteristica = Caracteristica.grupo;
 				}
+
 
 				Musico musico = new Musico(rs1.getString(musicoNombre), rs1.getString(musicoDescripcion),
 						rs1.getString(musicoImagen), caracteristica, albumes);
@@ -345,9 +392,16 @@ public class BasedeDatos {
 			ex.printStackTrace();
 		}
 
+
 		return musicos;
 	}
 
+
+	/**
+	 * Recoge una lista de todos los podcasters con sus respectivos podcasts.
+	 *
+	 * @return lista de objetos Podcaster, cada uno con sus podcasts asociados.
+	 */
 	public ArrayList<Podcaster> conseguirPodcasters() {
 		// TODO Auto-generated method stub
 		ArrayList<Podcaster> podcasters = new ArrayList<Podcaster>();
@@ -357,8 +411,10 @@ public class BasedeDatos {
 			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
 			ResultSet rs1 = preparedStatement1.executeQuery();
 
+
 			while (rs1.next()) {
 				ArrayList<Podcast> podcasts = new ArrayList<Podcast>(); // Nueva lista de álbumes para cada podcast
+
 
 				String consulta2 = "SELECT " + tablaAudio + ".*, " + tablaPodcast + "." + podcastColaboradores + " "
 						+ "FROM " + tablaPodcaster + " " + "JOIN " + tablaPodcast + " ON " + tablaPodcaster + "."
@@ -368,7 +424,9 @@ public class BasedeDatos {
 				PreparedStatement preparedStatement2 = conexion.prepareStatement(consulta2);
 				ResultSet rs2 = preparedStatement2.executeQuery();
 
+
 				while (rs2.next()) {
+
 
 					Podcast podcast = new Podcast(rs2.getString(audioNombre), rs2.getInt(audioId),
 							rs2.getString(audioDuracion), rs2.getString(audioAudio),
@@ -384,9 +442,18 @@ public class BasedeDatos {
 			ex.printStackTrace();
 		}
 
+
 		return podcasters;
 	}
 
+
+	/**
+	 * Añade una canción a la lista de "Me gusta" de un usuario.
+	 *
+	 * @param usuarioIniciado usuario que ha iniciado sesión.
+	 * @param idAudio         ID de la canción que se va a añadir a la lista de "Me
+	 *                        gusta".
+	 */
 	public void anadirCancionLike(Usuarios usuarioIniciado, int idAudio) {
 		// TODO Auto-generated method stub
 		int idLista = 0;
@@ -406,6 +473,7 @@ public class BasedeDatos {
 			// Ejecutar la consulta y obtener el resultado
 			preparedStatement.executeUpdate();
 
+
 			conexion.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -414,9 +482,18 @@ public class BasedeDatos {
 		}
 	}
 
+
+	/**
+	 * Añade una canción a la lista de "Me gusta" de un usuario.
+	 *
+	 * @param usuarioIniciado usuario que ha iniciado sesión.
+	 * @param idAudio         ID de la canción que se va a añadir a la lista de "Me
+	 *                        gusta".
+	 */
 	public void obtenerYActualizarPlaylist(String usuario, JList<String> listaPlaylist) {
 		DefaultListModel<String> listModel = new DefaultListModel<>();
 		listaPlaylist.setModel(listModel); // Establecer el modelo de lista en el JList
+
 
 		try {
 			// Conexión con la base de datos
@@ -443,6 +520,13 @@ public class BasedeDatos {
 		}
 	}
 
+
+	/**
+	 * Borra una playlist de un usuario.
+	 *
+	 * @param listaPlaylist JList que contiene las playlists del usuario.
+	 * @param usuario       nombre de usuario del usuario.
+	 */
 	public void borrarPlayList(JList<String> listaPlaylist, String usuario) {
 		// TODO Auto-generated method stub
 		try {
@@ -452,6 +536,7 @@ public class BasedeDatos {
 			String consulta1 = "DELETE FROM " + tablaPlaylist + " WHERE " + clienteId + " IN (SELECT " + clienteId
 					+ " FROM " + tablaCliente + " WHERE " + clienteUsuario + " = '" + usuario + "') AND "
 					+ playlistTitulo + " = '" + listaPlaylist.getSelectedValue() + "';";
+
 
 			// Crea el PreparedStatement
 			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
@@ -469,19 +554,37 @@ public class BasedeDatos {
 		}
 	}
 
-	public void obtenerYActualizarLista(JList<String> lista) {
+
+	/**
+	 * Recoge y actualiza la lista de artistas en un JList.
+	 *
+	 * @param lista JList que se actualizará con la lista de artistas.
+	 */
+	public void obtenerYActualizarLista(JList<String> lista, int elementoModificar) {
 		DefaultListModel<String> listModel = new DefaultListModel<>();
 		lista.setModel(listModel); // Establecer el modelo de lista en el JList
+		String elemento = "";
+		String tablaElemento = "";
+		if (elementoModificar == 1) {
+			elemento = musicoNombre;
+			tablaElemento = tablaMusico;
+		} else if (elementoModificar == 2) {
+			elemento = albumTitulo;
+			tablaElemento = tablaAlbum;
+		} else {
+			elemento = audioNombre;
+			tablaElemento = tablaAudio;
+		}
+
 
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consulta1 = "SELECT " + musicoNombre + " FROM " + tablaMusico;
+			String consulta1 = "SELECT " + elemento + " FROM " + tablaElemento;
 			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
 			ResultSet rs1 = preparedStatement1.executeQuery();
 			while (rs1.next()) {
-				// Obtener el nombre del artista de la columna "NombreArtistico"
-				String artista = rs1.getString("NombreArtistico");
-				listModel.addElement(artista);
+				String elementanyadir = rs1.getString(elemento);
+				listModel.addElement(elementanyadir);
 			}
 			conexion.close();
 		} catch (SQLException ex) {
@@ -491,22 +594,48 @@ public class BasedeDatos {
 		}
 	}
 
-	public void borrarElementosLista(JList<String> lista) {
+
+	/**
+	 * Borra un elemento de una lista y de la base de datos.
+	 *
+	 * @param lista             JList que contiene los elementos.
+	 * @param elementoModificar tipo de elemento a borrar (1 para músico...).
+	 */
+	public void borrarElementosLista(JList<String> lista, int elementoModificar) {
+		String elemento = "";
+		String tablaElemento = "";
+		if (elementoModificar == 1) {
+			elemento = musicoNombre;
+			tablaElemento = tablaMusico;
+		} else if (elementoModificar == 2) {
+			elemento = albumTitulo;
+			tablaElemento = tablaAlbum;
+		} else {
+			elemento = audioNombre;
+			tablaElemento = tablaAudio;
+		}
+
+
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 
+
 			String artistaSeleccionado = lista.getSelectedValue();
-			String consulta = "DELETE FROM " + tablaMusico + " WHERE " + musicoNombre + " = ?";
+			String consulta = "DELETE FROM " + tablaElemento + " WHERE " + elemento + " = ?";
+
 
 			// Crea el PreparedStatement
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 			preparedStatement.setString(1, artistaSeleccionado);
 
+
 			// Ejecutar la consulta para borrar el artista seleccionado
 			preparedStatement.executeUpdate();
 
+
 			// Cierra la conexión
 			conexion.close();
+
 
 			// Eliminar el elemento seleccionado del JList
 			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
@@ -518,30 +647,57 @@ public class BasedeDatos {
 		}
 	}
 
-	public void modificarElementosLista(JList<String> lista, String nuevoNombre) {
+
+	/**
+	 * Modifica un elemento de una lista en la base de datos y en el JList.
+	 *
+	 * @param lista             JList que contiene los elementos.
+	 * @param nuevoNombre       nuevo nombre del elemento.
+	 * @param elementoModificar tipo de elemento a modificar (1 para músico, 2 para
+	 *                          álbum...).
+	 */
+	public void modificarElementosLista(JList<String> lista, String nuevoNombre, int elementoModificar) {
+		String elemento = "";
+		String tablaElemento = "";
+		if (elementoModificar == 1) {
+			elemento = musicoNombre;
+			tablaElemento = tablaMusico;
+		} else if (elementoModificar == 2) {
+			elemento = albumTitulo;
+			tablaElemento = tablaAlbum;
+		} else {
+			elemento = audioNombre;
+			tablaElemento = tablaAudio;
+		}
 		try {
 			// Conexión con la base de datos
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 
+
 			// Obtener el artista seleccionado en el JList
 			String artistaSeleccionado = lista.getSelectedValue();
-			String consulta = "UPDATE " + tablaMusico + " SET " + musicoNombre + " = ? WHERE " + musicoNombre + " = ?";
+			String consulta = "UPDATE " + tablaElemento + " SET " + elemento + " = ? WHERE " + elemento + " = ?";
+
 
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+
 
 			// Establecer los parámetros para el nuevo nombre y el nombre del artista
 			// seleccionado
 			preparedStatement.setString(1, nuevoNombre);
 			preparedStatement.setString(2, artistaSeleccionado);
 
+
 			// Ejecutar la consulta para modificar el nombre del artista seleccionado
 			preparedStatement.executeUpdate();
 			conexion.close();
+
 
 			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
 			// Modificar el elemento seleccionado en el modelo de lista
 			int index = lista.getSelectedIndex();
 			model.set(index, nuevoNombre);
+
 
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -550,6 +706,15 @@ public class BasedeDatos {
 		}
 	}
 
+
+	/**
+	 * Inserta una nueva lista de reproducción en la base de datos.
+	 * 
+	 * @param usuarioIniciado El usuario que está iniciado en el sistema.
+	 * @param nombreLista     El nombre de la nueva lista de reproducción.
+	 * @param importar        Booleano que indica si se van a importar canciones a la lista de reproducción.
+	 * @param numeros         Un array de enteros que contiene los IDs de las canciones a importar.
+	 */
 	public void insertarNuevaPlayList(Usuarios usuarioIniciado, String nombreLista, boolean importar, int[] numeros) {
 		// TODO Auto-generated method stub
 		try {
@@ -567,11 +732,24 @@ public class BasedeDatos {
 		}
 		if (importar) {
 
+
 			int idLista = conseguirIDLista(nombreLista, usuarioIniciado.getIdUsuario());
 			insertarCancionesaPlaylist(numeros, idLista);
 		}
 	}
 
+
+	/**
+	 * Inserta una nueva playlist en la base de datos y, opcionalmente, importar
+	 * canciones a la misma.
+	 *
+	 * @param usuarioIniciado usuario que ha iniciado sesión.
+	 * @param nombreLista     nombre de la nueva playlist.
+	 * @param importar        indicador booleano que especifica si se deben importar
+	 *                        canciones a la playlist.
+	 * @param numeros         array de enteros que contiene los IDs de las canciones
+	 *                        que se importarán a la playlist.
+	 */
 	private int conseguirIDLista(String nombreLista, int idUsuario) {
 		int idLista = 0;
 		try {
@@ -592,6 +770,14 @@ public class BasedeDatos {
 		return idLista;
 	}
 
+
+	/**
+	 * Inserta canciones en una playlist en la base de datos.
+	 *
+	 * @param numeros array de enteros que contiene los IDs de las canciones a
+	 *                insertar.
+	 * @param idLista ID de la playlist donde se insertarán las canciones.
+	 */
 	private void insertarCancionesaPlaylist(int[] numeros, int idLista) {
 		int i = 0;
 		int ultimoAudio = sacarUltimoIdAudio();
@@ -610,6 +796,7 @@ public class BasedeDatos {
 							+ ", " + playlistCancionFecha + ") VALUES (" + idLista + ", " + numeros[i]
 							+ ", CURRENT_DATE())";
 
+
 					PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 					preparedStatement.executeUpdate();
 					numerosInsertados.add(numeros[i]);
@@ -622,7 +809,9 @@ public class BasedeDatos {
 			}
 			conexion.close();
 
+
 		} catch (
+
 
 		SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -631,6 +820,12 @@ public class BasedeDatos {
 		}
 	}
 
+
+	/**
+	 * Recoge el último ID de audio de la base de datos.
+	 *
+	 * @return último ID de audio.
+	 */
 	private int sacarUltimoIdAudio() {
 		int ultimo = 0;
 		try {
@@ -643,6 +838,7 @@ public class BasedeDatos {
 			}
 			conexion.close();
 
+
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
@@ -651,6 +847,12 @@ public class BasedeDatos {
 		return ultimo;
 	}
 
+
+	/**
+	 * Método para registrar que un audio ha sido reproducido.
+	 *
+	 * @param idAudio ID del audio que ha sido reproducido.
+	 */
 	public void audioReproducido(int idAudio) {
 		// TODO Auto-generated method stub
 		try {
@@ -667,8 +869,17 @@ public class BasedeDatos {
 		}
 	}
 
+
+	/**
+	 * Registra que a un audio se le ha dado "Me gusta".
+	 *
+	 * @param idAudio        ID del audio al que se le ha dado "Me gusta".
+	 * @param opcionEscogida La opción seleccionada (0 para canción, 1 para
+	 *                       podcast).
+	 */
 	public void anadirEstadisticasLike(int idAudio, int opcionEscogida) {
 		// TODO Auto-generated method stub
+
 
 		String atributoEscogido = "";
 		try {
@@ -690,6 +901,14 @@ public class BasedeDatos {
 		}
 	}
 
+
+	/**
+	 * Añade una canción a una playlist en la base de datos.
+	 *
+	 * @param idAudio   ID de la canción que se va a añadir a la playlist.
+	 * @param listaMenu JList que contiene las playlists disponibles.
+	 * @param idLista   ID de la playlist a la que se va a añadir la canción.
+	 */
 	public void anadirCancionPlaylist(int idAudio, JList<String> listaMenu, int idLista) {
 		// TODO Auto-generated method stub
 		try {
@@ -702,56 +921,24 @@ public class BasedeDatos {
 			conexion.close();
 		} catch (
 
+
 		SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 
+
 	}
 
-	public void añadirArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
-			JList<String> lista) {
-		try {
-			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consulta = "INSERT INTO " + tablaMusico + " (" + musicoNombre + ", " + musicoImagen + ", "
-					+ musicoDescripcion + ", " + musicoCaracteristica + ") VALUES (?, ?, ?, ?)";
-			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-			preparedStatement.setString(1, nombreArtista);
-			preparedStatement.setString(2, nombreArtista.toLowerCase() + ".jpg");
-			preparedStatement.setString(3, descripcionArtista);
-			preparedStatement.setString(4, selectedItem.toString().toLowerCase());
-			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
-			model.addElement(nombreArtista);
-			preparedStatement.executeUpdate();
-			conexion.close();
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
-	}
 
-	public void modificarArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
-			JList<String> lista) {
-		try {
-			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consulta = "UPDATE " + tablaMusico + " SET " + musicoDescripcion + "=?, " + musicoCaracteristica
-					+ "=? WHERE " + musicoNombre + "=?";
-			System.out.println(selectedItem.toString());
-			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-			preparedStatement.setString(1, descripcionArtista);
-			preparedStatement.setString(2, selectedItem.toString().toLowerCase());
-			preparedStatement.setString(3, nombreArtista);
-			preparedStatement.executeUpdate();
-			conexion.close();
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
-	}
-
+	/**
+	 * Recoge un artista de la base de datos según su nombre.
+	 *
+	 * @param nombreArtista nombre del artista a buscar.
+	 * @return objeto Musico que representa al artista encontrado, o null si no se
+	 *         encuentra.
+	 */
 	public Musico obtenerArtista(String nombreArtista) {
 		Musico artista = null;
 		try {
@@ -776,44 +963,120 @@ public class BasedeDatos {
 		return artista;
 	}
 
+
+	/**
+	 * Añade un nuevo artista a la base de datos.
+	 *
+	 * @param nombreArtista      nombre del nuevo artista.
+	 * @param descripcionArtista descripción del nuevo artista.
+	 * @param selectedItem       tipo de artista seleccionado.
+	 * @param lista              JList que muestra la lista de artistas.
+	 */
+	public void añadirArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
+			JList<String> lista) {
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "INSERT INTO " + tablaMusico + " (" + musicoNombre + ", " + musicoImagen + ", "
+					+ musicoDescripcion + ", " + musicoCaracteristica + ") VALUES (?, ?, ?, ?)";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, nombreArtista);
+			preparedStatement.setString(2, nombreArtista.toLowerCase() + ".jpg");
+			preparedStatement.setString(3, descripcionArtista);
+			preparedStatement.setString(4, selectedItem.toString().toLowerCase());
+			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
+			model.addElement(nombreArtista);
+			preparedStatement.executeUpdate();
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+
+	/**
+	 * Modifica los datos de un artista en la base de datos.
+	 *
+	 * @param nombreArtista      nombre del artista a modificar.
+	 * @param descripcionArtista nueva descripción del artista.
+	 * @param selectedItem       nuevo tipo de artista seleccionado.
+	 * @param lista              JList que muestra la lista de artistas.
+	 */
+	public void modificarArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
+			JList<String> lista) {
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "UPDATE " + tablaMusico + " SET " + musicoDescripcion + "=?, " + musicoCaracteristica
+					+ "=? WHERE " + musicoNombre + "=?";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, descripcionArtista);
+			preparedStatement.setString(2, selectedItem.toString().toLowerCase());
+			preparedStatement.setString(3, nombreArtista);
+			preparedStatement.executeUpdate();
+			conexion.close();
+
+
+			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
+			// Actualizar el nombre del artista en la lista
+			model.setElementAt(nombreArtista, lista.getSelectedIndex());
+
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+
+	/**
+	 * Recoge y muestra las canciones más escuchadas en una tabla.
+	 *
+	 * @param tablaEstadisticasPanel La tabla donde se mostrarán las canciones más escuchadas.
+	 */
 	public void obtenerTopCanciones(JTable tablaEstadisticasPanel) {
 		// TODO Auto-generated method stub
-		
-		int cont = 1;
-	     if (tablaEstadisticasPanel.getModel() instanceof DefaultTableModel) {
-	            ((DefaultTableModel) tablaEstadisticasPanel.getModel()).setRowCount(0);
-	        }
 
-	       DefaultTableModel model = new DefaultTableModel();
+
+		int cont = 1;
+		if (tablaEstadisticasPanel.getModel() instanceof DefaultTableModel) {
+			((DefaultTableModel) tablaEstadisticasPanel.getModel()).setRowCount(0);
+		}
+
+
+		DefaultTableModel model = new DefaultTableModel();
 		model.addColumn("Posicion");
 		model.addColumn("Nombre Artista");
 		model.addColumn("Nombre Álbum");
 		model.addColumn("Nombre Audio");
 		model.addColumn("Top Canciones");
 
+
 		// Establecer el modelo de datos en la tabla
 		tablaEstadisticasPanel.setModel(model);
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consulta = "SELECT m."+musicoNombre+" AS NombreArtista, a."+albumTitulo+" AS NombreAlbum, au."+audioNombre+" AS NombreAudio, e."+estadisticasTopCanciones+" " +
-                    "FROM "+tablaEstadisticas+" e " +
-                    "JOIN "+tablaAudio+" au ON e."+audioId+" = au."+audioId+" " +
-                    "JOIN "+tablaCancion+" c ON au."+audioId+" = c."+audioId+" " +
-                    "JOIN "+tablaAlbum+" a ON c."+albumId+" = a."+albumId+" " +
-                    "JOIN "+tablaMusico+" m ON a."+musicoId+" = m."+musicoId+" " +
-                    "WHERE e."+estadisticasTopCanciones+" > 0 " +
-                    "ORDER BY e."+estadisticasTopCanciones+" DESC";
+			String consulta = "SELECT m." + musicoNombre + " AS NombreArtista, a." + albumTitulo
+					+ " AS NombreAlbum, au." + audioNombre + " AS NombreAudio, e." + estadisticasTopCanciones + " "
+					+ "FROM " + tablaEstadisticas + " e " + "JOIN " + tablaAudio + " au ON e." + audioId + " = au."
+					+ audioId + " " + "JOIN " + tablaCancion + " c ON au." + audioId + " = c." + audioId + " " + "JOIN "
+					+ tablaAlbum + " a ON c." + albumId + " = a." + albumId + " " + "JOIN " + tablaMusico + " m ON a."
+					+ musicoId + " = m." + musicoId + " " + "WHERE e." + estadisticasTopCanciones + " > 0 "
+					+ "ORDER BY e." + estadisticasTopCanciones + " DESC";
 			PreparedStatement statement = conexion.prepareStatement(consulta);
-            ResultSet resultSet = statement.executeQuery();
+			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				Object[] row = { cont,resultSet.getString("NombreArtista"), resultSet.getString("NombreAlbum"),
+				Object[] row = { cont, resultSet.getString("NombreArtista"), resultSet.getString("NombreAlbum"),
 						resultSet.getString("NombreAudio"), resultSet.getInt(estadisticasTopCanciones) };
 				model.addRow(row);
 				cont++;
 			}
 
+
 			conexion.close();
 		} catch (
+
 
 		SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -821,42 +1084,54 @@ public class BasedeDatos {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 
+
 	}
 
+
+	/**
+	 * Recoge la lista de las canciones más escuchadas y mostrarlas en una tabla.
+	 *
+	 * @param tablaEstadisticasPanel tabla donde se mostrarán las canciones más
+	 *                               escuchadas.
+	 */
 	public void obtenerTopPodcasts(JTable tablaEstadisticasPanel) {
 		// TODO Auto-generated method stub
 		int cont = 1;
-	     if (tablaEstadisticasPanel.getModel() instanceof DefaultTableModel) {
-	            ((DefaultTableModel) tablaEstadisticasPanel.getModel()).setRowCount(0);
-	        }
+		if (tablaEstadisticasPanel.getModel() instanceof DefaultTableModel) {
+			((DefaultTableModel) tablaEstadisticasPanel.getModel()).setRowCount(0);
+		}
 
-	       DefaultTableModel model = new DefaultTableModel();
+
+		DefaultTableModel model = new DefaultTableModel();
 		model.addColumn("Posicion");
 		model.addColumn("Podcast");
 		model.addColumn("Capitulo");
 		model.addColumn("Top Podcast");
 
+
 		// Establecer el modelo de datos en la tabla
 		tablaEstadisticasPanel.setModel(model);
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			 String consulta = "SELECT p."+podcasterNombre+" AS NombrePodcaster, a."+audioNombre+" AS NombrePodcast, e."+estadisticasTopPodcast+" " +
-                     "FROM "+tablaEstadisticas+" e " +
-                     "JOIN "+tablaAudio+" a ON e."+audioId+" = a."+audioId+" "+
-                     "JOIN "+tablaPodcast+" pc ON e."+audioId+" = pc."+audioId+" " +
-                     "JOIN "+tablaPodcaster+" p ON pc."+podcasterId+" = p."+podcasterId+" " +
-                     "WHERE e."+estadisticasTopPodcast+" > 0 " +
-                     "ORDER BY e."+estadisticasTopPodcast+" DESC";
+			String consulta = "SELECT p." + podcasterNombre + " AS NombrePodcaster, a." + audioNombre
+					+ " AS NombrePodcast, e." + estadisticasTopPodcast + " " + "FROM " + tablaEstadisticas + " e "
+					+ "JOIN " + tablaAudio + " a ON e." + audioId + " = a." + audioId + " " + "JOIN " + tablaPodcast
+					+ " pc ON e." + audioId + " = pc." + audioId + " " + "JOIN " + tablaPodcaster + " p ON pc."
+					+ podcasterId + " = p." + podcasterId + " " + "WHERE e." + estadisticasTopPodcast + " > 0 "
+					+ "ORDER BY e." + estadisticasTopPodcast + " DESC";
 			PreparedStatement statement = conexion.prepareStatement(consulta);
-           ResultSet resultSet = statement.executeQuery();
+			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				Object[] row = { cont,resultSet.getString("NombrePodcaster"), resultSet.getString("NombrePodcast"), resultSet.getInt(estadisticasTopPodcast) };
+				Object[] row = { cont, resultSet.getString("NombrePodcaster"), resultSet.getString("NombrePodcast"),
+						resultSet.getInt(estadisticasTopPodcast) };
 				model.addRow(row);
 				cont++;
 			}
 
+
 			conexion.close();
 		} catch (
+
 
 		SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -865,14 +1140,21 @@ public class BasedeDatos {
 		}
 	}
 
+
 	public void obtenerTopPlaylist(JTable tablaEstadisticasPanel) {
 		// TODO Auto-generated method stub
 
+
 	}
+
 
 	public void obtenerMasEscuchadas(JTable tablaEstadisticasPanel) {
 		// TODO Auto-generated method stub
 
-	}
 
+	}
 }
+
+
+
+
