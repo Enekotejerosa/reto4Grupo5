@@ -1022,7 +1022,7 @@ public class Reto4Grupo5 extends JFrame {
 		lblDuracionSelec.setBounds(195, 102, 263, 29);
 		panelReproduccion.add(lblDuracionSelec);
 
-				btnReproducir = new JButton("Reproducir");
+		btnReproducir = new JButton("Reproducir");
 		btnReproducir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (btnReproducir.getText().equals("Reproducir")) {
@@ -1072,7 +1072,6 @@ public class Reto4Grupo5 extends JFrame {
 		btnReproducir.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		btnReproducir.setBounds(251, 350, 139, 23);
 		panelReproduccion.add(btnReproducir);
-
 
 		// ------------------------------------------- Fin Panel Reproduccion, Inicio
 		// Panel
@@ -1171,6 +1170,24 @@ public class Reto4Grupo5 extends JFrame {
 		listaPlaylist = new JList<String>();
 		listaPlaylist.setBounds(61, 44, 250, 354);
 		panelPlaylist.add(listaPlaylist);
+		
+		JScrollPane scrollPaneTablaPlaylist = new JScrollPane();
+		scrollPaneTablaPlaylist.setBounds(354, 198, 302, 200);
+		panelPlaylist.add(scrollPaneTablaPlaylist);
+
+		JTable tablaInfoPlaylist = new JTable();
+		scrollPaneTablaPlaylist.setViewportView(tablaInfoPlaylist);
+		listaPlaylist = new JList<String>();
+		listaPlaylist.addMouseListener(new MouseAdapter() {
+
+			public void mouseClicked(MouseEvent e) {
+
+				basededatos.mostrarInfoPlaylist(tablaInfoPlaylist, usuarioIniciado.getIdUsuario(),
+						listaPlaylist.getSelectedValue());
+			}
+		});
+		listaPlaylist.setBounds(61, 44, 250, 354);
+		panelPlaylist.add(listaPlaylist);
 		// Panel GestionarMusica
 		JPanel panelMenuGestMusica = new JPanel();
 		panelMenuGestMusica.setBackground(new Color(215, 223, 234));
@@ -1181,11 +1198,11 @@ public class Reto4Grupo5 extends JFrame {
 		panelGestMusica.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelGestMusica, idGestMusica);
 		panelGestMusica.setLayout(null);
-		
+
 		JList<String> lista = new JList<String>();
 		lista.setBounds(77, 46, 211, 321);
 		panelGestMusica.add(lista);
-		
+
 		JButton btnGestArtistas = new JButton("Gestionar artistas");
 		btnGestArtistas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1197,7 +1214,7 @@ public class Reto4Grupo5 extends JFrame {
 		btnGestArtistas.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnGestArtistas.setBounds(43, 141, 178, 94);
 		panelMenuGestMusica.add(btnGestArtistas);
-		
+
 		JButton btnGestAlbumes = new JButton("Gestionar Albumes");
 		btnGestAlbumes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1271,32 +1288,32 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnArtistaAceptar = new JButton("ACEPTAR");
 		btnArtistaAceptar.setVisible(false);
 		btnArtistaAceptar.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        if (gestionarArtista == 1) {
-		            boolean artistaRepetido = false;
-		            for (int i = 0; i < lista.getModel().getSize(); i++) {
-		                if (lista.getModel().getElementAt(i).equals(txtFNombreArtista.getText())) {
-		                    artistaRepetido = true;
-		                }
-		            }
-		            if (artistaRepetido) {
-		                JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
-		            } else {
-		                basededatos.añadirElementoLista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
-		                        comboBox.getSelectedItem(), lista);
-		            }
-		        } else if (gestionarArtista == 2) {
-		            if (lista.isSelectionEmpty()) {
-		                JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
-		            } else {
-		                String nombreArtistaSeleccionado = lista.getSelectedValue();
-		                basededatos.modificarElementoLista(nombreArtistaSeleccionado, txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
-		                        comboBox.getSelectedItem(), lista);
-		            }
-		        }
-		        metodos.ocultarComponentes(lblNombreArtista, lblDescripcionArtista, lblCaracteristicaArtista,
-		            txtFNombreArtista, txtFDescripcionArtista, comboBox, btnArtistaAceptar);
-		    }
+			public void actionPerformed(ActionEvent e) {
+				if (gestionarArtista == 1) {
+					boolean artistaRepetido = false;
+					for (int i = 0; i < lista.getModel().getSize(); i++) {
+						if (lista.getModel().getElementAt(i).equals(txtFNombreArtista.getText())) {
+							artistaRepetido = true;
+						}
+					}
+					if (artistaRepetido) {
+						JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
+					} else {
+						basededatos.añadirElementoLista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
+								comboBox.getSelectedItem(), lista);
+					}
+				} else if (gestionarArtista == 2) {
+					if (lista.isSelectionEmpty()) {
+						JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
+					} else {
+						String nombreArtistaSeleccionado = lista.getSelectedValue();
+						basededatos.modificarElementoLista(nombreArtistaSeleccionado, txtFNombreArtista.getText(),
+								txtFDescripcionArtista.getText(), comboBox.getSelectedItem(), lista);
+					}
+				}
+				metodos.ocultarComponentes(lblNombreArtista, lblDescripcionArtista, lblCaracteristicaArtista,
+						txtFNombreArtista, txtFDescripcionArtista, comboBox, btnArtistaAceptar);
+			}
 		});
 		btnArtistaAceptar.setBounds(397, 378, 89, 23);
 		panelGestMusica.add(btnArtistaAceptar);
