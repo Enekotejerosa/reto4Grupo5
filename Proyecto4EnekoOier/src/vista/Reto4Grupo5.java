@@ -50,7 +50,6 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-
 public class Reto4Grupo5 extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -80,7 +79,7 @@ public class Reto4Grupo5 extends JFrame {
 			Paths.get("").toAbsolutePath().toString() + "\\img\\predeterminado.jpg").getImage();
 	private JTextField txtFNombreArtista;
 	private JTextField txtFDescripcionArtista;
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -352,15 +351,9 @@ public class Reto4Grupo5 extends JFrame {
 							musicoElegido = musicos.get(Integer.parseInt(lblFoto.getToolTipText()));
 							do {
 								JLabel lblalbumFoto = new JLabel();
-								try {
-									lblalbumFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
-											+ "/img/" + musicoElegido.getAlbumes().get(cont).getImagen()));
-								} catch (Exception e1) {
-									// Si no se encuentra la imagen, establece una imagen predeterminada
-									ImageIcon iconoPredeterminado = new ImageIcon(
-											imgPredeterminada.getScaledInstance(65, 63, Image.SCALE_SMOOTH));
-									lblalbumFoto.setIcon(iconoPredeterminado);
-								}
+								lblalbumFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
+										+ musicoElegido.getAlbumes().get(cont).getImagen()));
+
 								lblalbumFoto.addMouseListener(new MouseAdapter() {
 									public void mouseClicked(MouseEvent e) {
 										cont = 0;
@@ -372,7 +365,7 @@ public class Reto4Grupo5 extends JFrame {
 												+ albumElegido.getImagen()).getImage();
 										ImageIcon img2 = new ImageIcon(
 												img.getScaledInstance(108, 117, Image.SCALE_SMOOTH));
-
+										System.out.println(img2.getImage());
 										do {
 											JLabel lblFotoCancion = new JLabel();
 											lblFotoCancion.addMouseListener(new MouseAdapter() {
@@ -381,14 +374,9 @@ public class Reto4Grupo5 extends JFrame {
 													audioElegido = Integer.parseInt(lblFotoCancion.getToolTipText());
 												}
 											});
-											try {
-												lblFotoCancion.setIcon(img2);
-											} catch (Exception e1) {
-												// Si no se encuentra la imagen, establece una imagen predeterminada
-												ImageIcon iconoPredeterminado = new ImageIcon(imgPredeterminada
-														.getScaledInstance(108, 117, Image.SCALE_SMOOTH));
-												lblFotoCancion.setIcon(iconoPredeterminado);
-											}
+
+											lblFotoCancion.setIcon(img2);
+
 											lblFotoCancion.setToolTipText(String.valueOf(cont));
 											lblFotoCancion.setBounds(122 + cambioX, 90 + cambioY, 108, 117);
 											panelCanciones.add(lblFotoCancion);
@@ -432,16 +420,10 @@ public class Reto4Grupo5 extends JFrame {
 							cambioY = 0;
 							cont = 0;
 							JLabel lblfotoDescripcion = new JLabel("");
-							try {
-								lblfotoDescripcion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
-										+ "/img/" + musicoElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
-							} catch (Exception e1) {
 
-								// Si no se encuentra la imagen, establece una imagen predeterminada
-								ImageIcon iconoPredeterminado = new ImageIcon(
-										imgPredeterminada.getScaledInstance(188, 176, Image.SCALE_SMOOTH));
-								lblfotoDescripcion.setIcon(iconoPredeterminado);
-							}
+							lblfotoDescripcion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
+									+ musicoElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
+
 							lblfotoDescripcion.setBounds(405, 11, 188, 176);
 							panelAlbumes.add(lblfotoDescripcion);
 
@@ -458,15 +440,10 @@ public class Reto4Grupo5 extends JFrame {
 
 						}
 					});
-					try {
-						lblFoto.setIcon(new ImageIcon(
-								Paths.get("").toAbsolutePath().toString() + "/img/" + musicos.get(cont).getImagen()));
-					} catch (Exception e1) {
-						// Si no se encuentra la imagen, establece una imagen predeterminada
-						ImageIcon iconoPredeterminado = new ImageIcon(
-								imgPredeterminada.getScaledInstance(147, 131, Image.SCALE_SMOOTH));
-						lblFoto.setIcon(iconoPredeterminado);
-					}
+
+					lblFoto.setIcon(new ImageIcon(
+							Paths.get("").toAbsolutePath().toString() + "/img/" + musicos.get(cont).getImagen()));
+
 					lblFoto.setBounds(49 + cambioX, 30 + cambioY, 147, 131);
 					lblFoto.setToolTipText(String.valueOf(cont));
 					panelArtistas.add(lblFoto);
@@ -943,7 +920,7 @@ public class Reto4Grupo5 extends JFrame {
 					if (!(clip == null) && clip.isRunning()) {
 						clip.stop();
 					}
-
+					audioElegido++;
 					if (!usuarioIniciado.getTipoCliente().equals(Tipo.premium)) {
 						try {
 							Random random = new Random();
@@ -958,7 +935,7 @@ public class Reto4Grupo5 extends JFrame {
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
-						audioElegido++;
+						
 
 					}
 					if (!btnAtrasCancion.isEnabled()) {
@@ -1037,27 +1014,19 @@ public class Reto4Grupo5 extends JFrame {
 									.getImage();
 							ImageIcon img2 = new ImageIcon(img.getScaledInstance(275, 210, Image.SCALE_SMOOTH));
 							lblAlbum.setText("Album:");
-							btnX05.setVisible(false);
-							btnX1.setVisible(false);
-							btnX15.setVisible(false);
-							file = new File(Paths.get("").toAbsolutePath().toString() + "\\musica\\"
-									+ albumElegido.getCanciones().get(audioElegido).getAudio());
+							file = albumElegido.getCanciones().get(audioElegido).reproducir(lblDuracionSelec,
+									lblReproduciendoSelec, btnX05, btnX1, btnX15);
 							lblAlbumSelec.setText(albumElegido.getTitulo().toUpperCase());
-							lblDuracionSelec.setText(albumElegido.getCanciones().get(audioElegido).getDuracion());
 							lblFotoReproduccion.setIcon(img2);
-							lblReproduciendoSelec.setText(albumElegido.getCanciones().get(audioElegido).getNombre());
-							basededatos.audioReproducido(albumElegido.getCanciones().get(audioElegido).getIdAudio());
+
 						} else {
 							lblAlbum.setText("Podcast:");
-							btnX05.setVisible(true);
-							btnX1.setVisible(true);
-							btnX15.setVisible(true);
-							file = new File(Paths.get("").toAbsolutePath().toString() + "\\musica\\"
-									+ podcasterElegido.getPodcasts().get(audioElegido).getAudio());
+							file = podcasterElegido.getPodcasts().get(audioElegido).reproducir(lblDuracionSelec,
+									lblReproduciendoSelec, btnX05, btnX1, btnX15);
 							lblFotoReproduccion.setBounds(251, 129, 275, 210);
 							lblFotoReproduccion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
 									+ "/img/" + podcasterElegido.getImagen()));
-							basededatos.audioReproducido(podcasterElegido.getPodcasts().get(audioElegido).getIdAudio());
+
 						}
 
 						AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
@@ -1381,7 +1350,7 @@ public class Reto4Grupo5 extends JFrame {
 		panelEstadisticas.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelEstadisticas, idEstadisticas);
 		panelEstadisticas.setLayout(null);
-		
+
 		JScrollPane scrollPaneTabla = new JScrollPane();
 		scrollPaneTabla.setBounds(10, 65, 600, 350);
 		panelEstadisticas.add(scrollPaneTabla);
