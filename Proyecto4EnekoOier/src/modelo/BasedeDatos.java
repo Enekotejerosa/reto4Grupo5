@@ -41,7 +41,7 @@ public class BasedeDatos {
 	final static String podcasterId = "IDPodcaster", podcasterNombre = "NombreArtistico", podcasterImagen = "Imagen",
 			podcasterGenero = "Genero", podcasterDescripcion = "Descripcion", tablaPodcaster = "Podcaster";
 	// Tabla Podcast
-	final static String podcastColaboradores = "Colaboradores", tablaPodcast = "podcast";
+	final static String podcastColaboradores = "Colaboradores", tablaPodcast = "Podcast";
 	// Tabla Estadisticas
 	final static String estadisticasTopCanciones = "TopCanciones", estadisticasTopPodcast = "TopPodcast",
 			estadisticasMasEscuchados = "MasEscuchados", estadisticasTopPlaylist = "TopPlaylist",
