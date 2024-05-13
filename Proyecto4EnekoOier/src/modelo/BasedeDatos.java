@@ -16,9 +16,9 @@ import javax.swing.table.DefaultTableModel;
 
 public class BasedeDatos {
 	// Conexion Base de datos
-	final static String url = "jdbc:mysql://reto4grupo5.duckdns.org:3306/reto4grupo5_m";
-	final static String contrasenabdd = "Elorrieta2024+";
-	final static String usuariobdd = "grupo05";
+	final static String url = "jdbc:mysql://localhost:33060/reto4grupo5_m";
+	final static String contrasenabdd = "elorrieta";
+	final static String usuariobdd = "root";
 
 
 	// Tabla Cliente
@@ -556,158 +556,6 @@ public class BasedeDatos {
 
 
 	/**
-	 * Recoge y actualiza la lista de artistas en un JList.
-	 *
-	 * @param lista JList que se actualizará con la lista de artistas.
-	 */
-	public void obtenerYActualizarLista(JList<String> lista, int elementoModificar) {
-		DefaultListModel<String> listModel = new DefaultListModel<>();
-		lista.setModel(listModel); // Establecer el modelo de lista en el JList
-		String elemento = "";
-		String tablaElemento = "";
-		if (elementoModificar == 1) {
-			elemento = musicoNombre;
-			tablaElemento = tablaMusico;
-		} else if (elementoModificar == 2) {
-			elemento = albumTitulo;
-			tablaElemento = tablaAlbum;
-		} else {
-			elemento = audioNombre;
-			tablaElemento = tablaAudio;
-		}
-
-
-		try {
-			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consulta1 = "SELECT " + elemento + " FROM " + tablaElemento;
-			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
-			ResultSet rs1 = preparedStatement1.executeQuery();
-			while (rs1.next()) {
-				String elementanyadir = rs1.getString(elemento);
-				listModel.addElement(elementanyadir);
-			}
-			conexion.close();
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
-	}
-
-
-	/**
-	 * Borra un elemento de una lista y de la base de datos.
-	 *
-	 * @param lista             JList que contiene los elementos.
-	 * @param elementoModificar tipo de elemento a borrar (1 para músico...).
-	 */
-	public void borrarElementosLista(JList<String> lista, int elementoModificar) {
-		String elemento = "";
-		String tablaElemento = "";
-		if (elementoModificar == 1) {
-			elemento = musicoNombre;
-			tablaElemento = tablaMusico;
-		} else if (elementoModificar == 2) {
-			elemento = albumTitulo;
-			tablaElemento = tablaAlbum;
-		} else {
-			elemento = audioNombre;
-			tablaElemento = tablaAudio;
-		}
-
-
-		try {
-			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-
-
-			String artistaSeleccionado = lista.getSelectedValue();
-			String consulta = "DELETE FROM " + tablaElemento + " WHERE " + elemento + " = ?";
-
-
-			// Crea el PreparedStatement
-			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-			preparedStatement.setString(1, artistaSeleccionado);
-
-
-			// Ejecutar la consulta para borrar el artista seleccionado
-			preparedStatement.executeUpdate();
-
-
-			// Cierra la conexión
-			conexion.close();
-
-
-			// Eliminar el elemento seleccionado del JList
-			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
-			model.removeElement(artistaSeleccionado);
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
-	}
-
-
-	/**
-	 * Modifica un elemento de una lista en la base de datos y en el JList.
-	 *
-	 * @param lista             JList que contiene los elementos.
-	 * @param nuevoNombre       nuevo nombre del elemento.
-	 * @param elementoModificar tipo de elemento a modificar (1 para músico, 2 para
-	 *                          álbum...).
-	 */
-	public void modificarElementosLista(JList<String> lista, String nuevoNombre, int elementoModificar) {
-		String elemento = "";
-		String tablaElemento = "";
-		if (elementoModificar == 1) {
-			elemento = musicoNombre;
-			tablaElemento = tablaMusico;
-		} else if (elementoModificar == 2) {
-			elemento = albumTitulo;
-			tablaElemento = tablaAlbum;
-		} else {
-			elemento = audioNombre;
-			tablaElemento = tablaAudio;
-		}
-		try {
-			// Conexión con la base de datos
-			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-
-
-			// Obtener el artista seleccionado en el JList
-			String artistaSeleccionado = lista.getSelectedValue();
-			String consulta = "UPDATE " + tablaElemento + " SET " + elemento + " = ? WHERE " + elemento + " = ?";
-
-
-			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-
-
-			// Establecer los parámetros para el nuevo nombre y el nombre del artista
-			// seleccionado
-			preparedStatement.setString(1, nuevoNombre);
-			preparedStatement.setString(2, artistaSeleccionado);
-
-
-			// Ejecutar la consulta para modificar el nombre del artista seleccionado
-			preparedStatement.executeUpdate();
-			conexion.close();
-
-
-			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
-			// Modificar el elemento seleccionado en el modelo de lista
-			int index = lista.getSelectedIndex();
-			model.set(index, nuevoNombre);
-
-
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-		}
-	}
-
-
-	/**
 	 * Inserta una nueva lista de reproducción en la base de datos.
 	 * 
 	 * @param usuarioIniciado El usuario que está iniciado en el sistema.
@@ -931,28 +779,35 @@ public class BasedeDatos {
 
 	}
 
-
 	/**
-	 * Recoge un artista de la base de datos según su nombre.
+	 * Recoge y actualiza la lista de artistas en un JList.
 	 *
-	 * @param nombreArtista nombre del artista a buscar.
-	 * @return objeto Musico que representa al artista encontrado, o null si no se
-	 *         encuentra.
+	 * @param lista JList que se actualizará con la lista de artistas.
 	 */
-	public Musico obtenerArtista(String nombreArtista) {
-		Musico artista = null;
+	public void obtenerYActualizarLista(JList<String> lista, int elementoModificar) {
+		DefaultListModel<String> listModel = new DefaultListModel<>();
+		lista.setModel(listModel); // Establecer el modelo de lista en el JList
+		String elemento = "";
+		String tablaElemento = "";
+		if (elementoModificar == 1) {
+			elemento = musicoNombre;
+			tablaElemento = tablaMusico;
+		} else if (elementoModificar == 2) {
+			elemento = albumTitulo;
+			tablaElemento = tablaAlbum;
+		} else {
+			elemento = audioNombre;
+			tablaElemento = tablaAudio;
+		}
+
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consulta = "SELECT * FROM " + tablaMusico + " WHERE " + musicoNombre + "=?";
-			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-			preparedStatement.setString(1, nombreArtista);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			if (resultSet.next()) {
-				String nombre = resultSet.getString(musicoNombre);
-				String descripcion = resultSet.getString(musicoDescripcion);
-				String imagen = resultSet.getString(musicoImagen);
-				Caracteristica caracteristica = Caracteristica.valueOf(resultSet.getString(musicoCaracteristica));
-				artista = new Musico(nombre, descripcion, imagen, caracteristica, null);
+			String consulta1 = "SELECT " + elemento + " FROM " + tablaElemento;
+			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
+			ResultSet rs1 = preparedStatement1.executeQuery();
+			while (rs1.next()) {
+				String elementanyadir = rs1.getString(elemento);
+				listModel.addElement(elementanyadir);
 			}
 			conexion.close();
 		} catch (SQLException ex) {
@@ -960,9 +815,7 @@ public class BasedeDatos {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
-		return artista;
 	}
-
 
 	/**
 	 * Añade un nuevo artista a la base de datos.
@@ -972,8 +825,9 @@ public class BasedeDatos {
 	 * @param selectedItem       tipo de artista seleccionado.
 	 * @param lista              JList que muestra la lista de artistas.
 	 */
-	public void añadirArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
+	public void añadirElementoLista(String nombreArtista, String descripcionArtista, Object selectedItem,
 			JList<String> lista) {
+		
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 			String consulta = "INSERT INTO " + tablaMusico + " (" + musicoNombre + ", " + musicoImagen + ", "
@@ -999,36 +853,115 @@ public class BasedeDatos {
 	 * Modifica los datos de un artista en la base de datos.
 	 *
 	 * @param nombreArtista      nombre del artista a modificar.
-	 * @param descripcionArtista nueva descripción del artista.
 	 * @param selectedItem       nuevo tipo de artista seleccionado.
 	 * @param lista              JList que muestra la lista de artistas.
 	 */
-	public void modificarArtista(String nombreArtista, String descripcionArtista, Object selectedItem,
-			JList<String> lista) {
+	public void modificarElementoLista(String nombreArtistaAntiguo, String nombreArtistaNuevo, String descripcionArtista, Object selectedItem,
+	        JList<String> lista) {
+	    try {
+	        Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+	        String consulta = "UPDATE " + tablaMusico + " SET " + musicoNombre + "=?, " + musicoDescripcion + "=?, " + musicoCaracteristica + "=? WHERE " + musicoNombre + "=?";
+	        PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+	        preparedStatement.setString(1, nombreArtistaNuevo); // Nuevo nombre del artista
+	        preparedStatement.setString(2, descripcionArtista);
+	        preparedStatement.setString(3, selectedItem.toString());
+	        preparedStatement.setString(4, nombreArtistaAntiguo); // Nombre antiguo del artista
+	        preparedStatement.executeUpdate();
+	        conexion.close();
+
+	        // Actualizar el nombre en el JList
+	        DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
+	        int index = lista.getSelectedIndex();
+	        model.set(index, nombreArtistaNuevo);
+	    } catch (SQLException ex) {
+	        System.out.println("SQLException: " + ex.getMessage());
+	        System.out.println("SQLState: " + ex.getSQLState());
+	        System.out.println("VendorError: " + ex.getErrorCode());
+	    }
+	}
+
+	/**
+	 * Recoge un artista de la base de datos según su nombre.
+	 *
+	 * @param nombreArtista nombre del artista a buscar.
+	 * @return objeto Musico que representa al artista encontrado, o null si no se
+	 *         encuentra.
+	 */
+	public Musico obtenerArtista(String nombreArtista) {
+	    Musico artista = null;
+	    try {
+	        Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+	        String consulta = "SELECT * FROM " + tablaMusico + " WHERE " + musicoNombre + "=?";
+	        PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+	        preparedStatement.setString(1, nombreArtista);
+	        ResultSet resultSet = preparedStatement.executeQuery();
+	        if (resultSet.next()) {
+	            String nombre = resultSet.getString(musicoNombre);
+	            String descripcion = resultSet.getString(musicoDescripcion);
+	            String imagen = resultSet.getString(musicoImagen);
+	            Caracteristica caracteristica = Caracteristica.valueOf(resultSet.getString(musicoCaracteristica));
+	            artista = new Musico(nombre, descripcion, imagen, caracteristica, null);
+	        }
+	        conexion.close();
+	    } catch (SQLException ex) {
+	        System.out.println("SQLException: " + ex.getMessage());
+	        System.out.println("SQLState: " + ex.getSQLState());
+	        System.out.println("VendorError: " + ex.getErrorCode());
+	    }
+	    return artista;
+	}
+	
+	/**
+	 * Borra un elemento de una lista y de la base de datos.
+	 *
+	 * @param lista             JList que contiene los elementos.
+	 * @param elementoModificar tipo de elemento a borrar (1 para músico...).
+	 */
+	public void borrarElementosLista(JList<String> lista, int elementoModificar) {
+		String elemento = "";
+		String tablaElemento = "";
+		if (elementoModificar == 1) {
+			elemento = musicoNombre;
+			tablaElemento = tablaMusico;
+		} else if (elementoModificar == 2) {
+			elemento = albumTitulo;
+			tablaElemento = tablaAlbum;
+		} else {
+			elemento = audioNombre;
+			tablaElemento = tablaAudio;
+		}
+
+
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
-			String consulta = "UPDATE " + tablaMusico + " SET " + musicoDescripcion + "=?, " + musicoCaracteristica
-					+ "=? WHERE " + musicoNombre + "=?";
+
+
+			String artistaSeleccionado = lista.getSelectedValue();
+			String consulta = "DELETE FROM " + tablaElemento + " WHERE " + elemento + " = ?";
+
+
+			// Crea el PreparedStatement
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-			preparedStatement.setString(1, descripcionArtista);
-			preparedStatement.setString(2, selectedItem.toString().toLowerCase());
-			preparedStatement.setString(3, nombreArtista);
+			preparedStatement.setString(1, artistaSeleccionado);
+
+
+			// Ejecutar la consulta para borrar el artista seleccionado
 			preparedStatement.executeUpdate();
+
+
+			// Cierra la conexión
 			conexion.close();
 
 
+			// Eliminar el elemento seleccionado del JList
 			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
-			// Actualizar el nombre del artista en la lista
-			model.setElementAt(nombreArtista, lista.getSelectedIndex());
-
-
+			model.removeElement(artistaSeleccionado);
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 	}
-
 
 	/**
 	 * Recoge y muestra las canciones más escuchadas en una tabla.

@@ -1282,14 +1282,15 @@ public class Reto4Grupo5 extends JFrame {
 		            if (artistaRepetido) {
 		                JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
 		            } else {
-		                basededatos.añadirArtista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
+		                basededatos.añadirElementoLista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
 		                        comboBox.getSelectedItem(), lista);
 		            }
 		        } else if (gestionarArtista == 2) {
 		            if (lista.isSelectionEmpty()) {
 		                JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
 		            } else {
-		                basededatos.modificarArtista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
+		                String nombreArtistaSeleccionado = lista.getSelectedValue();
+		                basededatos.modificarElementoLista(nombreArtistaSeleccionado, txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
 		                        comboBox.getSelectedItem(), lista);
 		            }
 		        }
@@ -1369,7 +1370,6 @@ public class Reto4Grupo5 extends JFrame {
 				} else {
 					metodos.exportarPodcast(podcasterElegido.getPodcasts().get(audioElegido));
 				}
-
 			}
 		});
 		btnExportarCancion.setBounds(342, 374, 220, 27);
