@@ -43,6 +43,8 @@ import modelo.BasedeDatos;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JLayeredPane;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
@@ -61,11 +63,13 @@ public class Reto4Grupo5 extends JFrame {
 	private JPasswordField pswFRegistroContra, pswFRegistroConfContra;
 	private JTextField txtFRegistroNombre, txtFRegistroUsuario, txtFRegistroApellido, txtFNombreCancionMenu;
 	private JButton btnRegistroGuardar, btnRegistroEditar, btnReproducir, btnAdelanteCancion, btnAtrasCancion;
-	private JPanel panelArtistas, panelAlbumes, panelCanciones, panelReproduccion, panelPlaylist, panelMenu;
-	private JLabel lblReproduciendoSelec, lblAlbumSelec;
-	private JList<String> listaPlaylist, listaMenu;
+	private JPanel panelArtistas, panelAlbumes, panelCanciones, panelReproduccion, panelPlaylist, panelMenu,
+			panelCrudMusica;
+	private ArrayList<Component> componentes = new ArrayList<Component>();
+	private JLabel lblReproduciendoSelec, lblAlbumSelec, lblCrudArtista;
+	private JList<String> listaPlaylist, listaMenu, listaCrudMusica;
 	private int cambioX = 0, cambioY = 0, cont = 0, cont2 = 0;
-	private int elementoModificar = 0;
+	private int elementoGestionado = 0;
 	private static Clip clip;
 	private static long clipTimePosition = 0; // Almacena la posición de la canción al detenerla
 	private Usuarios usuarioIniciado = null;
@@ -75,11 +79,12 @@ public class Reto4Grupo5 extends JFrame {
 	private Musico musicoElegido = new Musico();
 	private Album albumElegido = new Album();
 	private int audioElegido = -1, posicionPodcast = -1, opcionEscogida = -1;
-	private int gestionarArtista = 0;
+	private int accion = 0;
 	private Image imgPredeterminada = new ImageIcon(
 			Paths.get("").toAbsolutePath().toString() + "\\img\\predeterminado.jpg").getImage();
-	private JTextField txtFNombreArtista;
-	private JTextField txtFDescripcionArtista;
+	private JTextField txtFNombreCrud, txtFInfo1Crud;
+	private JComboBox<String> cmbxCrudTipo, cmbxArtista;
+	private JLabel lblInfo1Crud, lblInfo2Crud, lblNombreCrud;
 
 	/**
 	 * Launch the application.
@@ -109,7 +114,7 @@ public class Reto4Grupo5 extends JFrame {
 		String idMenu = "Menu", idAlbum = "Album", idCanciones = "Canciones", idPlaylist = "Playlist",
 				idReproducir = "Reproducir";
 		String idGestion = "Gestion", idGestMusica = "Gestion Musica", idMenuGestMusica = "Menu Gestion Musica";
-		String idbtnMenu = "btnMenu", idEstadisticas = "Estadisticas";
+		String idbtnMenu = "btnMenu", idEstadisticas = "Estadisticas", idPanelCrudMusica = "CrudMusica";
 		LocalDate fecha_registro = LocalDate.now();
 		LocalDate fecha_finpremium = fecha_registro.plusYears(1);
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -173,8 +178,11 @@ public class Reto4Grupo5 extends JFrame {
 					btnAtras.setEnabled(false);
 					btnPerfil.setEnabled(false);
 					btnPerfil.setText("Inicia Sesion");
+				} else if (panelCrudMusica.isVisible()) {
+					metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
 				}
 			}
+
 		});
 		menuBar.add(btnAtras);
 
@@ -1077,10 +1085,10 @@ public class Reto4Grupo5 extends JFrame {
 		// Panel
 		// Gestion----------------------------------------------------------------
 
-		JPanel panelGestion = new JPanel();
-		panelGestion.setBackground(new Color(215, 223, 234));
-		layeredPane.add(panelGestion, idGestion);
-		panelGestion.setLayout(null);
+		JPanel panelAdmin = new JPanel();
+		panelAdmin.setBackground(new Color(215, 223, 234));
+		layeredPane.add(panelAdmin, idGestion);
+		panelAdmin.setLayout(null);
 
 		JButton btnGestMusica = new JButton("Gestionar musica");
 		btnGestMusica.addActionListener(new ActionListener() {
@@ -1090,12 +1098,12 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		btnGestMusica.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnGestMusica.setBounds(263, 153, 167, 23);
-		panelGestion.add(btnGestMusica);
+		panelAdmin.add(btnGestMusica);
 
 		JButton btnGestPodcats = new JButton("Gestionar podcast");
 		btnGestPodcats.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnGestPodcats.setBounds(263, 199, 167, 23);
-		panelGestion.add(btnGestPodcats);
+		panelAdmin.add(btnGestPodcats);
 
 		JButton btnGestEstadisticas = new JButton("Estadisticas");
 		btnGestEstadisticas.addActionListener(new ActionListener() {
@@ -1105,12 +1113,12 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		btnGestEstadisticas.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnGestEstadisticas.setBounds(263, 241, 167, 23);
-		panelGestion.add(btnGestEstadisticas);
+		panelAdmin.add(btnGestEstadisticas);
 
-		JLabel lblNewLabel = new JLabel("Menu Gestión");
-		lblNewLabel.setFont(new Font("Rockwell Condensed", Font.PLAIN, 25));
-		lblNewLabel.setBounds(293, 86, 123, 56);
-		panelGestion.add(lblNewLabel);
+		JLabel lblAdmin = new JLabel("Menu Gestión");
+		lblAdmin.setFont(new Font("Rockwell Condensed", Font.PLAIN, 25));
+		lblAdmin.setBounds(293, 86, 123, 56);
+		panelAdmin.add(lblAdmin);
 		// ------------------------------------------- Fin Panel Gestion, Inicio
 		// Canciones ----------------------------------------------------------------
 		panelCanciones = new JPanel();
@@ -1167,10 +1175,6 @@ public class Reto4Grupo5 extends JFrame {
 		btnExportar.setBounds(379, 146, 120, 23);
 		panelPlaylist.add(btnExportar);
 
-		listaPlaylist = new JList<String>();
-		listaPlaylist.setBounds(61, 44, 250, 354);
-		panelPlaylist.add(listaPlaylist);
-		
 		JScrollPane scrollPaneTablaPlaylist = new JScrollPane();
 		scrollPaneTablaPlaylist.setBounds(354, 198, 302, 200);
 		panelPlaylist.add(scrollPaneTablaPlaylist);
@@ -1188,27 +1192,18 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		listaPlaylist.setBounds(61, 44, 250, 354);
 		panelPlaylist.add(listaPlaylist);
-		// Panel GestionarMusica
+		// Panel Menu GestionarMusica
 		JPanel panelMenuGestMusica = new JPanel();
 		panelMenuGestMusica.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelMenuGestMusica, idMenuGestMusica);
 		panelMenuGestMusica.setLayout(null);
 
-		JPanel panelGestMusica = new JPanel();
-		panelGestMusica.setBackground(new Color(215, 223, 234));
-		layeredPane.add(panelGestMusica, idGestMusica);
-		panelGestMusica.setLayout(null);
-
-		JList<String> lista = new JList<String>();
-		lista.setBounds(77, 46, 211, 321);
-		panelGestMusica.add(lista);
-
 		JButton btnGestArtistas = new JButton("Gestionar artistas");
 		btnGestArtistas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				metodos.cambiardePantalla(layeredPane, idGestMusica);
-				elementoModificar = 1;
-				basededatos.obtenerYActualizarLista(lista, elementoModificar);
+				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
+				elementoGestionado = 1;
+				basededatos.obtenerYActualizarLista(listaCrudMusica, elementoGestionado);
 			}
 		});
 		btnGestArtistas.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -1218,9 +1213,9 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnGestAlbumes = new JButton("Gestionar Albumes");
 		btnGestAlbumes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				metodos.cambiardePantalla(layeredPane, idGestMusica);
-				elementoModificar = 2;
-				basededatos.obtenerYActualizarLista(lista, elementoModificar);
+				elementoGestionado = 2;
+				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
+				basededatos.obtenerYActualizarLista(listaCrudMusica, elementoGestionado);
 			}
 		});
 		btnGestAlbumes.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -1230,137 +1225,29 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnGestCanciones = new JButton("Gestionar canciones");
 		btnGestCanciones.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				metodos.cambiardePantalla(layeredPane, idGestMusica);
-				elementoModificar = 3;
-				basededatos.obtenerYActualizarLista(lista, elementoModificar);
+
+				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
+				elementoGestionado = 3;
+				basededatos.obtenerYActualizarLista(listaCrudMusica, elementoGestionado);
 			}
 		});
 		btnGestCanciones.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnGestCanciones.setBounds(437, 141, 196, 94);
 		panelMenuGestMusica.add(btnGestCanciones);
 
-		JLabel lblNombreArtista = new JLabel("Nombre Artista:");
-		lblNombreArtista.setVisible(false);
-		lblNombreArtista.setBounds(397, 145, 150, 14);
-		panelGestMusica.add(lblNombreArtista);
-
-		JLabel lblDescripcionArtista = new JLabel("Descripción:");
-		lblDescripcionArtista.setVisible(false);
-		lblDescripcionArtista.setBounds(397, 193, 74, 14);
-		panelGestMusica.add(lblDescripcionArtista);
-
-		JLabel lblCaracteristicaArtista = new JLabel("Caracteristica:");
-		lblCaracteristicaArtista.setVisible(false);
-		lblCaracteristicaArtista.setBounds(397, 327, 89, 14);
-		panelGestMusica.add(lblCaracteristicaArtista);
-
-		txtFNombreArtista = new JTextField();
-		txtFNombreArtista.setVisible(false);
-		txtFNombreArtista.setBounds(397, 162, 259, 20);
-		panelGestMusica.add(txtFNombreArtista);
-		txtFNombreArtista.setColumns(10);
-
-		txtFDescripcionArtista = new JTextField();
-		txtFDescripcionArtista.setVisible(false);
-		txtFDescripcionArtista.setBounds(397, 207, 259, 109);
-		panelGestMusica.add(txtFDescripcionArtista);
-		txtFDescripcionArtista.setColumns(10);
-
-		JComboBox<String> comboBox = new JComboBox<String>();
-		comboBox.setVisible(false);
-		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] { "Solista", "Grupo" }));
-		comboBox.setBounds(397, 345, 259, 22);
-		panelGestMusica.add(comboBox);
-
-		JButton btnBorrar = new JButton("Borrar");
-		btnBorrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (lista.isSelectionEmpty()) {
-					JOptionPane.showMessageDialog(null, "Debes seleccionar algo");
-				} else {
-					basededatos.borrarElementosLista(lista, elementoModificar);
-				}
-			}
-		});
-		btnBorrar.setBounds(397, 111, 89, 23);
-		panelGestMusica.add(btnBorrar);
-
-		JButton btnArtistaAceptar = new JButton("ACEPTAR");
-		btnArtistaAceptar.setVisible(false);
-		btnArtistaAceptar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (gestionarArtista == 1) {
-					boolean artistaRepetido = false;
-					for (int i = 0; i < lista.getModel().getSize(); i++) {
-						if (lista.getModel().getElementAt(i).equals(txtFNombreArtista.getText())) {
-							artistaRepetido = true;
-						}
-					}
-					if (artistaRepetido) {
-						JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
-					} else {
-						basededatos.añadirElementoLista(txtFNombreArtista.getText(), txtFDescripcionArtista.getText(),
-								comboBox.getSelectedItem(), lista);
-					}
-				} else if (gestionarArtista == 2) {
-					if (lista.isSelectionEmpty()) {
-						JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
-					} else {
-						String nombreArtistaSeleccionado = lista.getSelectedValue();
-						basededatos.modificarElementoLista(nombreArtistaSeleccionado, txtFNombreArtista.getText(),
-								txtFDescripcionArtista.getText(), comboBox.getSelectedItem(), lista);
-					}
-				}
-				metodos.ocultarComponentes(lblNombreArtista, lblDescripcionArtista, lblCaracteristicaArtista,
-						txtFNombreArtista, txtFDescripcionArtista, comboBox, btnArtistaAceptar);
-			}
-		});
-		btnArtistaAceptar.setBounds(397, 378, 89, 23);
-		panelGestMusica.add(btnArtistaAceptar);
+		//////////////////////////////////////// Panel Boton Menu
+		//////////////////////////////////////// //////////////////////////////////////////////////////////
 		JPanel panelBtnMenu = new JPanel();
 		panelBtnMenu.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelBtnMenu, "btnMenu");
 		panelBtnMenu.setLayout(null);
 
-		JButton btnAñadir = new JButton("Añadir");
-		btnAñadir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metodos.mostrarComponentes(lblNombreArtista, lblDescripcionArtista, lblCaracteristicaArtista,
-						txtFNombreArtista, txtFDescripcionArtista, comboBox, btnArtistaAceptar);
-				gestionarArtista = 1;
-			}
-		});
-		btnAñadir.setBounds(397, 77, 89, 23);
-		panelGestMusica.add(btnAñadir);
-
-		JButton btnModificar = new JButton("Modificar");
-		btnModificar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int i = lista.getSelectedIndex();
-				if (i != -1) {
-					String nombreArtistaSeleccionado = lista.getSelectedValue();
-					Musico artistaSeleccionado = basededatos.obtenerArtista(nombreArtistaSeleccionado);
-					txtFNombreArtista.setText(artistaSeleccionado.getNombreArtista());
-					txtFDescripcionArtista.setText(artistaSeleccionado.getDescripcion());
-					comboBox.setSelectedItem(artistaSeleccionado.getCaracteristica());
-
-					gestionarArtista = 2;
-					metodos.mostrarComponentes(lblNombreArtista, lblDescripcionArtista, lblCaracteristicaArtista,
-							txtFNombreArtista, txtFDescripcionArtista, comboBox, btnArtistaAceptar);
-				} else {
-					JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
-				}
-			}
-		});
-		btnModificar.setBounds(397, 43, 89, 23);
-		panelGestMusica.add(btnModificar);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(230, 130, 220, 220);
-		panelBtnMenu.add(scrollPane);
+		JScrollPane scrollPaneBtnMenu = new JScrollPane();
+		scrollPaneBtnMenu.setBounds(230, 130, 220, 220);
+		panelBtnMenu.add(scrollPaneBtnMenu);
 
 		listaMenu = new JList<String>();
-		scrollPane.setViewportView(listaMenu);
+		scrollPaneBtnMenu.setViewportView(listaMenu);
 
 		txtFNombreCancionMenu = new JTextField();
 		txtFNombreCancionMenu.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1392,6 +1279,7 @@ public class Reto4Grupo5 extends JFrame {
 		btnExportarCancion.setBounds(342, 374, 220, 27);
 		panelBtnMenu.add(btnExportarCancion);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 		JPanel panelEstadisticas = new JPanel();
 		panelEstadisticas.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelEstadisticas, idEstadisticas);
@@ -1439,6 +1327,180 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		btnMasEscuchados.setBounds(505, 11, 155, 23);
 		panelEstadisticas.add(btnMasEscuchados);
+
+		////////////////////////////////// Panel Admin
+		////////////////////////////////// /////////////////////////////////////////////
+		panelCrudMusica = new JPanel();
+		layeredPane.add(panelCrudMusica, idPanelCrudMusica);
+		panelCrudMusica.setBackground(new Color(215, 223, 234));
+		panelCrudMusica.setLayout(null);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(77, 46, 211, 321);
+		panelCrudMusica.add(scrollPane);
+
+		listaCrudMusica = new JList<String>();
+		scrollPane.setViewportView(listaCrudMusica);
+
+		JLabel lblNombreCrud = new JLabel("");
+		lblNombreCrud.setBounds(397, 78, 259, 14);
+		lblNombreCrud.setVisible(false);
+		panelCrudMusica.add(lblNombreCrud);
+
+		JLabel lblInfo1Crud = new JLabel("");
+		lblInfo1Crud.setBounds(397, 122, 259, 14);
+		panelCrudMusica.add(lblInfo1Crud);
+		lblInfo1Crud.setVisible(false);
+
+		JLabel lblInfo2Crud = new JLabel("");
+		lblInfo2Crud.setBounds(397, 215, 259, 14);
+		panelCrudMusica.add(lblInfo2Crud);
+		lblInfo2Crud.setVisible(false);
+
+		JTextField txtFNombreCrud = new JTextField();
+		txtFNombreCrud.setBounds(397, 95, 259, 20);
+		panelCrudMusica.add(txtFNombreCrud);
+		txtFNombreCrud.setColumns(10);
+		txtFNombreCrud.setVisible(false);
+
+		JTextField txtFInfo1Crud = new JTextField();
+		txtFInfo1Crud.setHorizontalAlignment(SwingConstants.LEFT);
+		txtFInfo1Crud.setBounds(397, 138, 259, 70);
+		panelCrudMusica.add(txtFInfo1Crud);
+		txtFInfo1Crud.setColumns(10);
+		txtFInfo1Crud.setVisible(false);
+
+		JComboBox<String> cmbxCrudTipo = new JComboBox<String>();
+		cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(metodos.crearModeloAnyos()));
+		cmbxCrudTipo.setBounds(397, 232, 259, 22);
+		panelCrudMusica.add(cmbxCrudTipo);
+		cmbxCrudTipo.setVisible(false);
+
+		JLabel lblCrudArtista = new JLabel("Artista:");
+		lblCrudArtista.setBounds(397, 262, 259, 14);
+		panelCrudMusica.add(lblCrudArtista);
+		lblCrudArtista.setVisible(false);
+
+		ArrayList<Musico> musicos = basededatos.conseguirArtistas();
+		String[] artistas = new String[musicos.size()];
+		for (int i = 0; i != musicos.size(); i++) {
+			artistas[i] = musicos.get(i).getNombreArtista();
+		}
+		JComboBox<String> cmbxArtista = new JComboBox<String>();
+		cmbxArtista.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (elementoGestionado == 3) {
+					String[] albumes = new String[musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size()];
+					for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size(); i++) {
+						albumes[i] = musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(i).getTitulo();
+					}
+					cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(albumes));
+				}else {
+					DefaultListModel<String> listModel = new DefaultListModel<>();
+					listaCrudMusica.setModel(listModel); // Establecer el modelo de lista en el JList
+					for(int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size(); i++)
+					listModel.addElement(musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(i).getTitulo());
+				}
+			}
+		});
+		cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
+		cmbxArtista.setVisible(false);
+		cmbxArtista.setBounds(397, 283, 259, 22);
+		panelCrudMusica.add(cmbxArtista);
+
+		JButton btnAceptarCrudMusica = new JButton("ACEPTAR");
+		btnAceptarCrudMusica.setVisible(false);
+		btnAceptarCrudMusica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (accion == 1) {
+					boolean artistaRepetido = false;
+					for (int i = 0; i < listaCrudMusica.getModel().getSize(); i++) {
+						if (listaCrudMusica.getModel().getElementAt(i).equals(txtFNombreCrud.getText())) {
+							artistaRepetido = true;
+						}
+					}
+					if (artistaRepetido) {
+						JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
+					} else {
+						basededatos.añadirElementoLista(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
+								cmbxCrudTipo.getSelectedItem(), listaCrudMusica);
+					}
+				} else if (accion == 2) {
+					if (listaCrudMusica.isSelectionEmpty()) {
+						JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
+					} else {
+						String nombreArtistaSeleccionado = listaCrudMusica.getSelectedValue();
+						basededatos.modificarElementoLista(nombreArtistaSeleccionado, txtFNombreCrud.getText(),
+								txtFInfo1Crud.getText(), cmbxCrudTipo.getSelectedItem(), listaCrudMusica);
+					}
+				}
+				metodos.ocultarComponentes(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud, txtFInfo1Crud,
+						cmbxCrudTipo, btnAceptarCrudMusica);
+			}
+		});
+		btnAceptarCrudMusica.setBounds(481, 392, 89, 23);
+		panelCrudMusica.add(btnAceptarCrudMusica);
+		btnAceptarCrudMusica.setVisible(false);
+		JButton btnAñadirCrudMusica = new JButton("Añadir");
+		btnAñadirCrudMusica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				accion = 1;
+				if (elementoGestionado == 1) {
+					metodos.cargarCrudArtistas(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud, txtFInfo1Crud,
+							cmbxCrudTipo);
+
+				} else {
+					metodos.cargarCrudAlbumesycancion(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud,
+							txtFInfo1Crud, cmbxCrudTipo, lblCrudArtista, cmbxArtista, elementoGestionado);
+				}
+				btnAceptarCrudMusica.setVisible(true);
+			}
+		});
+		btnAñadirCrudMusica.setBounds(350, 44, 89, 23);
+		panelCrudMusica.add(btnAñadirCrudMusica);
+
+		JButton btnModificarCrudMusica = new JButton("Modificar");
+		btnModificarCrudMusica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (listaCrudMusica.getSelectedIndex() != -1) {
+					if (elementoGestionado == 1) {
+						txtFNombreCrud.setText(musicos.get(listaCrudMusica.getSelectedIndex()).getNombreArtista());
+						txtFInfo1Crud.setText(musicos.get(listaCrudMusica.getSelectedIndex()).getDescripcion());
+						cmbxCrudTipo.setSelectedItem(musicos.get(listaCrudMusica.getSelectedIndex()).getCaracteristica());
+						metodos.cargarCrudArtistas(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud, txtFInfo1Crud,
+								cmbxCrudTipo);
+						
+					}else if(elementoGestionado == 2) {
+						metodos.cargarCrudAlbumesycancion(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud,
+								txtFInfo1Crud, cmbxCrudTipo, lblCrudArtista, cmbxArtista, elementoGestionado);
+						
+					}
+					accion = 2;
+				} else {
+					JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
+				}
+			}
+		});
+		btnModificarCrudMusica.setBounds(449, 44, 89, 23);
+		panelCrudMusica.add(btnModificarCrudMusica);
+
+		JButton btnBorrarCrudMusica = new JButton("Borrar");
+		btnBorrarCrudMusica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (listaCrudMusica.isSelectionEmpty()) {
+					JOptionPane.showMessageDialog(null, "Debes seleccionar algo");
+				} else {
+					basededatos.borrarElementosLista(listaCrudMusica, elementoGestionado);
+				}
+			}
+		});
+		btnBorrarCrudMusica.setBounds(548, 44, 89, 23);
+		panelCrudMusica.add(btnBorrarCrudMusica);
+		//////////////////// Panel gestionar artista //////////////////////////////
+
+		// botones gestionar musica
+
+		///////////////////////////////////
 
 	}
 }

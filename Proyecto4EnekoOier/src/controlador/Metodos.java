@@ -11,9 +11,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -25,11 +27,13 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import modelo.Usuarios;
 import modelo.BasedeDatos;
 import modelo.Cancion;
+import modelo.Musico;
 import modelo.PlayList;
 import modelo.Podcast;
 
@@ -405,13 +409,13 @@ public class Metodos {
 			JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista,
 			JComboBox<String> comboBox, JButton btnArtistaAceptar) {
 		// TODO Auto-generated method stub
-		lblNombreArtista.setVisible(true);
-		lblDescripcionArtista.setVisible(true);
-		lblCaracteristicaArtista.setVisible(true);
-		txtFNombreArtista.setVisible(true);
-		txtFDescripcionArtista.setVisible(true);
-		comboBox.setVisible(true);
-		btnArtistaAceptar.setVisible(true);
+		lblNombreArtista.setVisible(false);
+		lblDescripcionArtista.setVisible(false);
+		lblCaracteristicaArtista.setVisible(false);
+		txtFNombreArtista.setVisible(false);
+		txtFDescripcionArtista.setVisible(false);
+		comboBox.setVisible(false);
+		btnArtistaAceptar.setVisible(false);
 	}
 
 	/**
@@ -436,6 +440,65 @@ public class Metodos {
 		txtFDescripcionArtista.setVisible(false);
 		comboBox.setVisible(false);
 		btnArtistaAceptar.setVisible(false);
+	}
+
+	public String[] crearModeloAnyos() {
+		// TODO Auto-generated method stub
+		int añoInicio = 1980;
+		int añoFin = 2024;
+		String[] años = new String[añoFin - añoInicio + 1];
+		for (int i = 0; i < años.length; i++) {
+			años[i] = String.valueOf(añoInicio + i);
+		}
+		return años;
+	}
+
+	public void cargarCrudArtistas(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
+			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo) {
+		// TODO Auto-generated method stub
+		lblNombreCrud.setText("Nombre Artista:");
+		lblNombreCrud.setVisible(true);
+		lblInfo1Crud.setText("Descripcion Artista");
+		lblInfo1Crud.setVisible(true);
+		lblInfo2Crud.setText("Caracteristica");
+		lblInfo2Crud.setVisible(true);
+		txtFNombreCrud.setVisible(true);
+		txtFInfo1Crud.setVisible(true);
+		cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(new String[] { "Solista", "Grupo" }));
+		cmbxCrudTipo.setVisible(true);
+	}
+
+	public void cargarCrudAlbumes(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
+			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo, JLabel lblCrudArtista,
+			JComboBox<String> cmbxArtista) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void cargarCrudAlbumesycancion(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
+			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo, JLabel lblCrudArtista,
+			JComboBox<String> cmbxArtista, int accion) {
+		// TODO Auto-generated method stub
+		lblNombreCrud.setVisible(true);
+		lblInfo1Crud.setVisible(true);
+		lblInfo2Crud.setVisible(true);
+		txtFNombreCrud.setVisible(true);
+		txtFInfo1Crud.setVisible(true);
+		cmbxCrudTipo.setVisible(true);
+		lblCrudArtista.setVisible(true);
+		cmbxArtista.setVisible(true);
+		if(accion == 2) {
+			lblNombreCrud.setText("Nombre Album:");
+			lblInfo1Crud.setText("Genero");
+			lblInfo2Crud.setText("Año");
+			cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(crearModeloAnyos()));
+		}else {
+			lblNombreCrud.setText("Nombre Cancion:");
+			lblInfo1Crud.setText("Duracion");
+			lblInfo2Crud.setText("Album");
+			cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>());
+		
+		}
 	}
 
 }
