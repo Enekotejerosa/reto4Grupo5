@@ -14,9 +14,9 @@ import javax.swing.table.DefaultTableModel;
 
 public class BasedeDatos {
 	// Conexion Base de datos
-	final static String url = "jdbc:mysql://localhost:3306/reto4grupo5_m";
-	final static String contrasenabdd = "eneko";
-	final static String usuariobdd = "root";
+	final static String url = "jdbc:mysql://reto4grupo5.duckdns.org:3306/reto4grupo5_m";
+	final static String contrasenabdd = "Elorrieta2024+";
+	final static String usuariobdd = "grupo05";
 
 	// Tabla Cliente
 	final static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellido = "Apellido",
