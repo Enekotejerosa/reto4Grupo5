@@ -65,8 +65,7 @@ public class Reto4Grupo5 extends JFrame {
 	private JButton btnRegistroGuardar, btnRegistroEditar, btnReproducir, btnAdelanteCancion, btnAtrasCancion;
 	private JPanel panelArtistas, panelAlbumes, panelCanciones, panelReproduccion, panelPlaylist, panelMenu,
 			panelCrudMusica;
-	private ArrayList<Component> componentes = new ArrayList<Component>();
-	private JLabel lblReproduciendoSelec, lblAlbumSelec, lblCrudArtista;
+	private JLabel lblReproduciendoSelec, lblAlbumSelec;
 	private JList<String> listaPlaylist, listaMenu, listaCrudMusica;
 	private int cambioX = 0, cambioY = 0, cont = 0, cont2 = 0;
 	private int elementoGestionado = 0;
