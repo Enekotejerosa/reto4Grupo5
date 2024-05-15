@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -14,9 +17,9 @@ import javax.swing.table.DefaultTableModel;
 
 public class BasedeDatos {
 	// Conexion Base de datos
-	final static String url = "jdbc:mysql://reto4grupo5.duckdns.org:3306/reto4grupo5_m";
-	final static String contrasenabdd = "Elorrieta2024+";
-	final static String usuariobdd = "grupo05";
+	final static String url = "jdbc:mysql://localhost:3306/reto4grupo5_m";
+	final static String contrasenabdd = "eneko";
+	final static String usuariobdd = "root";
 
 	// Tabla Cliente
 	final static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellido = "Apellido",
@@ -750,13 +753,15 @@ public class BasedeDatos {
 	 *
 	 * @param nombreArtista      nombre del nuevo artista.
 	 * @param descripcionArtista descripción del nuevo artista.
+	 * @param cmbxCrudTipo
 	 * @param selectedItem       tipo de artista seleccionado.
 	 * @param lista              JList que muestra la lista de artistas.
-	 * @param musico
+	 * @param cmbxArtista
 	 * @param elementoGestionado
+	 * @param musicos
 	 */
-	public void añadirElementoLista(String nombreArtista, String descripcionArtista, Object selectedItem,
-			JList<String> lista, int elementoGestionado, Musico musico) {
+	public void añadirElementoLista(String nombreArtista, String descripcionArtista, JComboBox<String> cmbxCrudTipo,
+			JList<String> lista, int elementoGestionado, JComboBox<String> cmbxArtista, ArrayList<Musico> musicos) {
 		PreparedStatement preparedStatement = null;
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
@@ -767,7 +772,7 @@ public class BasedeDatos {
 				preparedStatement.setString(1, nombreArtista);
 				preparedStatement.setString(2, nombreArtista.toLowerCase() + ".jpg");
 				preparedStatement.setString(3, descripcionArtista);
-				preparedStatement.setString(4, selectedItem.toString().toLowerCase());
+				preparedStatement.setString(4, cmbxCrudTipo.getSelectedItem().toString().toLowerCase());
 
 			} else if (elementoGestionado == 2) {
 				String consulta = "INSERT INTO " + tablaAlbum + " (" + albumTitulo + ", " + albumImagen + ", "
@@ -775,14 +780,46 @@ public class BasedeDatos {
 				preparedStatement = conexion.prepareStatement(consulta);
 				preparedStatement.setString(1, nombreArtista);
 				preparedStatement.setString(2, nombreArtista.toLowerCase() + ".jpg");
-				preparedStatement.setInt(3, Integer.parseInt(selectedItem.toString()));
+				preparedStatement.setInt(3, Integer.parseInt(cmbxCrudTipo.getSelectedItem().toString()));
 				preparedStatement.setString(4, descripcionArtista);
-				preparedStatement.setInt(5, musico.getId());
-			} else {
-
+				preparedStatement.setInt(5, musicos.get(cmbxArtista.getSelectedIndex()).getId());
+			} else if (elementoGestionado == 3) {
+				String consulta = "INSERT INTO " + tablaAudio + " (" + audioNombre + ", " + audioAudio + ", "
+						+ audioDuracion + ", " + audioTipo + ") VALUES (?, ?, ?, ?)";
+				preparedStatement = conexion.prepareStatement(consulta);
+				preparedStatement.setString(1, nombreArtista);
+				preparedStatement.setString(2, nombreArtista.toLowerCase() + ".wav");
+				preparedStatement.setString(3, descripcionArtista);
+				preparedStatement.setString(4, "cancion");
 			}
 			DefaultListModel<String> model = (DefaultListModel<String>) lista.getModel();
 			model.addElement(nombreArtista);
+			preparedStatement.executeUpdate();
+			if ((elementoGestionado == 3)) {
+				int idCancion = obteneridAudio(nombreArtista, descripcionArtista);
+				insertarCancion(musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(cmbxCrudTipo.getSelectedIndex()).getId(),
+						idCancion);
+				Cancion nuevaCancion = new Cancion(nombreArtista, idCancion, descripcionArtista, nombreArtista+".wav");
+				musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(cmbxCrudTipo.getSelectedIndex()).getCanciones().add(nuevaCancion);
+				
+				lista.setModel(new DefaultComboBoxModel<String>());
+			}
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+	private void insertarCancion(int idAlbum, int idAudio) {
+		// TODO Auto-generated method stub
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "INSERT INTO " + tablaCancion + " (" + audioId + ", " + albumId + ") VALUES (?, ?)";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setInt(1, idAudio);
+			preparedStatement.setInt(2, idAlbum);
 			preparedStatement.executeUpdate();
 			conexion.close();
 		} catch (SQLException ex) {
@@ -790,6 +827,28 @@ public class BasedeDatos {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
+	}
+
+	private int obteneridAudio(String nombreArtista, String duracion) {
+		// TODO Auto-generated method stub
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "Select " + audioId + " from " + tablaAudio + " where " + audioNombre + " ='"
+					+ nombreArtista + "' and " + audioDuracion + " = '" + duracion + "';";
+
+			PreparedStatement statement = conexion.prepareStatement(consulta);
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				return resultSet.getInt(audioId);
+			}
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+		return 0;
 	}
 
 	/**
@@ -841,7 +900,8 @@ public class BasedeDatos {
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				Caracteristica caracteristica = Caracteristica.valueOf(resultSet.getString(musicoCaracteristica));
-				artista = new Musico(resultSet.getString(musicoNombre), resultSet.getString(musicoDescripcion), resultSet.getString(musicoImagen), caracteristica, null, resultSet.getInt(musicoId));
+				artista = new Musico(resultSet.getString(musicoNombre), resultSet.getString(musicoDescripcion),
+						resultSet.getString(musicoImagen), caracteristica, null, resultSet.getInt(musicoId));
 			}
 			conexion.close();
 		} catch (SQLException ex) {
@@ -1098,17 +1158,15 @@ public class BasedeDatos {
 
 	}
 
-
-	public void modificarAlbum(String nombre, String genero, Object anyo, JList<String> listaCrudMusica,
-			Album album) {
+	public void modificarAlbum(String nombre, String genero, Object anyo, JList<String> listaCrudMusica, Album album) {
 		// TODO Auto-generated method stub
 		try {
 			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
 			String consulta = "UPDATE " + tablaAlbum + " SET " + albumTitulo + "=?, " + albumImagen + "=?, "
-					+ albumGenero + "=?, " + albumAnyo +"=? WHERE " + albumId + "=?";
+					+ albumGenero + "=?, " + albumAnyo + "=? WHERE " + albumId + "=?";
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 			preparedStatement.setString(1, nombre); // Nuevo nombre del artista
-			preparedStatement.setString(2, nombre+".jpg");
+			preparedStatement.setString(2, nombre + ".jpg");
 			preparedStatement.setString(3, genero);
 			preparedStatement.setInt(4, Integer.parseInt(anyo.toString())); // Nombre antiguo del artista
 			preparedStatement.setInt(5, album.getId());

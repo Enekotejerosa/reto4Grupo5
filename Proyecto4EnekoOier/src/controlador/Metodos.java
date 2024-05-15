@@ -424,12 +424,13 @@ public class Metodos {
 	 * @param txtFDescripcionArtista
 	 * @param comboBox
 	 * @param btnArtistaAceptar
-	 * @param cmbxArtista 
-	 * @param lblCrudArtista 
+	 * @param cmbxArtista
+	 * @param lblCrudArtista
 	 */
 	public void ocultarComponentes(JLabel lblNombreArtista, JLabel lblDescripcionArtista,
 			JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista,
-			JComboBox<String> comboBox, JButton btnArtistaAceptar, JLabel lblCrudArtista, JComboBox<String> cmbxArtista) {
+			JComboBox<String> comboBox, JButton btnArtistaAceptar, JLabel lblCrudArtista,
+			JComboBox<String> cmbxArtista) {
 		// TODO Auto-generated method stub
 		lblNombreArtista.setVisible(false);
 		lblDescripcionArtista.setVisible(false);
@@ -468,7 +469,6 @@ public class Metodos {
 		cmbxCrudTipo.setVisible(true);
 	}
 
-
 	public void cargarCrudAlbumesycancion(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
 			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo, JLabel lblCrudArtista,
 			JComboBox<String> cmbxArtista, int accion) {
@@ -481,18 +481,36 @@ public class Metodos {
 		cmbxCrudTipo.setVisible(true);
 		lblCrudArtista.setVisible(true);
 		cmbxArtista.setVisible(true);
-		if(accion == 2) {
+		if (accion == 2) {
 			lblNombreCrud.setText("Nombre Album:");
 			lblInfo1Crud.setText("Genero");
 			lblInfo2Crud.setText("Año");
 			cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(crearModeloAnyos()));
-		}else {
+		} else {
 			lblNombreCrud.setText("Nombre Cancion:");
 			lblInfo1Crud.setText("Duracion");
 			lblInfo2Crud.setText("Album");
 			cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>());
-		
+
 		}
+	}
+
+	public boolean formatoDuracion(String duracion) {
+		if (duracion == null) {
+			return false;
+		}
+		String patron = "^\\d{2}:\\d{2}:\\d{2}$";
+		if (!duracion.matches(patron)) {
+			return false;
+		}
+		// Dividir el string en horas, minutos y segundos
+		String[] partes = duracion.split(":");
+		int horas = Integer.parseInt(partes[0]);
+		int minutos = Integer.parseInt(partes[1]);
+		int segundos = Integer.parseInt(partes[2]);
+
+		// Comprobar rangos válidos
+		return horas >= 0 && horas <= 23 && minutos >= 0 && minutos <= 59 && segundos >= 0 && segundos <= 59;
 	}
 
 }

@@ -33,6 +33,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 import controlador.Metodos;
+import modelo.Cancion;
 import modelo.Album;
 import modelo.Musico;
 import modelo.Podcaster;
@@ -1109,8 +1110,8 @@ public class Reto4Grupo5 extends JFrame {
 		panelAdmin.add(btnGestEstadisticas);
 
 		JLabel lblAdmin = new JLabel("Menu Gestión");
-		lblAdmin.setFont(new Font("Rockwell Condensed", Font.PLAIN, 25));
-		lblAdmin.setBounds(293, 86, 123, 56);
+		lblAdmin.setFont(new Font("Cambria", Font.BOLD, 25));
+		lblAdmin.setBounds(266, 86, 180, 56);
 		panelAdmin.add(lblAdmin);
 		// ------------------------------------------- Fin Panel Gestion, Inicio
 		// Canciones ----------------------------------------------------------------
@@ -1363,10 +1364,9 @@ public class Reto4Grupo5 extends JFrame {
 		}
 
 		JComboBox<String> cmbxCrudTipo = new JComboBox<String>();
-		cmbxCrudTipo.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (elementoGestionado == 3 && accion == 2) {
+		cmbxCrudTipo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (elementoGestionado == 3) {
 					DefaultListModel<String> listModel = new DefaultListModel<>();
 					listaCrudMusica.setModel(listModel);
 					Album albumSeleccionado = musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
@@ -1387,7 +1387,6 @@ public class Reto4Grupo5 extends JFrame {
 		panelCrudMusica.add(lblCrudArtista);
 		lblCrudArtista.setVisible(false);
 
-		
 		cmbxArtista = new JComboBox<String>();
 		cmbxArtista.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1403,9 +1402,10 @@ public class Reto4Grupo5 extends JFrame {
 					DefaultListModel<String> listModel = new DefaultListModel<>();
 					listaCrudMusica.setModel(listModel);
 					// For para que aparezcan todos los albumes en la lista
-					for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(cmbxCrudTipo.getSelectedIndex()).getCanciones().size(); i++)
-						listModel.addElement(
-								musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(cmbxCrudTipo.getSelectedIndex()).getCanciones().get(i).getNombre());
+					for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
+							.get(cmbxCrudTipo.getSelectedIndex()).getCanciones().size(); i++)
+						listModel.addElement(musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
+								.get(cmbxCrudTipo.getSelectedIndex()).getCanciones().get(i).getNombre());
 				}
 			}
 		});
@@ -1432,8 +1432,8 @@ public class Reto4Grupo5 extends JFrame {
 								JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
 							} else {
 								basededatos.añadirElementoLista(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
-										cmbxCrudTipo.getSelectedItem(), listaCrudMusica, elementoGestionado,
-										musicos.get(cmbxArtista.getSelectedIndex()));
+										cmbxCrudTipo, listaCrudMusica, elementoGestionado,
+										cmbxArtista, musicos);
 								Album albumNuevo = new Album(txtFNombreCrud.getText(),
 										Integer.parseInt(cmbxCrudTipo.getSelectedItem().toString()),
 										txtFInfo1Crud.getText());
@@ -1450,12 +1450,32 @@ public class Reto4Grupo5 extends JFrame {
 										"El album que deseas insertar ya existe para ese artista");
 							} else {
 								basededatos.añadirElementoLista(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
-										cmbxCrudTipo.getSelectedItem(), listaCrudMusica, elementoGestionado,
-										musicos.get(cmbxArtista.getSelectedIndex()));
+										cmbxCrudTipo, listaCrudMusica, elementoGestionado,
+										cmbxArtista, musicos);
 								Album albumNuevo = new Album(txtFNombreCrud.getText(),
 										Integer.parseInt(cmbxCrudTipo.getSelectedItem().toString()),
 										txtFInfo1Crud.getText());
 								musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().add(albumNuevo);
+							}
+						} else {
+							for (int i = 0; i < listaCrudMusica.getModel().getSize(); i++) {
+								if (listaCrudMusica.getModel().getElementAt(i).equals(txtFNombreCrud.getText())) {
+									artistaRepetido = true;
+								}
+							}
+							if (artistaRepetido) {
+								JOptionPane.showMessageDialog(null,
+										"El album que deseas insertar ya existe para ese artista");
+							} else {
+								if (metodos.formatoDuracion(txtFInfo1Crud.getText())) {
+									basededatos.añadirElementoLista(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
+											cmbxCrudTipo, listaCrudMusica, elementoGestionado,
+											cmbxArtista, musicos);
+								}else {
+									JOptionPane.showMessageDialog(null,
+											"Formato de duración Incorrecto");
+								}
+
 							}
 						}
 					} else if (accion == 2) {
@@ -1525,7 +1545,7 @@ public class Reto4Grupo5 extends JFrame {
 						JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
 					}
 
-				} else if (elementoGestionado == 2) {
+				} else {
 					metodos.cargarCrudAlbumesycancion(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud,
 							txtFInfo1Crud, cmbxCrudTipo, lblCrudArtista, cmbxArtista, elementoGestionado);
 
@@ -1560,6 +1580,12 @@ public class Reto4Grupo5 extends JFrame {
 							.get(listaCrudMusica.getSelectedIndex());
 					txtFNombreCrud.setText(albumSeleccionado.getTitulo());
 					txtFInfo1Crud.setText(albumSeleccionado.getGenero());
+				} else if ((elementoGestionado == 3 && accion == 2)) {
+					Cancion cancionElegida = musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
+							.get(cmbxCrudTipo.getSelectedIndex()).getCanciones()
+							.get(listaCrudMusica.getSelectedIndex());
+					txtFNombreCrud.setText(cancionElegida.getNombre());
+					txtFInfo1Crud.setText(cancionElegida.getDuracion());
 				}
 			}
 		});
