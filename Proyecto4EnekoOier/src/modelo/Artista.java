@@ -79,7 +79,7 @@ public abstract class Artista {
 	/**
 	 * Establece la imagen asociada al artista.
 	 * 
-	 * @param imagen imagen del artista.
+	 * @param imagen imagen del artista
 	 */
 	public void setImagen(String imagen) {
 		this.imagen = imagen;

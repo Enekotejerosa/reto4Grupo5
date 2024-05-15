@@ -71,7 +71,7 @@ public class Podcast extends Multimedia implements Reproducible {
 	 * @param btnX1                 Botón para reproducir a 1x la velocidad normal.
 	 * @param btnX15                Botón para reproducir a 1.5x la velocidad
 	 *                              normal.
-	 * @return Archivo de audio del podcast.
+	 * @return Archivo de audio del podcast
 	 */
 	@Override
 	public File reproducir(JLabel lblDuracionSelec, JLabel lblReproduciendoSelec, JButton btnX05, JButton btnX1,

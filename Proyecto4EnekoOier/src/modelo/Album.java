@@ -113,7 +113,7 @@ public class Album {
 	}
 
 	/**
-     * Constructor que inicializa un nuevo álbum con los detalles especificados.
+     * Constructor que inicializa un nuevo álbum con los detalles especificados
      * 
      * @param titulo     título del álbum.
      * @param anyo       año de lanzamiento del álbum.

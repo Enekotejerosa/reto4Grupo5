@@ -44,7 +44,7 @@ public class PlayList {
 	/**
 	 * Establece la fecha de registro de la lista de reproducción.
 	 * 
-	 * @param fec_registro fecha de registro de la lista de reproducción.
+	 * @param fec_registro fecha de registro de la lista de reproducción
 	 */
 	public void setFec_registro(String fec_registro) {
 		this.fec_registro = fec_registro;

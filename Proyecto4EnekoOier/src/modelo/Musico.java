@@ -71,7 +71,7 @@ public class Musico extends Artista {
 	/**
 	 * Devuelve una representación en formato cadena del músico.
 	 * 
-	 * @return una cadena que representa al músico.
+	 * @return una cadena que representa al músico
 	 */
 	@Override
 	public String toString() {

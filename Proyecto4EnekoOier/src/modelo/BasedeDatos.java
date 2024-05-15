@@ -398,7 +398,7 @@ public class BasedeDatos {
 	 *
 	 * @param usuarioIniciado usuario que ha iniciado sesión.
 	 * @param idAudio         ID de la canción que se va a añadir a la lista de "Me
-	 *                        gusta".
+	 *                        gusta"
 	 */
 	public void anadirCancionLike(Usuarios usuarioIniciado, int idAudio) {
 		// TODO Auto-generated method stub

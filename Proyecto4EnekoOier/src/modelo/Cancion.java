@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 /**
  * Clase que representa una canción, heredada de Multimedia e implementa la
  * interfaz Reproducible. Contiene información sobre el nombre, ID de audio,
- * duración y archivo de audio de la canción.
+ * duración y archivo de audio de la canción
  */
 public class Cancion extends Multimedia implements Reproducible {
 	BasedeDatos basededatos = new BasedeDatos();

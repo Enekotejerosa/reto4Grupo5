@@ -45,7 +45,7 @@ public class Podcaster extends Artista {
 	/**
 	 * Establece el género del Podcaster.
 	 * 
-	 * @param genero género del Podcaster.
+	 * @param genero género del Podcaster
 	 */
 	public void setGenero(String genero) {
 		this.genero = genero;

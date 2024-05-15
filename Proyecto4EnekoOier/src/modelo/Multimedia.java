@@ -56,7 +56,7 @@ public abstract class Multimedia {
 	/**
 	 * Establece la duración del elemento multimedia.
 	 * 
-	 * @param duracion duración del elemento multimedia.
+	 * @param duracion duración del elemento multimedia
 	 */
 	public void setDuracion(String duracion) {
 		this.duracion = duracion;
