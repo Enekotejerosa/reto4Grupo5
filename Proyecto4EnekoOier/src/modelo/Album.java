@@ -119,7 +119,7 @@ public class Album {
      * @param anyo       año de lanzamiento del álbum.
      * @param genero     género del álbum.
      * @param imagen     imagen del álbum.
-     * @param canciones  lista de canciones del álbum.
+     * @param canciones  lista de canciones del álbum
      */
     public Album(String titulo, int anyo, String genero, String imagen, ArrayList<Cancion> canciones, int id) {
 		super();

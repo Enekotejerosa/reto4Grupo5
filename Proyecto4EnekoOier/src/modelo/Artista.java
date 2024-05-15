@@ -77,7 +77,7 @@ public abstract class Artista {
 	}
 
 	/**
-	 * Establece la imagen asociada al artista.
+	 * Establece la imagen asociada al artista
 	 * 
 	 * @param imagen imagen del artista
 	 */

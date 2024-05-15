@@ -1356,6 +1356,11 @@ public class Reto4Grupo5 extends JFrame {
 		panelCrudMusica.add(txtFInfo1Crud);
 		txtFInfo1Crud.setColumns(10);
 		txtFInfo1Crud.setVisible(false);
+		ArrayList<Musico> musicos = basededatos.conseguirArtistas();
+		String[] artistas = new String[musicos.size()];
+		for (int i = 0; i != musicos.size(); i++) {
+			artistas[i] = musicos.get(i).getNombreArtista();
+		}
 
 		JComboBox<String> cmbxCrudTipo = new JComboBox<String>();
 		cmbxCrudTipo.addMouseListener(new MouseAdapter() {
@@ -1382,29 +1387,25 @@ public class Reto4Grupo5 extends JFrame {
 		panelCrudMusica.add(lblCrudArtista);
 		lblCrudArtista.setVisible(false);
 
-		ArrayList<Musico> musicos = basededatos.conseguirArtistas();
-		String[] artistas = new String[musicos.size()];
-		for (int i = 0; i != musicos.size(); i++) {
-			artistas[i] = musicos.get(i).getNombreArtista();
-		}
+		
 		cmbxArtista = new JComboBox<String>();
 		cmbxArtista.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Establece todos los albumes en el combobox si gestionamos canciones
+				// Establece todos los albumes en el combobox si gestionamos canciones.
 				if (elementoGestionado == 3) {
 					String[] albumes = new String[musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size()];
 					for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size(); i++) {
 						albumes[i] = musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(i).getTitulo();
 					}
 					cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(albumes));
-					// Establece todos los albumes en la lista si gestionamos albumes
+					// Establece todos los albumes en la lista si gestionamos albumes.
 				} else {
 					DefaultListModel<String> listModel = new DefaultListModel<>();
 					listaCrudMusica.setModel(listModel);
 					// For para que aparezcan todos los albumes en la lista
-					for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size(); i++)
+					for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(cmbxCrudTipo.getSelectedIndex()).getCanciones().size(); i++)
 						listModel.addElement(
-								musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(i).getTitulo());
+								musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(cmbxCrudTipo.getSelectedIndex()).getCanciones().get(i).getNombre());
 				}
 			}
 		});

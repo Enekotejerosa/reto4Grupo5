@@ -415,7 +415,7 @@ public class Metodos {
 	}
 
 	/**
-	 * Esconde los componentes necesarios para añadir o modificar un artista
+	 * Esconde los componentes necesarios para añadir o modificar un artista.
 	 * 
 	 * @param lblNombreArtista
 	 * @param lblDescripcionArtista

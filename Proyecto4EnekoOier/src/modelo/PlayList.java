@@ -42,7 +42,7 @@ public class PlayList {
 	}
 
 	/**
-	 * Establece la fecha de registro de la lista de reproducción.
+	 * Establece la fecha de registro de la lista de reproducción
 	 * 
 	 * @param fec_registro fecha de registro de la lista de reproducción
 	 */

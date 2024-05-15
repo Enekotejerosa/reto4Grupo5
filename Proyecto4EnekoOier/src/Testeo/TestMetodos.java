@@ -21,7 +21,7 @@ public class TestMetodos {
 
 		// Segunda línea con números válidos
 		String segundaLinea = "1;2;3;4;5";
-		// Llamada al método a testear.
+		// Llamada al método a testear
 		int[] resultado = Metodos.validarSegundaLinea(segundaLinea);
 		// Comprobación de que el array contiene los números esperados.
 		assertArrayEquals(new int[] { 1, 2, 3, 4, 5 }, resultado);

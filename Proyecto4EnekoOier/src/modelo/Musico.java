@@ -53,7 +53,7 @@ public class Musico extends Artista {
 	/**
 	 * Obtiene la característica del músico.
 	 * 
-	 * @return característica del músico.
+	 * @return característica del músico
 	 */
 	public Caracteristica getCaracteristica() {
 		return caracteristica;

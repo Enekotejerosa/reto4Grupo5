@@ -9,6 +9,6 @@ public class MiExcepcion extends Exception {
 	}
 
 	MiExcepcion(String mensaje) {
-		System.out.println("Imagen no encontrada, se inserta la predeterminada");
+		System.out.println("Imagen no encontrada, se inserta la imagen predeterminada");
 	}
 }

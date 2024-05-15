@@ -61,7 +61,7 @@ public class Podcast extends Multimedia implements Reproducible {
 	}
 
 	/**
-	 * Método para reproducir el podcast.
+	 * Método para reproducir el podcast
 	 * 
 	 * @param lblDuracionSelec      Etiqueta para mostrar la duración seleccionada.
 	 * @param lblReproduciendoSelec Etiqueta para mostrar el podcast que se está

@@ -54,7 +54,7 @@ public abstract class Multimedia {
 	}
 
 	/**
-	 * Establece la duración del elemento multimedia.
+	 * Establece la duración del elemento multimedia
 	 * 
 	 * @param duracion duración del elemento multimedia
 	 */

@@ -6,7 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 /**
- * Interfaz que define el comportamiento de los elementos que pueden ser reproducidos.
+ * Interfaz que define el comportamiento de los elementos que pueden ser reproducidos
  */
 public interface Reproducible {
     

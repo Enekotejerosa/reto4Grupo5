@@ -36,7 +36,7 @@ public class Podcaster extends Artista {
 	/**
 	 * Obtiene el género del Podcaster.
 	 * 
-	 * @return género del Podcaster.
+	 * @return género del Podcaster
 	 */
 	public String getGenero() {
 		return genero;

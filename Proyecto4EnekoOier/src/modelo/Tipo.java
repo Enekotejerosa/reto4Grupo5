@@ -1,7 +1,7 @@
 package modelo;
 
 /**
- * Tipo de cliente.
+ * Tipo de cliente
  */
 public enum Tipo {
 premium, free

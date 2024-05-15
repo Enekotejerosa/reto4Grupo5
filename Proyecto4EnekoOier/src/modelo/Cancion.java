@@ -30,7 +30,7 @@ public class Cancion extends Multimedia implements Reproducible {
 	/**
 	 * Devuelve una representación en formato cadena de la canción.
 	 * 
-	 * @return una cadena que representa la canción.
+	 * @return una cadena que representa la canción
 	 */
 	@Override
 	public String toString() {

@@ -35,7 +35,7 @@ public class Usuarios {
 	}
 
 	/**
-	 * Método para obtener el tipo de cliente.
+	 * Método para obtener el tipo de cliente
 	 * 
 	 * @return tipo de cliente
 	 */
