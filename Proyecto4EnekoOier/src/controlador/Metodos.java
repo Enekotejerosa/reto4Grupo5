@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -27,13 +25,11 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import modelo.Usuarios;
 import modelo.BasedeDatos;
 import modelo.Cancion;
-import modelo.Musico;
 import modelo.PlayList;
 import modelo.Podcast;
 
@@ -428,10 +424,12 @@ public class Metodos {
 	 * @param txtFDescripcionArtista
 	 * @param comboBox
 	 * @param btnArtistaAceptar
+	 * @param cmbxArtista 
+	 * @param lblCrudArtista 
 	 */
 	public void ocultarComponentes(JLabel lblNombreArtista, JLabel lblDescripcionArtista,
 			JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista,
-			JComboBox<String> comboBox, JButton btnArtistaAceptar) {
+			JComboBox<String> comboBox, JButton btnArtistaAceptar, JLabel lblCrudArtista, JComboBox<String> cmbxArtista) {
 		// TODO Auto-generated method stub
 		lblNombreArtista.setVisible(false);
 		lblDescripcionArtista.setVisible(false);
@@ -440,6 +438,8 @@ public class Metodos {
 		txtFDescripcionArtista.setVisible(false);
 		comboBox.setVisible(false);
 		btnArtistaAceptar.setVisible(false);
+		lblCrudArtista.setVisible(false);
+		cmbxArtista.setVisible(false);
 	}
 
 	public String[] crearModeloAnyos() {
@@ -468,12 +468,6 @@ public class Metodos {
 		cmbxCrudTipo.setVisible(true);
 	}
 
-	public void cargarCrudAlbumes(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
-			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo, JLabel lblCrudArtista,
-			JComboBox<String> cmbxArtista) {
-		// TODO Auto-generated method stub
-
-	}
 
 	public void cargarCrudAlbumesycancion(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
 			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo, JLabel lblCrudArtista,

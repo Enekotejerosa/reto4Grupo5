@@ -20,8 +20,8 @@ public class Musico extends Artista {
 	 * @param albumes        lista de álbumes del músico.
 	 */
 	public Musico(String nombreArtista, String descripcion, String imagen, Caracteristica caracteristica,
-			ArrayList<Album> albumes) {
-		super(nombreArtista, descripcion, imagen);
+			ArrayList<Album> albumes, int id) {
+		super(nombreArtista, descripcion, imagen, id);
 		this.caracteristica = caracteristica;
 		this.albumes = albumes;
 	}
@@ -75,7 +75,8 @@ public class Musico extends Artista {
 	 */
 	@Override
 	public String toString() {
-		return "Musico [caracteristica=" + caracteristica + ", albumes=" + albumes + ", getNombreArtista()="
-				+ getNombreArtista() + ", getDescripcion()=" + getDescripcion() + ", getImagen()=" + getImagen() + "]";
+		return "Musico [caracteristica=" + caracteristica + ", albumes=" + albumes + ", getId()=" + getId()
+				+ ", getNombreArtista()=" + getNombreArtista() + ", getDescripcion()=" + getDescripcion() + "]";
 	}
+
 }

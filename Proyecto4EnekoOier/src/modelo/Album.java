@@ -13,7 +13,7 @@ public class Album {
     private String Genero;
     private String imagen;
     private ArrayList<Cancion> canciones = new ArrayList<Cancion>();
-
+    private int id;
     /**
      * Obtiene el título del álbum.
      * 
@@ -104,7 +104,15 @@ public class Album {
         this.canciones = canciones;
     }
 
-    /**
+    public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
      * Constructor que inicializa un nuevo álbum con los detalles especificados.
      * 
      * @param titulo     título del álbum.
@@ -113,29 +121,37 @@ public class Album {
      * @param imagen     imagen del álbum.
      * @param canciones  lista de canciones del álbum.
      */
-    public Album(String titulo, int anyo, String genero, String imagen, ArrayList<Cancion> canciones) {
-        super();
-        this.titulo = titulo;
-        this.anyo = anyo;
-        Genero = genero;
-        this.imagen = imagen;
-        this.canciones = canciones;
-    }
+    public Album(String titulo, int anyo, String genero, String imagen, ArrayList<Cancion> canciones, int id) {
+		super();
+		this.titulo = titulo;
+		this.anyo = anyo;
+		Genero = genero;
+		this.imagen = imagen;
+		this.canciones = canciones;
+		this.id = id;
+	}
 
-    /**
+	/**
      * Constructor por defecto.
      */
     public Album() {
     }
-
-    /**
+    
+    public Album(String titulo, int anyo, String genero) {
+		this.titulo = titulo;
+		this.anyo = anyo;
+		Genero = genero;
+	}
+	/**
      * Devuelve una representación en formato cadena del álbum.
      * 
      * @return una cadena que representa el álbum.
      */
-    @Override
-    public String toString() {
-        return "Album [titulo=" + titulo + ", anyo=" + anyo + ", Genero=" + Genero + ", imagen=" + imagen
-                + ", canciones=" + canciones + "]";
-    }
+	@Override
+	public String toString() {
+		return "Album [titulo=" + titulo + ", anyo=" + anyo + ", Genero=" + Genero + ", imagen=" + imagen
+				+ ", canciones=" + canciones + ", id=" + id + "]";
+	}
+
+  
 }

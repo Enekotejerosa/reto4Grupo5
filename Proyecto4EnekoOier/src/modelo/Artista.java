@@ -9,6 +9,14 @@ public abstract class Artista {
 	private String nombreArtista;
 	private String descripcion;
 	private String imagen;
+	private int id;
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * Constructor que inicializa un nuevo artista con los detalles especificados.
@@ -82,4 +90,19 @@ public abstract class Artista {
 	 */
 	public Artista() {
 	}
+
+	public Artista(String nombreArtista, String descripcion, String imagen, int id) {
+		super();
+		this.nombreArtista = nombreArtista;
+		this.descripcion = descripcion;
+		this.imagen = imagen;
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "Artista [nombreArtista=" + nombreArtista + ", descripcion=" + descripcion + ", imagen=" + imagen
+				+ ", id=" + id + "]";
+	}
+	
 }
