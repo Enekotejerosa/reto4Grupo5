@@ -203,7 +203,7 @@ public class Metodos {
 		// TODO Auto-generated method stub
 		PlayList playlist = usuarioIniciado.getPlaylists().get(posicionSeleccionada);
 		File fichero = new File(
-				Paths.get("").toAbsolutePath().toString() + "\\src\\" + playlist.getTitulo().replace(" ", "") + ".csv");
+				Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\" + playlist.getTitulo().replace(" ", "") + ".csv");
 
 		try (FileWriter fic = new FileWriter(fichero)) {
 			if (!fichero.exists()) {
@@ -311,7 +311,7 @@ public class Metodos {
 	public void exportarCancion(Cancion cancion) {
 		// TODO Auto-generated method stub
 		File fichero = new File(
-				Paths.get("").toAbsolutePath().toString() + "\\src\\" + cancion.getNombre().replace(" ", "") + ".txt");
+				Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\" + cancion.getNombre().replace(" ", "") + ".txt");
 
 		try (FileWriter fic = new FileWriter(fichero)) {
 			if (!fichero.exists()) {
@@ -337,7 +337,7 @@ public class Metodos {
 	public void exportarPodcast(Podcast podcast) {
 		// TODO Auto-generated method stub
 		File fichero = new File(
-				Paths.get("").toAbsolutePath().toString() + "\\src\\" + podcast.getNombre().replace(" ", "") + ".txt");
+				Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\" + podcast.getNombre().replace(" ", "") + ".txt");
 
 		try (FileWriter fic = new FileWriter(fichero)) {
 			if (!fichero.exists()) {
