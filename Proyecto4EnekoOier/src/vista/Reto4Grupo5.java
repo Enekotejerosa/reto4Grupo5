@@ -115,6 +115,8 @@ public class Reto4Grupo5 extends JFrame {
 		String diaString = fecha_registro.format(formato);
 		String premiumfinal = fecha_finpremium.format(formato);
 
+		musicos = basededatos.conseguirArtistas();
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -352,118 +354,135 @@ public class Reto4Grupo5 extends JFrame {
 							metodos.borrarPanel(panelAlbumes);
 							cont = 0;
 							musicoElegido = musicos.get(Integer.parseInt(lblFoto.getToolTipText()));
-							do {
-								JLabel lblalbumFoto = new JLabel();
-								try {
-									lblalbumFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
-											+ "/img/" + musicoElegido.getAlbumes().get(cont).getImagen()));
-								} catch (Exception e1) {
+							if (!musicoElegido.getAlbumes().isEmpty()) {
+								do {
+									JLabel lblalbumFoto = new JLabel();
+									if (new File(Paths.get("").toAbsolutePath().toString() + "/img/"
+											+ musicoElegido.getAlbumes().get(cont).getImagen()).exists()) {
+										lblalbumFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
+												+ "/img/" + musicoElegido.getAlbumes().get(cont).getImagen()));
+									} else {
+										// Si no se encuentra la imagen, establece una imagen predeterminada
+										ImageIcon iconoPredeterminado = new ImageIcon(
+												imgPredeterminada.getScaledInstance(65, 63, Image.SCALE_SMOOTH));
+										lblalbumFoto.setIcon(iconoPredeterminado);
+									}
+									lblalbumFoto.addMouseListener(new MouseAdapter() {
+										public void mouseClicked(MouseEvent e) {
+
+											cont = 0;
+											metodos.cambiardePantalla(layeredPane, idCanciones);
+											metodos.borrarPanel(panelCanciones);
+											albumElegido = musicoElegido.getAlbumes()
+													.get(Integer.parseInt(lblalbumFoto.getToolTipText()));
+											Image img = new ImageIcon(Paths.get("").toAbsolutePath().toString()
+													+ "\\img\\" + albumElegido.getImagen()).getImage();
+											ImageIcon img2 = new ImageIcon(
+													img.getScaledInstance(108, 117, Image.SCALE_SMOOTH));
+											if (!albumElegido.getCanciones().isEmpty()) {
+												do {
+													JLabel lblFotoCancion = new JLabel();
+													lblFotoCancion.addMouseListener(new MouseAdapter() {
+														public void mouseClicked(MouseEvent e) {
+															metodos.cambiardePantalla(layeredPane, idReproducir);
+															audioElegido = Integer
+																	.parseInt(lblFotoCancion.getToolTipText());
+														}
+													});
+													if (new File(Paths.get("").toAbsolutePath().toString() + "\\img\\"
+															+ albumElegido.getImagen()).exists()) {
+														lblFotoCancion.setIcon(img2);
+													} else {
+														ImageIcon iconoPredeterminado = new ImageIcon(imgPredeterminada
+																.getScaledInstance(108, 117, Image.SCALE_SMOOTH));
+														lblFotoCancion.setIcon(iconoPredeterminado);
+													}
+
+													lblFotoCancion.setToolTipText(String.valueOf(cont));
+													lblFotoCancion.setBounds(122 + cambioX, 90 + cambioY, 108, 117);
+													panelCanciones.add(lblFotoCancion);
+
+													JLabel lblNombreCancion = new JLabel(
+															albumElegido.getCanciones().get(cont).getNombre());
+													lblNombreCancion.setFont(new Font("SansSerif", Font.BOLD, 14));
+													lblNombreCancion.setBounds(122 + cambioX, 208 + cambioY, 150, 32);
+													panelCanciones.add(lblNombreCancion);
+													if (cont % 2 == 0) {
+														cambioX = 293;
+													} else {
+														cambioX = 0;
+														cambioY = cambioY + 147;
+													}
+													cont++;
+												} while (cont != albumElegido.getCanciones().size());
+												cambioY = 0;
+												cont = 0;
+
+												JLabel lblNombre = new JLabel("<html><h1><i>"
+														+ albumElegido.getTitulo().toUpperCase() + "</i></h1></html>");
+												lblNombre.setFont(new Font("SansSerif", Font.PLAIN, 17));
+												lblNombre.setBounds(30, 30, 347, 58);
+												panelCanciones.add(lblNombre);
+
+											} else {
+												JOptionPane.showMessageDialog(null,
+														"El Album no tiene canciones actualmente, vuelva a la seleccion de artistas");
+
+											}
+
+										}
+									});
+									lblalbumFoto.setBounds(80, 81 + cambioY, 65, 63);
+									lblalbumFoto.setToolTipText(String.valueOf(cont));
+									panelAlbumes.add(lblalbumFoto);
+
+									JLabel labeltxtAlbum = new JLabel(musicoElegido.getAlbumes().get(cont).getTitulo());
+									labeltxtAlbum.setBounds(151, 107 + cambioY, 174, 22);
+									panelAlbumes.add(labeltxtAlbum);
+
+									cambioY = cambioY + 74;
+									cont++;
+								} while (cont != musicoElegido.getAlbumes().size());
+								cambioY = 0;
+								cont = 0;
+								JLabel lblfotoDescripcion = new JLabel("");
+								if (new File(Paths.get("").toAbsolutePath().toString() + "/img/"
+										+ musicoElegido.getNombreArtista().replace(" ", "") + "Desc.jpg").exists()) {
+									lblfotoDescripcion
+											.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
+													+ musicoElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
+								} else {
+
 									// Si no se encuentra la imagen, establece una imagen predeterminada
 									ImageIcon iconoPredeterminado = new ImageIcon(
-											imgPredeterminada.getScaledInstance(65, 63, Image.SCALE_SMOOTH));
-									lblalbumFoto.setIcon(iconoPredeterminado);
+											imgPredeterminada.getScaledInstance(188, 176, Image.SCALE_SMOOTH));
+									lblfotoDescripcion.setIcon(iconoPredeterminado);
 								}
-								lblalbumFoto.addMouseListener(new MouseAdapter() {
-									public void mouseClicked(MouseEvent e) {
-										cont = 0;
-										metodos.cambiardePantalla(layeredPane, idCanciones);
-										metodos.borrarPanel(panelCanciones);
-										albumElegido = musicoElegido.getAlbumes()
-												.get(Integer.parseInt(lblalbumFoto.getToolTipText()));
-										Image img = new ImageIcon(Paths.get("").toAbsolutePath().toString() + "\\img\\"
-												+ albumElegido.getImagen()).getImage();
-										ImageIcon img2 = new ImageIcon(
-												img.getScaledInstance(108, 117, Image.SCALE_SMOOTH));
+								lblfotoDescripcion.setBounds(405, 11, 188, 176);
+								panelAlbumes.add(lblfotoDescripcion);
 
-										do {
-											JLabel lblFotoCancion = new JLabel();
-											lblFotoCancion.addMouseListener(new MouseAdapter() {
-												public void mouseClicked(MouseEvent e) {
-													metodos.cambiardePantalla(layeredPane, idReproducir);
-													audioElegido = Integer.parseInt(lblFotoCancion.getToolTipText());
-												}
-											});
-											try {
-												lblFotoCancion.setIcon(img2);
-											} catch (Exception e1) {
-												// Si no se encuentra la imagen, establece una imagen predeterminada
-												ImageIcon iconoPredeterminado = new ImageIcon(imgPredeterminada
-														.getScaledInstance(108, 117, Image.SCALE_SMOOTH));
-												lblFotoCancion.setIcon(iconoPredeterminado);
-											}
-											lblFotoCancion.setToolTipText(String.valueOf(cont));
-											lblFotoCancion.setBounds(122 + cambioX, 90 + cambioY, 108, 117);
-											panelCanciones.add(lblFotoCancion);
+								JLabel lblNombre = new JLabel("<html><h1><i>"
+										+ musicoElegido.getNombreArtista().toUpperCase() + "</i></h1></html>");
+								lblNombre.setFont(new Font("SansSerif", Font.PLAIN, 17));
+								lblNombre.setBounds(29, 11, 257, 59);
+								panelAlbumes.add(lblNombre);
 
-											JLabel lblNombreCancion = new JLabel(
-													albumElegido.getCanciones().get(cont).getNombre());
-											lblNombreCancion.setFont(new Font("SansSerif", Font.BOLD, 14));
-											lblNombreCancion.setBounds(122 + cambioX, 208 + cambioY, 150, 32);
-											panelCanciones.add(lblNombreCancion);
-											if (cont % 2 == 0) {
-												cambioX = 293;
-											} else {
-												cambioX = 0;
-												cambioY = cambioY + 147;
-											}
-											cont++;
-										} while (cont != albumElegido.getCanciones().size());
-										cambioY = 0;
-										cont = 0;
+								JLabel lblResumenArtista = new JLabel(
+										"<html><p>" + musicoElegido.getDescripcion() + "</p></html>");
+								lblResumenArtista.setBounds(345, 168, 307, 235);
+								panelAlbumes.add(lblResumenArtista);
 
-										JLabel lblNombre = new JLabel("<html><h1><i>"
-												+ albumElegido.getTitulo().toUpperCase() + "</i></h1></html>");
-										lblNombre.setFont(new Font("SansSerif", Font.PLAIN, 17));
-										lblNombre.setBounds(30, 30, 347, 58);
-										panelCanciones.add(lblNombre);
-
-									}
-
-								});
-								lblalbumFoto.setBounds(80, 81 + cambioY, 65, 63);
-								lblalbumFoto.setToolTipText(String.valueOf(cont));
-								panelAlbumes.add(lblalbumFoto);
-
-								JLabel labeltxtAlbum = new JLabel(musicoElegido.getAlbumes().get(cont).getTitulo());
-								labeltxtAlbum.setBounds(151, 107 + cambioY, 174, 22);
-								panelAlbumes.add(labeltxtAlbum);
-
-								cambioY = cambioY + 74;
-								cont++;
-							} while (cont != musicoElegido.getAlbumes().size());
-							cambioY = 0;
-							cont = 0;
-							JLabel lblfotoDescripcion = new JLabel("");
-							try {
-								lblfotoDescripcion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
-										+ "/img/" + musicoElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
-							} catch (Exception e1) {
-
-								// Si no se encuentra la imagen, establece una imagen predeterminada
-								ImageIcon iconoPredeterminado = new ImageIcon(
-										imgPredeterminada.getScaledInstance(188, 176, Image.SCALE_SMOOTH));
-								lblfotoDescripcion.setIcon(iconoPredeterminado);
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"El Artista no tiene albumes actualmente, vuelva a la seleccion de artistas");
 							}
-							lblfotoDescripcion.setBounds(405, 11, 188, 176);
-							panelAlbumes.add(lblfotoDescripcion);
-
-							JLabel lblNombre = new JLabel("<html><h1><i>"
-									+ musicoElegido.getNombreArtista().toUpperCase() + "</i></h1></html>");
-							lblNombre.setFont(new Font("SansSerif", Font.PLAIN, 17));
-							lblNombre.setBounds(29, 11, 257, 59);
-							panelAlbumes.add(lblNombre);
-
-							JLabel lblResumenArtista = new JLabel(
-									"<html><p>" + musicoElegido.getDescripcion() + "</p></html>");
-							lblResumenArtista.setBounds(345, 168, 307, 235);
-							panelAlbumes.add(lblResumenArtista);
-
 						}
 					});
-					try {
+					if (new File(Paths.get("").toAbsolutePath().toString() + "/img/" + musicos.get(cont).getImagen())
+							.exists()) {
 						lblFoto.setIcon(new ImageIcon(
 								Paths.get("").toAbsolutePath().toString() + "/img/" + musicos.get(cont).getImagen()));
-					} catch (Exception e1) {
+					} else {
 						// Si no se encuentra la imagen, establece una imagen predeterminada
 						ImageIcon iconoPredeterminado = new ImageIcon(
 								imgPredeterminada.getScaledInstance(147, 131, Image.SCALE_SMOOTH));
@@ -540,10 +559,11 @@ public class Reto4Grupo5 extends JFrame {
 							cont = 0;
 
 							JLabel lblfotoArtista = new JLabel("");
-							try {
+							if (new File(Paths.get("").toAbsolutePath().toString() + "/img/"
+									+ podcasterElegido.getNombreArtista().replace(" ", "") + "Desc.jpg").exists()) {
 								lblfotoArtista.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
 										+ podcasterElegido.getNombreArtista().replace(" ", "") + "Desc.jpg"));
-							} catch (Exception e1) {
+							} else {
 								// Si no se encuentra la imagen, establece una imagen predeterminada
 								ImageIcon iconoPredeterminado = new ImageIcon(
 										imgPredeterminada.getScaledInstance(188, 176, Image.SCALE_SMOOTH));
@@ -565,10 +585,11 @@ public class Reto4Grupo5 extends JFrame {
 						}
 					});
 					System.out.println(podcasters.get(cont).getImagen());
-					try {
+					if (new File(Paths.get("").toAbsolutePath().toString() + "/img/"
+							+ podcasterElegido.getNombreArtista().replace(" ", "") + "Desc.jpg").exists()) {
 						lblFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
 								+ podcasters.get(cont).getImagen()));
-					} catch (Exception e1) {
+					} else {
 						// Si no se encuentra la imagen, establece una imagen predeterminada
 						ImageIcon iconoPredeterminado = new ImageIcon(
 								imgPredeterminada.getScaledInstance(147, 147, Image.SCALE_SMOOTH));
@@ -1039,14 +1060,33 @@ public class Reto4Grupo5 extends JFrame {
 							file = albumElegido.getCanciones().get(audioElegido).reproducir(lblDuracionSelec,
 									lblReproduciendoSelec, btnX05, btnX1, btnX15);
 							lblAlbumSelec.setText(albumElegido.getTitulo().toUpperCase());
-							lblFotoReproduccion.setIcon(img2);
+							if (new File(
+									Paths.get("").toAbsolutePath().toString() + "\\img\\" + albumElegido.getImagen())
+									.exists()) {
+								lblFotoReproduccion.setIcon(img2);
+							} else {
+								ImageIcon iconoPredeterminado = new ImageIcon(
+										imgPredeterminada.getScaledInstance(275, 210, Image.SCALE_SMOOTH));
+								lblFotoReproduccion.setIcon(iconoPredeterminado);
+							}
 						} else {
 							lblAlbum.setText("Podcast:");
 							file = podcasterElegido.getPodcasts().get(audioElegido).reproducir(lblDuracionSelec,
 									lblReproduciendoSelec, btnX05, btnX1, btnX15);
+
 							lblFotoReproduccion.setBounds(251, 129, 275, 210);
-							lblFotoReproduccion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
-									+ "/img/" + podcasterElegido.getImagen()));
+							if (new File(Paths.get("").toAbsolutePath().toString() + "/img/"
+									+ podcasterElegido.getNombreArtista().replace(" ", "") + "Desc.jpg").exists()) {
+								lblFotoReproduccion.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString()
+										+ "/img/" + podcasterElegido.getImagen()));
+							} else {
+								ImageIcon iconoPredeterminado = new ImageIcon(
+										imgPredeterminada.getScaledInstance(275, 210, Image.SCALE_SMOOTH));
+								lblFotoReproduccion.setIcon(iconoPredeterminado);
+							}
+						}
+						if (!file.exists()) {
+							file = new File(Paths.get("").toAbsolutePath().toString() + "\\musica\\predeterminado.wav");
 						}
 						AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
 						clip = AudioSystem.getClip();
@@ -1198,6 +1238,12 @@ public class Reto4Grupo5 extends JFrame {
 				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
 				elementoGestionado = 1;
 				basededatos.obtenerYActualizarLista(listaCrudMusica, elementoGestionado);
+				String[] artistas = new String[musicos.size()];
+				for (int i = 0; i != musicos.size(); i++) {
+					artistas[i] = musicos.get(i).getNombreArtista();
+				}
+
+				cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
 			}
 		});
 		btnGestArtistas.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -1209,6 +1255,12 @@ public class Reto4Grupo5 extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				elementoGestionado = 2;
 				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
+				String[] artistas = new String[musicos.size()];
+				for (int i = 0; i != musicos.size(); i++) {
+					artistas[i] = musicos.get(i).getNombreArtista();
+				}
+
+				cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
 			}
 		});
 		btnGestAlbumes.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -1220,6 +1272,12 @@ public class Reto4Grupo5 extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
 				elementoGestionado = 3;
+				String[] artistas = new String[musicos.size()];
+				for (int i = 0; i != musicos.size(); i++) {
+					artistas[i] = musicos.get(i).getNombreArtista();
+				}
+
+				cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
 			}
 		});
 		btnGestCanciones.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -1357,11 +1415,6 @@ public class Reto4Grupo5 extends JFrame {
 		panelCrudMusica.add(txtFInfo1Crud);
 		txtFInfo1Crud.setColumns(10);
 		txtFInfo1Crud.setVisible(false);
-		ArrayList<Musico> musicos = basededatos.conseguirArtistas();
-		String[] artistas = new String[musicos.size()];
-		for (int i = 0; i != musicos.size(); i++) {
-			artistas[i] = musicos.get(i).getNombreArtista();
-		}
 
 		JComboBox<String> cmbxCrudTipo = new JComboBox<String>();
 		cmbxCrudTipo.addActionListener(new ActionListener() {
@@ -1402,14 +1455,15 @@ public class Reto4Grupo5 extends JFrame {
 					DefaultListModel<String> listModel = new DefaultListModel<>();
 					listaCrudMusica.setModel(listModel);
 					// For para que aparezcan todos los albumes en la lista
-					for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
-							.get(cmbxCrudTipo.getSelectedIndex()).getCanciones().size(); i++)
-						listModel.addElement(musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
-								.get(cmbxCrudTipo.getSelectedIndex()).getCanciones().get(i).getNombre());
+					if (musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes() != null 
+							&& musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size() > 0) {
+						for (int i = 0; i != musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().size(); i++)
+							listModel.addElement(
+									musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(i).getTitulo());
+					}
 				}
 			}
 		});
-		cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
 		cmbxArtista.setVisible(false);
 		cmbxArtista.setBounds(397, 283, 259, 22);
 		panelCrudMusica.add(cmbxArtista);
@@ -1432,12 +1486,8 @@ public class Reto4Grupo5 extends JFrame {
 								JOptionPane.showMessageDialog(null, "El artista que deseas insertar ya existe");
 							} else {
 								basededatos.añadirElementoLista(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
-										cmbxCrudTipo, listaCrudMusica, elementoGestionado,
-										cmbxArtista, musicos);
-								Album albumNuevo = new Album(txtFNombreCrud.getText(),
-										Integer.parseInt(cmbxCrudTipo.getSelectedItem().toString()),
-										txtFInfo1Crud.getText());
-								musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().add(albumNuevo);
+										cmbxCrudTipo, listaCrudMusica, elementoGestionado, cmbxArtista, musicos);
+
 							}
 						} else if (elementoGestionado == 2) {
 							for (int i = 0; i < listaCrudMusica.getModel().getSize(); i++) {
@@ -1450,12 +1500,8 @@ public class Reto4Grupo5 extends JFrame {
 										"El album que deseas insertar ya existe para ese artista");
 							} else {
 								basededatos.añadirElementoLista(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
-										cmbxCrudTipo, listaCrudMusica, elementoGestionado,
-										cmbxArtista, musicos);
-								Album albumNuevo = new Album(txtFNombreCrud.getText(),
-										Integer.parseInt(cmbxCrudTipo.getSelectedItem().toString()),
-										txtFInfo1Crud.getText());
-								musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().add(albumNuevo);
+										cmbxCrudTipo, listaCrudMusica, elementoGestionado, cmbxArtista, musicos);
+
 							}
 						} else {
 							for (int i = 0; i < listaCrudMusica.getModel().getSize(); i++) {
@@ -1469,11 +1515,9 @@ public class Reto4Grupo5 extends JFrame {
 							} else {
 								if (metodos.formatoDuracion(txtFInfo1Crud.getText())) {
 									basededatos.añadirElementoLista(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
-											cmbxCrudTipo, listaCrudMusica, elementoGestionado,
-											cmbxArtista, musicos);
-								}else {
-									JOptionPane.showMessageDialog(null,
-											"Formato de duración Incorrecto");
+											cmbxCrudTipo, listaCrudMusica, elementoGestionado, cmbxArtista, musicos);
+								} else {
+									JOptionPane.showMessageDialog(null, "Formato de duración Incorrecto");
 								}
 
 							}
@@ -1493,10 +1537,13 @@ public class Reto4Grupo5 extends JFrame {
 									musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
 											.get(listaCrudMusica.getSelectedIndex()));
 						} else {
-							basededatos.modificarAlbum(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
-									cmbxCrudTipo.getSelectedItem(), listaCrudMusica,
-									musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes()
-											.get(listaCrudMusica.getSelectedIndex()));
+							if (metodos.formatoDuracion(txtFInfo1Crud.getText())) {
+								basededatos.modificarCancion(txtFNombreCrud.getText(), txtFInfo1Crud.getText(),
+										cmbxCrudTipo, listaCrudMusica, musicos, cmbxArtista);
+							} else {
+								JOptionPane.showMessageDialog(null, "Formato de duración Incorrecto");
+							}
+
 						}
 					}
 					metodos.ocultarComponentes(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud, txtFInfo1Crud,

@@ -5,6 +5,10 @@ package modelo;
  * sobre el nombre, ID de audio, duración y archivo de audio del elemento.
  */
 public abstract class Multimedia {
+	public Multimedia() {
+		// TODO Auto-generated constructor stub
+	}
+
 	private String nombre;
 	private int idAudio;
 	private String duracion;

@@ -27,6 +27,10 @@ public class Cancion extends Multimedia implements Reproducible {
 		// TODO Auto-generated constructor stub
 	}
 
+	public Cancion() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * Devuelve una representación en formato cadena de la canción.
 	 * 

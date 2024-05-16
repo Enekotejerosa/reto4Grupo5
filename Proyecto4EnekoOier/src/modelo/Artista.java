@@ -101,8 +101,7 @@ public abstract class Artista {
 
 	@Override
 	public String toString() {
-		return "Artista [nombreArtista=" + nombreArtista + ", descripcion=" + descripcion + ", imagen=" + imagen
-				+ ", id=" + id + "]";
+		return "Artista []";
 	}
 	
 }
