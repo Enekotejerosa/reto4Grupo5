@@ -26,7 +26,9 @@ public class Cancion extends Multimedia implements Reproducible {
 		super(nombre, idAudio, duracion, audio);
 		// TODO Auto-generated constructor stub
 	}
-
+	/**
+	 * constructor por defecto
+	 */
 	public Cancion() {
 		// TODO Auto-generated constructor stub
 	}

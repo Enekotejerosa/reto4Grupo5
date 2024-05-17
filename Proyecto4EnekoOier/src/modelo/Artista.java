@@ -13,7 +13,9 @@ public abstract class Artista {
 	public int getId() {
 		return id;
 	}
-
+/**
+ * establece el Id
+ */
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -90,7 +92,13 @@ public abstract class Artista {
 	 */
 	public Artista() {
 	}
-
+/**
+ * constructor completo
+ * @param nombreArtista
+ * @param descripcion
+ * @param imagen
+ * @param id
+ */
 	public Artista(String nombreArtista, String descripcion, String imagen, int id) {
 		super();
 		this.nombreArtista = nombreArtista;

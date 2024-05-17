@@ -113,26 +113,30 @@ public class Metodos {
 			String conficontrasena, String fecNac, String fecReg, String fecPremium, boolean premium) {
 		// TODO Auto-generated method stub
 		Usuarios usuarionuevo = new Usuarios();
-		if (premium) {
+		if (premium) {//crea el objeto dependiendo de si es premium o no
 			Usuarios nuevo_usuario = new Usuarios(nombre, apellido, usuario, contrasena, fecNac, fecReg, "premium");
 			usuarionuevo = nuevo_usuario;
 		} else {
 			Usuarios nuevo_usuario = new Usuarios(nombre, apellido, usuario, contrasena, fecNac, fecReg, "free");
 			usuarionuevo = nuevo_usuario;
 		}
-		boolean error = basededatos.comprobarUsuarios(usuarionuevo.getUsuario());
+		boolean error = basededatos.comprobarUsuarios(usuarionuevo.getUsuario());//da error si ese usuario ya existe
 		if (error) {
 			JOptionPane.showMessageDialog(null, "Usuario repetido, ponga otro");
 		}
-		if (!contrasena.equals(conficontrasena)) {
+		if (!contrasena.equals(conficontrasena)) {//da error si las contraseña no coinciden
 			error = true;
 			JOptionPane.showMessageDialog(null, "Las contraseñas son distintas");
 		}
-		if (nombre.isBlank() || apellido.isBlank() || usuario.isBlank() || contrasena.isBlank() || fecNac.isBlank()) {
+		if (nombre.isBlank() || apellido.isBlank() || usuario.isBlank() || contrasena.isBlank() || fecNac.isBlank()) {// da error como alguno de los campos este en blanco
 			error = true;
 			JOptionPane.showMessageDialog(null, "Todos los campos deben estar rellenados");
 		}
-		if (premium && !error) {
+		if (!formatofecha(fecNac)) {//da error si el formato de la fecha de nacimiento es incorrecto
+			error = true;
+			JOptionPane.showMessageDialog(null, "Fecha Incorrecta");
+		}
+		if (premium && !error) {//inserta el usuario de una manera u otra dependiendo de si es premiu o free
 			basededatos.insertarUsuario(usuarionuevo, fecPremium);
 			JOptionPane.showMessageDialog(null, "Usuario premium creado correctamente");
 			return true;
@@ -174,13 +178,14 @@ public class Metodos {
 		String nombreLista = JOptionPane.showInputDialog("Por favor, introduce un texto:");
 		System.out.println(nombreLista);
 		boolean error = false;
+		//comprueba que no exista ya la playlist
 		for (int i = 0; (i != usuarioIniciado.getPlaylists().size()) && error == false; i++) {
 			if (nombreLista.equalsIgnoreCase(usuarioIniciado.getPlaylists().get(i).getTitulo())) {
 				JOptionPane.showMessageDialog(null, "Ya hay una PlayList creada con el nombre de " + nombreLista);
 				error = true;
 			}
 		}
-		if (!error) {
+		if (!error) {//inserta la playlist
 			basededatos.insertarNuevaPlayList(usuarioIniciado, nombreLista, false, null);
 			DefaultListModel<String> model = (DefaultListModel<String>) listaPlaylist.getModel();
 			model.addElement(nombreLista);
@@ -202,8 +207,8 @@ public class Metodos {
 	public void exportarPlayList(Usuarios usuarioIniciado, int posicionSeleccionada) {
 		// TODO Auto-generated method stub
 		PlayList playlist = usuarioIniciado.getPlaylists().get(posicionSeleccionada);
-		File fichero = new File(
-				Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\" + playlist.getTitulo().replace(" ", "") + ".csv");
+		File fichero = new File(Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\"
+				+ playlist.getTitulo().replace(" ", "") + ".csv");
 
 		try (FileWriter fic = new FileWriter(fichero)) {
 			if (!fichero.exists()) {
@@ -225,7 +230,8 @@ public class Metodos {
 	}
 
 	/**
-	 * Importa una lista de reproducción desde un archivo CSV.
+	 * Importa una lista de reproducción desde un archivo CSV comprobando que el formato requerido es el correcto
+	 * y la añade al usuarioIniciado y a la lista
 	 *
 	 * @param usuarioIniciado usuario que está iniciado en el sistema.
 	 * @param listaPlaylist   lista de reproducción.
@@ -246,13 +252,13 @@ public class Metodos {
 				boolean repetido = false;
 				do {
 					if (tituloPlaylist.equals(usuarioIniciado.getPlaylists().get(i).getTitulo())) {
-						repetido = true;
+						repetido = true;//comprueba que la playlist a importar no tenga el mismo nombre que otra
 					}
 					i++;
 				} while (i != usuarioIniciado.getPlaylists().size() && repetido == false);
 				if (!repetido) {
 					int[] numeros = validarSegundaLinea(segundaLinea);
-					if (numeros.length != 0) {
+					if (numeros.length != 0) {//si la segunda linea tiene el formato correcto añadira la playlist
 						DefaultListModel<String> model = (DefaultListModel<String>) listaPlaylist.getModel();
 						model.addElement(tituloPlaylist);
 
@@ -310,8 +316,9 @@ public class Metodos {
 	 */
 	public void exportarCancion(Cancion cancion) {
 		// TODO Auto-generated method stub
-		File fichero = new File(
-				Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\" + cancion.getNombre().replace(" ", "") + ".txt");
+		//crea el fichero con el nombre de la cancion en la carpeta exportaciones
+		File fichero = new File(Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\"
+				+ cancion.getNombre().replace(" ", "") + ".txt");
 
 		try (FileWriter fic = new FileWriter(fichero)) {
 			if (!fichero.exists()) {
@@ -336,8 +343,9 @@ public class Metodos {
 	 */
 	public void exportarPodcast(Podcast podcast) {
 		// TODO Auto-generated method stub
-		File fichero = new File(
-				Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\" + podcast.getNombre().replace(" ", "") + ".txt");
+		//crea el fichero con el nombre del podcast en la carpeta exportaciones
+		File fichero = new File(Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\"
+				+ podcast.getNombre().replace(" ", "") + ".txt");
 
 		try (FileWriter fic = new FileWriter(fichero)) {
 			if (!fichero.exists()) {
@@ -405,13 +413,13 @@ public class Metodos {
 			JLabel lblCaracteristicaArtista, JTextField txtFNombreArtista, JTextField txtFDescripcionArtista,
 			JComboBox<String> comboBox, JButton btnArtistaAceptar) {
 		// TODO Auto-generated method stub
-		lblNombreArtista.setVisible(false);
-		lblDescripcionArtista.setVisible(false);
-		lblCaracteristicaArtista.setVisible(false);
-		txtFNombreArtista.setVisible(false);
-		txtFDescripcionArtista.setVisible(false);
-		comboBox.setVisible(false);
-		btnArtistaAceptar.setVisible(false);
+		lblNombreArtista.setVisible(true);
+		lblDescripcionArtista.setVisible(true);
+		lblCaracteristicaArtista.setVisible(true);
+		txtFNombreArtista.setVisible(true);
+		txtFDescripcionArtista.setVisible(true);
+		comboBox.setVisible(true);
+		btnArtistaAceptar.setVisible(true);
 	}
 
 	/**
@@ -443,6 +451,12 @@ public class Metodos {
 		cmbxArtista.setVisible(false);
 	}
 
+	/**
+	 * Crea un modelo de comboBox(Array de Strings) rellenado de opciones entre el
+	 * año de inicio y el año de fin(1980-2024)
+	 * 
+	 * @return devuelve el Array de Strings
+	 */
 	public String[] crearModeloAnyos() {
 		// TODO Auto-generated method stub
 		int añoInicio = 1980;
@@ -454,24 +468,22 @@ public class Metodos {
 		return años;
 	}
 
-	public void cargarCrudArtistas(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
-			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo) {
-		// TODO Auto-generated method stub
-		lblNombreCrud.setText("Nombre Artista:");
-		lblNombreCrud.setVisible(true);
-		lblInfo1Crud.setText("Descripcion Artista");
-		lblInfo1Crud.setVisible(true);
-		lblInfo2Crud.setText("Caracteristica");
-		lblInfo2Crud.setVisible(true);
-		txtFNombreCrud.setVisible(true);
-		txtFInfo1Crud.setVisible(true);
-		cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(new String[] { "Solista", "Grupo" }));
-		cmbxCrudTipo.setVisible(true);
-	}
-
-	public void cargarCrudAlbumesycancion(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
+	/**
+	 * rellena el panel de CrudMusica cuando se pulsa en gestionar artistas
+	 * 
+	 * @param lblNombreCrud
+	 * @param lblInfo1Crud
+	 * @param lblInfo2Crud
+	 * @param txtFNombreCrud     campo para insertar el nombre del artista
+	 * @param txtFInfo1Crud      campo para insertar la descripcion del artista
+	 * @param cmbxCrudTipo       campo para seleccionar el tipo de artista
+	 * @param lblCrudArtista
+	 * @param cmbxArtista
+	 * @param elementoGestionado
+	 */
+	public void cargarCrudMusica(JLabel lblNombreCrud, JLabel lblInfo1Crud, JLabel lblInfo2Crud,
 			JTextField txtFNombreCrud, JTextField txtFInfo1Crud, JComboBox<String> cmbxCrudTipo, JLabel lblCrudArtista,
-			JComboBox<String> cmbxArtista, int accion) {
+			JComboBox<String> cmbxArtista, int elementoGestionado) {
 		// TODO Auto-generated method stub
 		lblNombreCrud.setVisible(true);
 		lblInfo1Crud.setVisible(true);
@@ -479,22 +491,37 @@ public class Metodos {
 		txtFNombreCrud.setVisible(true);
 		txtFInfo1Crud.setVisible(true);
 		cmbxCrudTipo.setVisible(true);
-		lblCrudArtista.setVisible(true);
-		cmbxArtista.setVisible(true);
-		if (accion == 2) {
+		//dependiendo de cual sea el elemento a gestionar rellena algunos elementos y visualiza otros
+		if (elementoGestionado == 2) {
 			lblNombreCrud.setText("Nombre Album:");
 			lblInfo1Crud.setText("Genero");
 			lblInfo2Crud.setText("Año");
 			cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(crearModeloAnyos()));
-		} else {
+			lblCrudArtista.setVisible(true);
+			cmbxArtista.setVisible(true);
+		} else if (elementoGestionado == 3) {
 			lblNombreCrud.setText("Nombre Cancion:");
 			lblInfo1Crud.setText("Duracion");
 			lblInfo2Crud.setText("Album");
 			cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>());
-
+			lblCrudArtista.setVisible(true);
+			cmbxArtista.setVisible(true);
+		} else {
+			lblInfo2Crud.setText("Caracteristica");
+			lblInfo1Crud.setText("Descripcion Artista");
+			lblNombreCrud.setText("Nombre Artista:");
+			cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(new String[] { "Solista", "Grupo" }));
 		}
 	}
 
+	/**
+	 * Metodo que comprueba el relleno del campo Duracion esta en el formato
+	 * ##:##:## y que no sobrepase los limites horarios
+	 * 
+	 * @param duracion string a revisar
+	 * @return devuelve false si esta vacio, si no sigue el patron y si supera el
+	 *         limite horario, devuelve true si cumple todas las condiciones
+	 */
 	public boolean formatoDuracion(String duracion) {
 		if (duracion == null) {
 			return false;
@@ -511,6 +538,35 @@ public class Metodos {
 
 		// Comprobar rangos válidos
 		return horas >= 0 && horas <= 23 && minutos >= 0 && minutos <= 59 && segundos >= 0 && segundos <= 59;
+	}
+
+	/**
+	 * Metodo qe comprueba si el campo de fecha de nacimiento a la hora del registro
+	 * tiene formato de fecha valido
+	 * 
+	 * @param duracion string a revisar
+	 * @return devuelve false si la fecha es incorrecta
+	 */
+	public boolean formatofecha(String fecNac) {
+		String[] partes = fecNac.split("-");
+		int anyo = Integer.parseInt(partes[0]);
+		int mes = Integer.parseInt(partes[1]);
+		int dia = Integer.parseInt(partes[2]);
+		//devuelve true si la fecha es valida, false si no
+		if (anyo <= 2024 && anyo >= 1970) {
+			
+			if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12) {
+				return dia > 0 && dia <= 31;
+			} else if (mes == 4 || mes == 6 || mes == 9 || mes == 11) {
+				return dia > 0 && dia <= 30;
+			} else if (mes == 2) {
+				return dia > 0 && dia <= 28;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 }

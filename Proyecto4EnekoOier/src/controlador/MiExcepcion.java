@@ -1,14 +1,16 @@
 package controlador;
 
-public class MiExcepcion extends Exception {
-	
+import javax.swing.JOptionPane;
+
+import com.google.protobuf.TextFormat.ParseException;
+
+public class MiExcepcion extends ParseException {
+
 	private static final long serialVersionUID = 1L;
 
-	MiExcepcion() {
-		super();
+	public MiExcepcion(String mensaje, int errorOffset) {
+		super(mensaje);
+		JOptionPane.showMessageDialog(null, mensaje);
 	}
 
-	MiExcepcion(String mensaje) {
-		System.out.println("Imagen no encontrada, se inserta la imagen predeterminada");
-	}
 }

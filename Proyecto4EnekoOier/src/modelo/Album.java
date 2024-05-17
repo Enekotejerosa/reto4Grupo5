@@ -103,11 +103,17 @@ public class Album {
     public void setCanciones(ArrayList<Cancion> canciones) {
         this.canciones = canciones;
     }
-
+/**
+ * obtiene el id del album
+ * @return
+ */
     public int getId() {
 		return id;
 	}
-
+/**
+ * establece el id de album
+ * @param id
+ */
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -136,7 +142,12 @@ public class Album {
      */
     public Album() {
     }
-    
+    /**
+     * Constructor especial
+     * @param titulo
+     * @param anyo
+     * @param genero
+     */
     public Album(String titulo, int anyo, String genero) {
 		this.titulo = titulo;
 		this.anyo = anyo;

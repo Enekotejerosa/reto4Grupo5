@@ -749,16 +749,16 @@ public class BasedeDatos {
 	}
 
 	/**
-	 * Añade un nuevo artista a la base de datos.
+	 * Añade el elemento seleccionado a su/s tabla/s correspondiente/s, añade un
+	 * objeto al arrayList de musicos para poder usarlo despues en modificar
 	 *
-	 * @param nombre             nombre del nuevo artista.
-	 * @param atributo           descripción del nuevo artista.
-	 * @param cmbxCrudTipo
-	 * @param selectedItem       tipo de artista seleccionado.
+	 * @param nombre             nombre del nuevo elemento
+	 * @param atributo           atributo del nuevo elemento
+	 * @param cmbxCrudTipo       segundo atributo del nuevo elemento
 	 * @param lista              JList que muestra la lista de artistas.
-	 * @param cmbxArtista
-	 * @param elementoGestionado
-	 * @param musicos
+	 * @param cmbxArtista        comboBox con todos los artistas
+	 * @param elementoGestionado elemento a gestionar
+	 * @param musicos            ArrayList de objetos musico usado para modificar
 	 */
 	public void añadirElementoLista(String nombre, String atributo, JComboBox<String> cmbxCrudTipo, JList<String> lista,
 			int elementoGestionado, JComboBox<String> cmbxArtista, ArrayList<Musico> musicos) {
@@ -827,6 +827,13 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * Metodo para obtener el id de un Musico teniendo su nombre y atributo
+	 * 
+	 * @param nombre
+	 * @param atributo
+	 * @return devuelve el id
+	 */
 	private int obtenerIdMusico(String nombre, String atributo) {
 		// TODO Auto-generated method stub
 		try {
@@ -849,6 +856,13 @@ public class BasedeDatos {
 		return 0;
 	}
 
+	/**
+	 * Metodo para obtener el id de un Album teniendo su nombre y id del musico
+	 * 
+	 * @param nombre
+	 * @param id
+	 * @return devuelve el id
+	 */
 	private int obtenerIdAlbum(String nombre, int id) {
 		// TODO Auto-generated method stub
 		try {
@@ -871,6 +885,12 @@ public class BasedeDatos {
 		return 0;
 	}
 
+	/**
+	 * Metodo para insertar una cancion
+	 * 
+	 * @param idAlbum id del album de la cancion
+	 * @param idAudio id de la cancion
+	 */
 	private void insertarCancion(int idAlbum, int idAudio) {
 		// TODO Auto-generated method stub
 		try {
@@ -888,6 +908,13 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * Metodo para obtener el id de un Audio teniendo su nombre y atributo
+	 * 
+	 * @param nombreArtista
+	 * @param duracion
+	 * @return devuelve el id
+	 */
 	private int obtenerIdAudio(String nombreArtista, String duracion) {
 		// TODO Auto-generated method stub
 		try {
@@ -1117,6 +1144,12 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * rellena la tabla con los datos de todas las canciones y podcasts con mas de
+	 * una vez añadidas a una playlist en orden descendente
+	 * 
+	 * @param tablaEstadisticasPanel
+	 */
 	public void obtenerTopPlaylist(JTable tablaEstadisticasPanel) {
 		int cont = 1;
 		if (tablaEstadisticasPanel.getModel() instanceof DefaultTableModel) {
@@ -1149,6 +1182,12 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * Rellena la tabla de las canciones y podcast mas veces reproducidos en orden
+	 * descendente
+	 * 
+	 * @param tablaEstadisticasPanel
+	 */
 	public void obtenerMasEscuchadas(JTable tablaEstadisticasPanel) {
 		int cont = 1;
 		if (tablaEstadisticasPanel.getModel() instanceof DefaultTableModel) {
@@ -1182,6 +1221,14 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * rellena la tabla de las canciones con sus datos que contiene una plyalist de
+	 * un cliente en especifico
+	 * 
+	 * @param tablaPlaylists
+	 * @param idCliente
+	 * @param nombreLista
+	 */
 	public void mostrarInfoPlaylist(JTable tablaPlaylists, int idCliente, String nombreLista) {
 		int cont = 1;
 		if (tablaPlaylists.getModel() instanceof DefaultTableModel) {
@@ -1217,6 +1264,14 @@ public class BasedeDatos {
 
 	}
 
+	/**
+	 *  metodo que modifica de la base de datos una linea de la tabla album
+	 * @param nombre nuevo nombre
+	 * @param genero nuevo genero
+	 * @param anyo nuevo anyo
+	 * @param listaCrudMusica lista donde aparecen todos los albumes para modificar el nombre del seleccionado
+	 * @param album objeto a modificar
+	 */
 	public void modificarAlbum(String nombre, String genero, Object anyo, JList<String> listaCrudMusica, Album album) {
 		// TODO Auto-generated method stub
 		try {
@@ -1242,7 +1297,15 @@ public class BasedeDatos {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 	}
-
+	/**
+	 * Metodo para modificar un objeto cancion de la base de datos
+	 * @param nombre nuevo nombre	
+	 * @param duracion nueva duracion
+	 * @param cmbxCrudTipo tipo de artista
+	 * @param listaCrudMusica lista a modificar
+	 * @param musicos arrayList de musicos
+	 * @param cmbxArtista artista seleccionado
+	 */
 	public void modificarCancion(String nombre, String duracion, JComboBox<String> cmbxCrudTipo,
 			JList<String> listaCrudMusica, ArrayList<Musico> musicos, JComboBox<String> cmbxArtista) {
 		// TODO Auto-generated method stub
