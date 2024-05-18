@@ -37,8 +37,8 @@ import controlador.MiExcepcion;
 import modelo.Cancion;
 import modelo.Album;
 import modelo.Musico;
+import modelo.Podcast;
 import modelo.Podcaster;
-import modelo.Tipo;
 import modelo.Usuarios;
 import modelo.BasedeDatos;
 import java.awt.CardLayout;
@@ -60,13 +60,16 @@ public class Reto4Grupo5 extends JFrame {
 	private JFormattedTextField txtFRegistroFecNac;
 	private JPasswordField pswFRegistroContra, pswFRegistroConfContra;
 	private JTextField txtFRegistroNombre, txtFRegistroUsuario, txtFRegistroApellido, txtFNombreCancionMenu;
-	private JButton btnRegistroGuardar, btnRegistroEditar, btnReproducir, btnAdelanteCancion, btnAtrasCancion;
+	private JButton btnRegistroGuardar, btnRegistroEditar, btnReproducir, btnAdelanteCancion, btnAtrasCancion,
+			btnGestArtistas, btnGestAlbumes, btnGestCanciones, btnGestPodcasts, btnGestPodcaster, btnAceptarPodcaster;
 	private JPanel panelArtistas, panelAlbumes, panelCanciones, panelReproduccion, panelPlaylist, panelMenu,
-			panelCrudMusica, panelBtnMenu, panelAdmin;
-	private JLabel lblReproduciendoSelec, lblAlbumSelec;
-	private JList<String> listaPlaylist, listaMenu, listaCrudMusica;
+			panelCrudMusica, panelBtnMenu, panelAdmin, panelGestPodcaster, panelMenuGestMusica, panelEstadisticas;
+	private JLabel lblReproduciendoSelec, lblAlbumSelec, lblNombreCrudPodcaster, lblInfo1CrudPodcaster,
+			lblInfo2CrudPodcaster;
+	private JList<String> listaPlaylist, listaMenu, listaCrudMusica, listaPodcaster;
 	private int elementoGestionado = 0;
 	private static Clip clip;
+	private String[] podcasterTotales;
 	private static long clipTimePosition = 0;
 	private Usuarios usuarioIniciado = null;
 	private ArrayList<Musico> musicos = new ArrayList<Musico>();
@@ -77,6 +80,11 @@ public class Reto4Grupo5 extends JFrame {
 	private int audioElegido = -1, posicionPodcast = -1, opcionEscogida = -1;
 	private int accion = 0;
 	private JComboBox<String> cmbxArtista;
+	private JTextField txtFNombreCrudPodcaster;
+	private JTextField txtFInfo2CrudPodcaster;
+	private JTextField txtFInfo1CrudPodcaster;
+	private JLabel lblInfo3CrudPodcast;
+	private JComboBox<String> cmbxCrudPodcast;
 
 	/**
 	 * Launch the application.
@@ -109,10 +117,10 @@ public class Reto4Grupo5 extends JFrame {
 				.getImage();
 		String imagenArtistas1 = "\\img\\imagenArtistas1.jpg", imagenArtistas2 = "\\img\\imagenArtistas2.jpg";
 		String idMenu = "Menu", idAlbum = "Album", idCanciones = "Canciones", idPlaylist = "Playlist",
-				idReproducir = "Reproducir", idGestion = "Gestion", idMenuGestMusica = "Menu Gestion Musica",
+				idReproducir = "Reproducir", idAdmin = "Admin", idMenuGestMusica = "Menu Gestion Musica",
 				idbtnMenu = "btnMenu", idEstadisticas = "Estadisticas", idPanelCrudMusica = "CrudMusica",
-				idLogin = "Interfaz de Login", idRegistro = "Registro", idArtistas = "Interfaz de elección del artista";
-		;
+				idLogin = "Interfaz de Login", idRegistro = "Registro", idArtistas = "Interfaz de elección del artista",
+				idGestionPodcaster = "Gestion Podcaster";
 		LocalDate fecha_registro = LocalDate.now();
 		LocalDate fecha_finpremium = fecha_registro.plusYears(1);
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -184,10 +192,13 @@ public class Reto4Grupo5 extends JFrame {
 					btnAtras.setEnabled(false);
 					btnPerfil.setEnabled(false);
 					btnPerfil.setText("Inicia Sesion");
-				} else if (panelCrudMusica.isVisible()) {
+				} else if (panelCrudMusica.isVisible() || panelGestPodcaster.isVisible()
+						|| panelEstadisticas.isVisible()) {
 					metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
 				} else if (panelBtnMenu.isVisible()) {
 					metodos.cambiardePantalla(layeredPane, idReproducir);
+				} else if (panelMenuGestMusica.isVisible()) {
+					metodos.cambiardePantalla(layeredPane, idAdmin);
 				}
 			}
 
@@ -326,14 +337,15 @@ public class Reto4Grupo5 extends JFrame {
 								&& new String(pswFContra.getPassword()).equals("123"))) {
 					JOptionPane.showMessageDialog(null, "Sesión iniciada correctamente");
 
-					if (!(cmbxTipo.getSelectedItem().equals(admin) && txtFUsuario.getText().equals("admin")
-							&& new String(pswFContra.getPassword()).equals("123")
+					if ((!(cmbxTipo.getSelectedItem().toString().equals(admin) && txtFUsuario.getText().equals("admin")
+							&& new String(pswFContra.getPassword()).equals("123"))
 							&& cmbxTipo.getSelectedItem().equals("CLIENTE"))) {
+						System.out.println(cmbxTipo.getSelectedItem().toString().equals(admin));
 						btnPerfil.setText(usuarioIniciado.getUsuario());
 						btnPerfil.setEnabled(true);
 						metodos.cambiardePantalla(layeredPane, idMenu);
 					} else if (cmbxTipo.getSelectedItem().equals(admin)) {
-						metodos.cambiardePantalla(layeredPane, idGestion);
+						metodos.cambiardePantalla(layeredPane, idAdmin);
 					}
 
 					btnAtras.setEnabled(true);
@@ -1041,40 +1053,24 @@ public class Reto4Grupo5 extends JFrame {
 						clip.stop();
 					}
 
-					if (!usuarioIniciado.getTipoCliente().equals(Tipo.premium)) {// si el usuario no es premium debera
-																					// escuchar un anuncio
+					if (usuarioIniciado.getTipoCliente().equals("free")) {// si el usuario no es premium debera
+						Random random = new Random(); // escuchar un anuncio
 						try {
-							Random random = new Random();
-							int numeroAleatorio = random.nextInt(6) + 1;
-							File file = new File(Paths.get("").toAbsolutePath().toString() + "\\musica\\anuncio"
-									+ numeroAleatorio + ".wav");// reproduce un anuncio aleatorio
-							AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-							clip = AudioSystem.getClip();
-							clip.open(audioInputStream);
-							clip.start();
-							btnAtrasCancion.setEnabled(false);
-							btnAdelanteCancion.setEnabled(false);
-							btnReproducir.setEnabled(false);
-							btnMeGusta.setEnabled(false);
-							btnMenu.setEnabled(false);
-							Thread.sleep(clip.getMicrosecondLength() / 1000);
-							btnAtrasCancion.setEnabled(true);
-							btnAdelanteCancion.setEnabled(true);
-							btnReproducir.setEnabled(true);
-							btnMeGusta.setEnabled(true);
-							btnMenu.setEnabled(true);
-							int audioAleatorio = 0;
-							if (opcionEscogida == 0) {// asigna una cancion/podcast aleatoria
-								audioAleatorio = random.nextInt(albumElegido.getCanciones().size());
-							} else {
-								audioAleatorio = random.nextInt(podcasterElegido.getPodcasts().size());
-							}
-							audioElegido = audioAleatorio;
-						} catch (Exception e1) {
+							metodos.reproducirAnuncio(clip, btnAtrasCancion, btnAdelanteCancion, btnReproducir,
+									btnMeGusta, btnMenu, random);
+						} catch (MiExcepcion e1) {
+							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 
-					} else if (usuarioIniciado.getTipoCliente().equals(Tipo.premium)) {
+						int audioAleatorio = 0;
+						if (opcionEscogida == 0) {// asigna una cancion/podcast aleatoria
+							audioAleatorio = random.nextInt(albumElegido.getCanciones().size());
+						} else {
+							audioAleatorio = random.nextInt(podcasterElegido.getPodcasts().size());
+						}
+						audioElegido = audioAleatorio;
+					} else {
 						audioElegido--;
 					}
 					// si el btn de adelante estaba deshabilitado al pusar en anterior se volvera a
@@ -1109,40 +1105,25 @@ public class Reto4Grupo5 extends JFrame {
 						clip.stop();
 					}
 
-					if (!usuarioIniciado.getTipoCliente().equals(Tipo.premium)) {// si el usuario no es premium debera
-						// escuchar un anuncio
+					if (usuarioIniciado.getTipoCliente().equals("free")) {// si el usuario no es premium debera
+						Random random = new Random(); // escuchar un anuncio
 						try {
-							Random random = new Random();
-							int numeroAleatorio = random.nextInt(6) + 1;
-							File file = new File(Paths.get("").toAbsolutePath().toString() + "\\musica\\anuncio"
-									+ numeroAleatorio + ".wav");// reproduce un anuncio aleatorio
-							AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-							clip = AudioSystem.getClip();
-							clip.open(audioInputStream);
-							clip.start();
-							btnAtrasCancion.setEnabled(false);
-							btnAdelanteCancion.setEnabled(false);
-							btnReproducir.setEnabled(false);
-							btnMeGusta.setEnabled(false);
-							btnMenu.setEnabled(false);
-							Thread.sleep(clip.getMicrosecondLength() / 1000);
-							btnAtrasCancion.setEnabled(true);
-							btnAdelanteCancion.setEnabled(true);
-							btnReproducir.setEnabled(true);
-							btnMeGusta.setEnabled(true);
-							btnMenu.setEnabled(true);
-							int audioAleatorio = 0;
-							if (opcionEscogida == 0) {// asigna una cancion/podcast aleatoria
-								audioAleatorio = random.nextInt(albumElegido.getCanciones().size());
-							} else {
-								audioAleatorio = random.nextInt(podcasterElegido.getPodcasts().size());
-							}
-							audioElegido = audioAleatorio;
-						} catch (Exception e1) {
+							metodos.reproducirAnuncio(clip, btnAtrasCancion, btnAdelanteCancion, btnReproducir,
+									btnMeGusta, btnMenu, random);
+						} catch (MiExcepcion e1) {
+							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-					} else if (usuarioIniciado.getTipoCliente().equals(Tipo.premium)) {
-						audioElegido--;
+
+						int audioAleatorio = 0;
+						if (opcionEscogida == 0) {// asigna una cancion/podcast aleatoria
+							audioAleatorio = random.nextInt(albumElegido.getCanciones().size());
+						} else {
+							audioAleatorio = random.nextInt(podcasterElegido.getPodcasts().size());
+						}
+						audioElegido = audioAleatorio;
+					} else {
+						audioElegido++;
 					}
 					// si el btn de atras estaba deshabilitado al pusar en siguiente se volvera a
 					// habilitar
@@ -1286,13 +1267,18 @@ public class Reto4Grupo5 extends JFrame {
 
 		panelAdmin = new JPanel();
 		panelAdmin.setBackground(new Color(215, 223, 234));
-		layeredPane.add(panelAdmin, idGestion);
+		layeredPane.add(panelAdmin, idAdmin);
 		panelAdmin.setLayout(null);
 
 		JButton btnGestMusica = new JButton("Gestionar musica");
 		btnGestMusica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
+				btnGestPodcasts.setVisible(false);
+				btnGestPodcaster.setVisible(false);
+				btnGestArtistas.setVisible(true);
+				btnGestAlbumes.setVisible(true);
+				btnGestCanciones.setVisible(true);
 			}
 		});
 		btnGestMusica.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -1300,6 +1286,16 @@ public class Reto4Grupo5 extends JFrame {
 		panelAdmin.add(btnGestMusica);
 
 		JButton btnGestPodcats = new JButton("Gestionar podcast");
+		btnGestPodcats.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
+				btnGestPodcasts.setVisible(true);
+				btnGestPodcaster.setVisible(true);
+				btnGestArtistas.setVisible(false);
+				btnGestAlbumes.setVisible(false);
+				btnGestCanciones.setVisible(false);
+			}
+		});
 		btnGestPodcats.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnGestPodcats.setBounds(263, 199, 167, 23);
 		panelAdmin.add(btnGestPodcats);
@@ -1416,12 +1412,12 @@ public class Reto4Grupo5 extends JFrame {
 		listaPlaylist.setBounds(61, 44, 250, 354);
 		panelPlaylist.add(listaPlaylist);
 		// Panel Menu GestionarMusica
-		JPanel panelMenuGestMusica = new JPanel();
+		panelMenuGestMusica = new JPanel();
 		panelMenuGestMusica.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelMenuGestMusica, idMenuGestMusica);
 		panelMenuGestMusica.setLayout(null);
 
-		JButton btnGestArtistas = new JButton("Gestionar artistas");
+		btnGestArtistas = new JButton("Gestionar artistas");
 		btnGestArtistas.addActionListener(new ActionListener() {
 			/**
 			 * entra en el panel de gestion de artistas y establece el comboBox
@@ -1442,7 +1438,7 @@ public class Reto4Grupo5 extends JFrame {
 		btnGestArtistas.setBounds(43, 141, 178, 94);
 		panelMenuGestMusica.add(btnGestArtistas);
 
-		JButton btnGestAlbumes = new JButton("Gestionar Albumes");
+		btnGestAlbumes = new JButton("Gestionar Albumes");
 		btnGestAlbumes.addActionListener(new ActionListener() {
 			/**
 			 * entra en el panel de gestion de albumes y establece el comboBox
@@ -1462,7 +1458,7 @@ public class Reto4Grupo5 extends JFrame {
 		btnGestAlbumes.setBounds(231, 141, 196, 94);
 		panelMenuGestMusica.add(btnGestAlbumes);
 
-		JButton btnGestCanciones = new JButton("Gestionar canciones");
+		btnGestCanciones = new JButton("Gestionar canciones");
 		btnGestCanciones.addActionListener(new ActionListener() {
 			/**
 			 * entra en el panel de gestion de canciones y establece el comboBox
@@ -1481,6 +1477,35 @@ public class Reto4Grupo5 extends JFrame {
 		btnGestCanciones.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnGestCanciones.setBounds(437, 141, 196, 94);
 		panelMenuGestMusica.add(btnGestCanciones);
+
+		btnGestPodcaster = new JButton("Gestionar Podcaster");
+		btnGestPodcaster.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiardePantalla(layeredPane, idGestionPodcaster);
+				elementoGestionado = 4;
+				basededatos.obtenerYActualizarListaPodcaster(listaPodcaster, elementoGestionado);
+				metodos.ocultarComponentesPodcaster(lblNombreCrudPodcaster, lblInfo1CrudPodcaster,
+						lblInfo2CrudPodcaster, lblInfo3CrudPodcast, txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster,
+						txtFInfo2CrudPodcaster, btnAceptarPodcaster, cmbxCrudPodcast);
+			}
+		});
+		btnGestPodcaster.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnGestPodcaster.setBounds(137, 246, 178, 94);
+		panelMenuGestMusica.add(btnGestPodcaster);
+
+		btnGestPodcasts = new JButton("Gestionar Podcasts");
+		btnGestPodcasts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiardePantalla(layeredPane, idGestionPodcaster);
+				elementoGestionado = 5;
+				metodos.ocultarComponentesPodcaster(lblNombreCrudPodcaster, lblInfo1CrudPodcaster,
+						lblInfo2CrudPodcaster, lblInfo3CrudPodcast, txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster,
+						txtFInfo2CrudPodcaster, btnAceptarPodcaster, cmbxCrudPodcast);
+			}
+		});
+		btnGestPodcasts.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnGestPodcasts.setBounds(342, 246, 178, 94);
+		panelMenuGestMusica.add(btnGestPodcasts);
 
 		//////////////////////////////////////// Panel Boton Menu
 		//////////////////////////////////////// //////////////////////////////////////////////////////////
@@ -1537,7 +1562,7 @@ public class Reto4Grupo5 extends JFrame {
 		panelBtnMenu.add(btnExportarCancion);
 
 ////////////////////////////////////////////Panel Estadisticas////////////////////////////////////////////////////
-		JPanel panelEstadisticas = new JPanel();
+		panelEstadisticas = new JPanel();
 		panelEstadisticas.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelEstadisticas, idEstadisticas);
 		panelEstadisticas.setLayout(null);
@@ -1875,6 +1900,7 @@ public class Reto4Grupo5 extends JFrame {
 		listaCrudMusica.addMouseListener(new MouseAdapter() {
 			/**
 			 * al clickar encima de un elemento de la lista pondra sus datos en los campos
+			 * 
 			 * @param e
 			 */
 			public void mouseClicked(MouseEvent e) {
@@ -1893,6 +1919,256 @@ public class Reto4Grupo5 extends JFrame {
 			}
 		});
 		scrollPane.setViewportView(listaCrudMusica);
+
+		panelGestPodcaster = new JPanel();
+		panelGestPodcaster.setBackground(new Color(215, 223, 234));
+		layeredPane.add(panelGestPodcaster, idGestionPodcaster);
+		panelGestPodcaster.setLayout(null);
+
+		listaPodcaster = new JList<String>();
+		listaPodcaster.setBounds(77, 46, 211, 324);
+		panelGestPodcaster.add(listaPodcaster);
+
+		listaPodcaster.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (elementoGestionado == 4 && accion == 1) {
+					Podcaster podcasterSeleccionado = podcasters.get(cmbxCrudPodcast.getSelectedIndex());
+					txtFNombreCrudPodcaster.setText(podcasterSeleccionado.getNombreArtista());
+					txtFInfo1CrudPodcaster.setText(podcasterSeleccionado.getGenero());
+					txtFInfo2CrudPodcaster.setText(podcasterSeleccionado.getDescripcion());
+				} else if ((elementoGestionado == 5 && accion == 2)) {
+					Podcast podcastSeleccionado = podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getPodcasts()
+							.get(listaPodcaster.getSelectedIndex());
+					txtFNombreCrudPodcaster.setText(podcastSeleccionado.getNombre());
+					txtFInfo1CrudPodcaster.setText(podcastSeleccionado.getDuracion());
+					txtFInfo2CrudPodcaster.setText(podcastSeleccionado.getColaboradores());
+				}
+			}
+		});
+
+		JButton btnBorrarPodcaster = new JButton("Borrar");
+		btnBorrarPodcaster.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				if (listaPodcaster.isSelectionEmpty()) {
+					JOptionPane.showMessageDialog(null, "Debes seleccionar algo");
+				} else {
+					basededatos.borrarElementosListaPodcaster(listaPodcaster, elementoGestionado);
+
+				}
+
+			}
+		});
+		btnBorrarPodcaster.setBounds(536, 43, 89, 23);
+		panelGestPodcaster.add(btnBorrarPodcaster);
+
+		lblNombreCrudPodcaster = new JLabel("");
+		lblNombreCrudPodcaster.setVisible(false);
+		lblNombreCrudPodcaster.setBounds(364, 77, 188, 14);
+		panelGestPodcaster.add(lblNombreCrudPodcaster);
+
+		lblInfo1CrudPodcaster = new JLabel("");
+		lblInfo1CrudPodcaster.setVisible(false);
+		lblInfo1CrudPodcaster.setBounds(364, 133, 188, 14);
+		panelGestPodcaster.add(lblInfo1CrudPodcaster);
+
+		lblInfo2CrudPodcaster = new JLabel("");
+		lblInfo2CrudPodcaster.setVisible(false);
+		lblInfo2CrudPodcaster.setBounds(364, 189, 188, 14);
+		panelGestPodcaster.add(lblInfo2CrudPodcaster);
+
+		btnAceptarPodcaster = new JButton("ACEPTAR");
+		btnAceptarPodcaster.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				// En el caso de gestionar los podcasters con su genero y descripcion
+				if (elementoGestionado == 4) {
+					if (accion == 1) {
+						if (!txtFNombreCrudPodcaster.getText().isEmpty() || !txtFInfo1CrudPodcaster.getText().isEmpty()
+								|| !txtFInfo2CrudPodcaster.getText().isEmpty()) {
+
+							basededatos.anadirPodcaster(txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster,
+									txtFInfo2CrudPodcaster, listaPodcaster);
+							JOptionPane.showMessageDialog(null, "El podcaster ha sido insertado con exito.");
+							basededatos.obtenerYActualizarListaPodcaster(listaPodcaster, elementoGestionado);
+
+						} else {
+							JOptionPane.showMessageDialog(null, "Debes insertar los datos del podcaster para añadirlo");
+						}
+
+					} else if (accion == 2) {
+
+						if (listaPodcaster.isSelectionEmpty()) {
+							JOptionPane.showMessageDialog(null, "Debes seleccionar un podcaster para modificar");
+						} else {
+							String nombrePodcasterSeleccionado = listaPodcaster.getSelectedValue();
+							basededatos.modificarElementoListaPodcaster(nombrePodcasterSeleccionado,
+									txtFNombreCrudPodcaster.getText(), txtFInfo1CrudPodcaster.getText(),
+									txtFInfo2CrudPodcaster.getText(), listaPodcaster);
+							JOptionPane.showMessageDialog(null, "El podcaster ha sido modificado con exito");
+						}
+
+					}
+				}
+				// En el caso de gestionar los podcasts nuevos con su duracion y colaboradores
+				else {
+					if (metodos.formatoDuracion(txtFInfo1CrudPodcaster.getText())) {
+						if (accion == 1) {
+							if (!txtFNombreCrudPodcaster.getText().isEmpty()
+									|| !txtFInfo1CrudPodcaster.getText().isEmpty()
+									|| !txtFInfo2CrudPodcaster.getText().isEmpty()) {
+
+								basededatos.anadirPodcast(txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster,
+										txtFInfo2CrudPodcaster, listaPodcaster, cmbxCrudPodcast, podcasters);
+								JOptionPane.showMessageDialog(null, "El podcaster ha sido insertado con exito.");
+
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"Debes insertar los datos del podcaster para añadirlo");
+							}
+
+						} else if (accion == 2) {
+
+							if (listaPodcaster.isSelectionEmpty()) {
+								JOptionPane.showMessageDialog(null, "Debes seleccionar un podcaster para modificar");
+							} else {
+								String nombrePodcasterSeleccionado = listaPodcaster.getSelectedValue();
+								basededatos.modificarElementoListaPodcast(nombrePodcasterSeleccionado,
+										txtFNombreCrudPodcaster.getText(), txtFInfo1CrudPodcaster.getText(),
+										txtFInfo2CrudPodcaster.getText(),
+										podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getPodcasts()
+												.get(listaPodcaster.getSelectedIndex()),
+										listaPodcaster, cmbxCrudPodcast, podcasters);
+								JOptionPane.showMessageDialog(null, "El podcaster ha sido modificado con exito");
+
+							}
+
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Formato de duracion incorrecto");
+					}
+				}
+				metodos.ocultarComponentesPodcaster(lblNombreCrudPodcaster, lblInfo2CrudPodcaster,
+						lblInfo1CrudPodcaster, lblInfo3CrudPodcast, txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster,
+						txtFInfo2CrudPodcaster, btnAceptarPodcaster, cmbxCrudPodcast);
+			}
+
+		});
+		btnAceptarPodcaster.setBounds(396, 380, 89, 23);
+		panelGestPodcaster.add(btnAceptarPodcaster);
+
+		JButton btnAñadirPodcaster = new JButton("Añadir");
+		btnAñadirPodcaster.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				accion = 1;
+
+				if (elementoGestionado == 4) {
+
+					metodos.cargarCrudPodcaster(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
+							txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster);
+
+				} else {
+
+					metodos.cargarCrudPodcast(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
+							txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster, cmbxCrudPodcast,
+							lblInfo3CrudPodcast);
+				}
+				btnAceptarPodcaster.setVisible(true);
+			}
+		});
+		btnAñadirPodcaster.setBounds(329, 43, 89, 23);
+		panelGestPodcaster.add(btnAñadirPodcaster);
+
+		JButton btnModificarPodcaster = new JButton("Modificar");
+		btnModificarPodcaster.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				if (elementoGestionado == 4) {
+					int i = listaPodcaster.getSelectedIndex();
+					if (i != -1) {
+						String nombrePodcaster = listaPodcaster.getSelectedValue();
+						Podcaster podcasterSeleccionado = basededatos.obtenerPodcaster(nombrePodcaster);
+						txtFNombreCrudPodcaster.setText(podcasterSeleccionado.getNombreArtista());
+						txtFInfo1CrudPodcaster.setText(podcasterSeleccionado.getGenero());
+						txtFInfo2CrudPodcaster.setText(podcasterSeleccionado.getDescripcion());
+
+					} else {
+
+						JOptionPane.showMessageDialog(null, "Debes seleccionar un podcaster para modificar");
+					}
+					metodos.cargarCrudPodcaster(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
+							txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster);
+				}
+
+				else if (elementoGestionado == 5) {
+					int i = listaPodcaster.getSelectedIndex();
+					if (i != -1) {
+
+						String nombrePodcast = listaPodcaster.getSelectedValue();
+						Podcast podcastSeleccionado = basededatos.obtenerPodcast(nombrePodcast);
+
+						txtFNombreCrudPodcaster.setText(nombrePodcast);
+						txtFInfo1CrudPodcaster.setText(podcastSeleccionado.getDuracion());
+						txtFInfo2CrudPodcaster.setText(podcastSeleccionado.getColaboradores());
+
+					}
+					metodos.cargarCrudPodcast(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
+							txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster, cmbxCrudPodcast,
+							lblInfo3CrudPodcast);
+				}
+
+				btnAceptarPodcaster.setVisible(true);
+				accion = 2;
+			}
+
+		});
+		btnModificarPodcaster.setBounds(437, 43, 89, 23);
+		panelGestPodcaster.add(btnModificarPodcaster);
+
+		txtFNombreCrudPodcaster = new JTextField();
+		txtFNombreCrudPodcaster.setBounds(364, 102, 244, 20);
+		panelGestPodcaster.add(txtFNombreCrudPodcaster);
+		txtFNombreCrudPodcaster.setColumns(10);
+
+		txtFInfo2CrudPodcaster = new JTextField();
+		txtFInfo2CrudPodcaster.setColumns(10);
+		txtFInfo2CrudPodcaster.setBounds(364, 214, 244, 88);
+		panelGestPodcaster.add(txtFInfo2CrudPodcaster);
+
+		txtFInfo1CrudPodcaster = new JTextField();
+		txtFInfo1CrudPodcaster.setColumns(10);
+		txtFInfo1CrudPodcaster.setBounds(364, 158, 244, 20);
+		panelGestPodcaster.add(txtFInfo1CrudPodcaster);
+
+		podcasters = basededatos.conseguirPodcasters();
+		podcasterTotales = new String[podcasters.size()];
+		// Almacenamiento de los podcasters que aparecene en el comboBox
+		for (int i = 0; i != podcasters.size(); i++) {
+			podcasterTotales[i] = podcasters.get(i).getNombreArtista();
+		}
+		cmbxCrudPodcast = new JComboBox<String>();
+		cmbxCrudPodcast.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DefaultListModel<String> listModel = new DefaultListModel<String>();
+				listaPodcaster.setModel(listModel);
+
+				for (int i = 0; i != podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getPodcasts().size(); i++) {
+
+					listModel.addElement(
+							podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getPodcasts().get(i).getNombre());
+				}
+			}
+		});
+		cmbxCrudPodcast.setModel(new DefaultComboBoxModel<String>(podcasterTotales));
+		cmbxCrudPodcast.setVisible(false);
+		cmbxCrudPodcast.setBounds(364, 335, 244, 22);
+		panelGestPodcaster.add(cmbxCrudPodcast);
+
+		lblInfo3CrudPodcast = new JLabel("");
+		lblInfo3CrudPodcast.setVisible(false);
+		lblInfo3CrudPodcast.setBounds(364, 313, 188, 14);
+		panelGestPodcaster.add(lblInfo3CrudPodcast);
 
 	}
 }

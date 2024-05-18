@@ -11,26 +11,20 @@ public class Podcaster extends Artista {
 	private String genero;
 	private ArrayList<Podcast> podcasts = new ArrayList<Podcast>();
 
-	/**
-	 * Constructor que inicializa un nuevo Podcaster con los detalles especificados.
-	 * 
-	 * @param nombreArtista nombre del artista.
-	 * @param descripcion   descripción del artista.
-	 * @param imagen        imagen asociada al artista.
-	 * @param genero        género del Podcaster.
-	 * @param podcasts      lista de podcasts del Podcaster.
-	 */
-	public Podcaster(String nombreArtista, String descripcion, String imagen, String genero,
-			ArrayList<Podcast> podcasts) {
-		super(nombreArtista, descripcion, imagen);
-		this.genero = genero;
-		this.podcasts = podcasts;
-	}
+
 
 	/**
 	 * Constructor por defecto.
 	 */
 	public Podcaster() {
+	}
+
+	public Podcaster(String nombreArtista, String descripcion, String imagen, String genero, ArrayList<Podcast> podcasts,
+			int id) {
+		super(nombreArtista, descripcion, imagen, id);
+		this.podcasts = podcasts;
+		this.genero = genero;
+		// TODO Auto-generated constructor stub
 	}
 
 	/**

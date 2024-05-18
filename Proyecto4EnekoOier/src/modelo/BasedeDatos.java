@@ -13,13 +13,14 @@ import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 public class BasedeDatos {
 	// Conexion Base de datos
-	final static String url = "jdbc:mysql://reto4grupo5.duckdns.org:3306/reto4grupo5_m";
-	final static String contrasenabdd = "Elorrieta2024+";
-	final static String usuariobdd = "grupo05";
+	final static String url = "jdbc:mysql://localhost:33060/reto4grupo5_m";
+	final static String contrasenabdd = "elorrieta";
+	final static String usuariobdd = "root";
 
 	// Tabla Cliente
 	final static String clienteUsuario = "Usuario", clienteNombre = "Nombre", clienteApellido = "Apellido",
@@ -385,7 +386,7 @@ public class BasedeDatos {
 					podcasts.add(podcast); // Agregar el álbum a la lista de álbumes del músico
 				}
 				Podcaster podcaster = new Podcaster(rs1.getString(podcasterNombre), rs1.getString(podcasterDescripcion),
-						rs1.getString(podcasterImagen), rs1.getString(podcasterGenero), podcasts);
+						rs1.getString(podcasterImagen), rs1.getString(podcasterGenero), podcasts, rs1.getInt(podcasterId));
 				podcasters.add(podcaster); // Agregar el músico a la lista de músicos
 			}
 			conexion.close();
@@ -1265,12 +1266,14 @@ public class BasedeDatos {
 	}
 
 	/**
-	 *  metodo que modifica de la base de datos una linea de la tabla album
-	 * @param nombre nuevo nombre
-	 * @param genero nuevo genero
-	 * @param anyo nuevo anyo
-	 * @param listaCrudMusica lista donde aparecen todos los albumes para modificar el nombre del seleccionado
-	 * @param album objeto a modificar
+	 * metodo que modifica de la base de datos una linea de la tabla album
+	 * 
+	 * @param nombre          nuevo nombre
+	 * @param genero          nuevo genero
+	 * @param anyo            nuevo anyo
+	 * @param listaCrudMusica lista donde aparecen todos los albumes para modificar
+	 *                        el nombre del seleccionado
+	 * @param album           objeto a modificar
 	 */
 	public void modificarAlbum(String nombre, String genero, Object anyo, JList<String> listaCrudMusica, Album album) {
 		// TODO Auto-generated method stub
@@ -1297,14 +1300,16 @@ public class BasedeDatos {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 	}
+
 	/**
 	 * Metodo para modificar un objeto cancion de la base de datos
-	 * @param nombre nuevo nombre	
-	 * @param duracion nueva duracion
-	 * @param cmbxCrudTipo tipo de artista
+	 * 
+	 * @param nombre          nuevo nombre
+	 * @param duracion        nueva duracion
+	 * @param cmbxCrudTipo    tipo de artista
 	 * @param listaCrudMusica lista a modificar
-	 * @param musicos arrayList de musicos
-	 * @param cmbxArtista artista seleccionado
+	 * @param musicos         arrayList de musicos
+	 * @param cmbxArtista     artista seleccionado
 	 */
 	public void modificarCancion(String nombre, String duracion, JComboBox<String> cmbxCrudTipo,
 			JList<String> listaCrudMusica, ArrayList<Musico> musicos, JComboBox<String> cmbxArtista) {
@@ -1330,6 +1335,325 @@ public class BasedeDatos {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
+	}
+
+	public void modificarElementoListaPodcaster(String nombrePodcasterAntiguo, String nombrePodcasterNuevo,
+			String descripcionPodcaster, String generoPodcaster, JList<String> listaPodcast) {
+
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "UPDATE " + tablaPodcaster + " SET " + podcasterNombre + "=?, " + podcasterImagen + "=?, "
+					+ podcasterGenero + "=?, " + podcasterDescripcion + "=? WHERE " + podcasterNombre + "=?";
+
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, nombrePodcasterNuevo); // Nuevo nombre del artista
+			preparedStatement.setString(2, nombrePodcasterNuevo + ".jpg".toLowerCase()); // Nuevo nombre del artista
+			preparedStatement.setString(3, descripcionPodcaster);
+			preparedStatement.setString(4, generoPodcaster);
+			preparedStatement.setString(5, nombrePodcasterAntiguo); // Nombre antiguo del artista
+			preparedStatement.executeUpdate();
+			conexion.close();
+
+			// Actualizar el nombre en el JList
+			DefaultListModel<String> model = (DefaultListModel<String>) listaPodcast.getModel();
+			int index = listaPodcast.getSelectedIndex();
+			model.set(index, nombrePodcasterNuevo);
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+	}
+
+	public void modificarElementoListaPodcast(String nombrePodcasterSeleccionado, String txtFNombreCrudPodcaster,
+			String txtFInfo1CrudPodcaster, String txtFInfo2CrudPodcaster, Podcast podcast, JList<String> listaPodcaster,
+			JComboBox<String> cmbxCrudPodcast, ArrayList<Podcaster> podcasters) {
+
+		int idPodcaster = podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getId();
+		int idPodcast = podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getPodcasts()
+				.get(listaPodcaster.getSelectedIndex()).getIdAudio();
+
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "UPDATE " + tablaAudio + " SET " + audioNombre + "=?, " + audioAudio + "=?, "
+					+ audioDuracion + "=? WHERE " + audioNombre + "=?";
+
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, txtFNombreCrudPodcaster); // Nuevo nombre del artista
+			preparedStatement.setString(2, txtFNombreCrudPodcaster + ".wav".toLowerCase()); // Nuevo nombre del artista
+			preparedStatement.setString(3, txtFInfo1CrudPodcaster);
+			// preparedStatement.setString(4, txtFInfo2CrudPodcaster);
+			preparedStatement.setString(4, nombrePodcasterSeleccionado); // Nombre antiguo del artista
+			preparedStatement.executeUpdate();
+
+			modificarPodcast(idPodcaster, idPodcast, txtFInfo2CrudPodcaster);
+			conexion.close();
+
+			// Actualizar el nombre en el JList
+			DefaultListModel<String> model = (DefaultListModel<String>) listaPodcaster.getModel();
+			int index = listaPodcaster.getSelectedIndex();
+			model.set(index, txtFNombreCrudPodcaster);
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+	}
+
+	private void modificarPodcast(int idPodcaster, int idPodcast, String txtFInfo2CrudPodcaster) {
+		// TODO Auto-generated method stub
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "UPDATE " + tablaPodcast + " SET " + podcastColaboradores + "=? WHERE " + podcasterId
+					+ "= ? and " + audioId + " =?";
+
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, txtFInfo2CrudPodcaster); // Nuevo nombre del artista
+			preparedStatement.setInt(2, idPodcaster); // Nuevo nombre del artista
+			preparedStatement.setInt(3, idPodcast);
+			preparedStatement.executeUpdate();
+
+			conexion.close();
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+	public Podcast obtenerPodcast(String nombrePodcast) {
+		// TODO Auto-generated method stub
+		Podcast podcast = null;
+		Connection conexion = null;
+		PreparedStatement preparedStatementAudio = null;
+		PreparedStatement preparedStatementPodcast = null;
+		ResultSet resultSetAudio = null;
+		ResultSet resultSetPodcast = null;
+
+		try {
+			conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+
+			// Consulta para obtener los detalles del audio
+			String consultaAudio = "SELECT * FROM " + tablaAudio + " WHERE " + audioNombre + "=?";
+			preparedStatementAudio = conexion.prepareStatement(consultaAudio);
+			preparedStatementAudio.setString(1, nombrePodcast);
+			resultSetAudio = preparedStatementAudio.executeQuery();
+
+			if (resultSetAudio.next()) {
+				int idAudio = resultSetAudio.getInt(audioId);
+				String nombre = resultSetAudio.getString(audioNombre);
+				String duracion = resultSetAudio.getString(audioDuracion);
+				String archivoAudio = resultSetAudio.getString(audioAudio);
+
+				// Consulta adicional para obtener los colaboradores del podcast
+				String consultaPodcast = "SELECT " + podcastColaboradores + " FROM " + tablaPodcast + " WHERE "
+						+ audioId + "=?";
+				preparedStatementPodcast = conexion.prepareStatement(consultaPodcast);
+				preparedStatementPodcast.setInt(1, idAudio);
+				resultSetPodcast = preparedStatementPodcast.executeQuery();
+
+				String colaboradores = "";
+				if (resultSetPodcast.next()) {
+					colaboradores = resultSetPodcast.getString(podcastColaboradores);
+				}
+
+				podcast = new Podcast(nombre, idAudio, duracion, archivoAudio, colaboradores);
+			}
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return podcast;
+	}
+
+	public void borrarElementosListaPodcaster(JList<String> listaPodcaster, int elementoModificar) {
+		String elementoPodcaster = "";
+		String tablaElementoPodcaster = "";
+
+		if (elementoModificar == 4) {
+			elementoPodcaster = podcasterNombre;
+			tablaElementoPodcaster = tablaPodcaster;
+
+		} else if (elementoModificar == 5) {
+			elementoPodcaster = audioNombre;
+			tablaElementoPodcaster = tablaAudio;
+
+		}
+
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+
+			String podcasterSeleccionado = listaPodcaster.getSelectedValue();
+			String consulta = "DELETE FROM " + tablaElementoPodcaster + " WHERE " + elementoPodcaster + " = ?";
+			// Crea el PreparedStatement
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, podcasterSeleccionado);
+
+			// Ejecutar la consulta para borrar el artista seleccionado
+			preparedStatement.executeUpdate();
+
+			// Cierra la conexión
+			conexion.close();
+
+			// Eliminar el elemento seleccionado del JList
+			DefaultListModel<String> model = (DefaultListModel<String>) listaPodcaster.getModel();
+			model.removeElement(podcasterSeleccionado);
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+	}
+
+	public Podcaster obtenerPodcaster(String nombrePodcaster) {
+		Podcaster podcaster = null;
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "SELECT * FROM " + tablaPodcaster + " WHERE " + podcasterNombre + "=?";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.setString(1, nombrePodcaster);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				String nombre = resultSet.getString(podcasterNombre);
+				String descripcion = resultSet.getString(podcasterDescripcion);
+				String genero = resultSet.getString(podcasterGenero);
+				podcaster = new Podcaster(nombre, descripcion, resultSet.getString(podcasterImagen), genero,
+						new ArrayList<Podcast>(), resultSet.getInt(podcasterId));
+			}
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return podcaster;
+	}
+
+	public void anadirPodcaster(JTextField txtFNombrePodcaster, JTextField txtFGeneroPodcaster,
+			JTextField txtFDescripcionPodcaster, JList<String> listaPodcaster) {
+
+		try {
+			// Conexión con la base de datos
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			// Crear la consulta SQL para insertar en podcaster
+			String consulta = "INSERT INTO " + tablaPodcaster + " (" + podcasterNombre + ", " + podcasterImagen + ", "
+					+ podcasterGenero + ", " + podcasterDescripcion + ") " + "VALUES (" + "'"
+					+ txtFNombrePodcaster.getText() + "'" + "," + "'" + txtFNombrePodcaster.getText()
+					+ ".jpg".toLowerCase() + "'" + "," + "'" + txtFGeneroPodcaster.getText() + "'" + "," + "'"
+					+ txtFDescripcionPodcaster.getText() + "'" + ");";
+
+			System.out.println(consulta);
+			// Crea el PreparedStatement
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			// Ejecutar la consulta y obtener el resultado
+			preparedStatement.executeUpdate();
+
+			conexion.close();
+
+			// Actualizar el nombre en el JList
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+	}
+
+	public void anadirPodcast(JTextField txtFNombreCrudPodcaster, JTextField txtFInfo1Podcaster,
+			JTextField txtFInfo2Podcaster, JList<String> listaPodcaster, JComboBox<String> cmbxCrudPodcast,
+			ArrayList<Podcaster> podcasters) {
+
+		int idPodcaster = podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getId();
+
+		try {
+			// Conexión con la base de datos
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			// Crear la consulta SQL para insertar en podcaster
+			String consulta = "INSERT INTO " + tablaAudio + " (" + audioNombre + ", " + audioAudio + ", "
+					+ audioDuracion + ") " + "VALUES (" + "'" + txtFNombreCrudPodcaster.getText() + "'" + "," + "'"
+					+ txtFNombreCrudPodcaster.getText() + ".wav".toLowerCase() + "'" + "," + "'"
+					+ txtFInfo1Podcaster.getText() + "'" + ")";
+
+			// Crea el PreparedStatement
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+
+			DefaultListModel<String> model = (DefaultListModel<String>) listaPodcaster.getModel();
+			model.addElement(txtFNombreCrudPodcaster.getText());
+			// Ejecutar la consulta y obtener el resultado
+			preparedStatement.executeUpdate();
+
+			int idAudio = obtenerIdAudio(txtFNombreCrudPodcaster.getText(), txtFInfo1Podcaster.getText());
+			insertarPodcast(idPodcaster, idAudio, txtFInfo2Podcaster);
+			conexion.close();
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+	}
+
+	private void insertarPodcast(int idPodcaster, int idAudio, JTextField txtFInfo2Podcaster) {
+
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+
+			String consulta = "INSERT INTO " + tablaPodcast + " (" + audioId + "," + podcastColaboradores + ", "
+					+ podcasterId + ") " + "VALUES (" + idAudio + ",'" + txtFInfo2Podcaster.getText() + "','"
+					+ idPodcaster + "'" + ");";
+
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+	}
+
+	public void obtenerYActualizarListaPodcaster(JList<String> listaPodcaster, int elementoModificar) {
+		DefaultListModel<String> listModel = new DefaultListModel<>();
+		listaPodcaster.setModel(listModel); // Establecer el modelo de lista en el JList
+		String elemento = "";
+		String elemento2 = "";
+		String tablaElemento = "";
+
+		if (elementoModificar == 4) {
+			elemento = podcasterNombre;
+			elemento2 = podcasterGenero;
+			tablaElemento = tablaPodcaster;
+		} else if (elementoModificar == 5) {
+			elemento = podcasterDescripcion;
+			tablaElemento = tablaPodcaster;
+		}
+
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta1 = "SELECT " + elemento + " , " + elemento2 + " FROM " + tablaElemento;
+			PreparedStatement preparedStatement1 = conexion.prepareStatement(consulta1);
+			ResultSet rs1 = preparedStatement1.executeQuery();
+			while (rs1.next()) {
+				String elementanyadir = rs1.getString(elemento);
+				listModel.addElement(elementanyadir);
+
+			}
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
 	}
 
 }

@@ -11,8 +11,13 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -113,30 +118,39 @@ public class Metodos {
 			String conficontrasena, String fecNac, String fecReg, String fecPremium, boolean premium) {
 		// TODO Auto-generated method stub
 		Usuarios usuarionuevo = new Usuarios();
-		if (premium) {//crea el objeto dependiendo de si es premium o no
+		if (premium) {// crea el objeto dependiendo de si es premium o no
 			Usuarios nuevo_usuario = new Usuarios(nombre, apellido, usuario, contrasena, fecNac, fecReg, "premium");
 			usuarionuevo = nuevo_usuario;
 		} else {
 			Usuarios nuevo_usuario = new Usuarios(nombre, apellido, usuario, contrasena, fecNac, fecReg, "free");
 			usuarionuevo = nuevo_usuario;
 		}
-		boolean error = basededatos.comprobarUsuarios(usuarionuevo.getUsuario());//da error si ese usuario ya existe
+		boolean error = basededatos.comprobarUsuarios(usuarionuevo.getUsuario());// da error si ese usuario ya existe
 		if (error) {
 			JOptionPane.showMessageDialog(null, "Usuario repetido, ponga otro");
 		}
-		if (!contrasena.equals(conficontrasena)) {//da error si las contraseña no coinciden
+		if (!contrasena.equals(conficontrasena)) {// da error si las contraseña no coinciden
 			error = true;
 			JOptionPane.showMessageDialog(null, "Las contraseñas son distintas");
 		}
-		if (nombre.isBlank() || apellido.isBlank() || usuario.isBlank() || contrasena.isBlank() || fecNac.isBlank()) {// da error como alguno de los campos este en blanco
+		if (nombre.isBlank() || apellido.isBlank() || usuario.isBlank() || contrasena.isBlank() || fecNac.isBlank()) {// da
+																														// error
+																														// como
+																														// alguno
+																														// de
+																														// los
+																														// campos
+																														// este
+																														// en
+																														// blanco
 			error = true;
 			JOptionPane.showMessageDialog(null, "Todos los campos deben estar rellenados");
 		}
-		if (!formatofecha(fecNac)) {//da error si el formato de la fecha de nacimiento es incorrecto
+		if (!formatofecha(fecNac)) {// da error si el formato de la fecha de nacimiento es incorrecto
 			error = true;
 			JOptionPane.showMessageDialog(null, "Fecha Incorrecta");
 		}
-		if (premium && !error) {//inserta el usuario de una manera u otra dependiendo de si es premiu o free
+		if (premium && !error) {// inserta el usuario de una manera u otra dependiendo de si es premiu o free
 			basededatos.insertarUsuario(usuarionuevo, fecPremium);
 			JOptionPane.showMessageDialog(null, "Usuario premium creado correctamente");
 			return true;
@@ -178,14 +192,14 @@ public class Metodos {
 		String nombreLista = JOptionPane.showInputDialog("Por favor, introduce un texto:");
 		System.out.println(nombreLista);
 		boolean error = false;
-		//comprueba que no exista ya la playlist
+		// comprueba que no exista ya la playlist
 		for (int i = 0; (i != usuarioIniciado.getPlaylists().size()) && error == false; i++) {
 			if (nombreLista.equalsIgnoreCase(usuarioIniciado.getPlaylists().get(i).getTitulo())) {
 				JOptionPane.showMessageDialog(null, "Ya hay una PlayList creada con el nombre de " + nombreLista);
 				error = true;
 			}
 		}
-		if (!error) {//inserta la playlist
+		if (!error) {// inserta la playlist
 			basededatos.insertarNuevaPlayList(usuarioIniciado, nombreLista, false, null);
 			DefaultListModel<String> model = (DefaultListModel<String>) listaPlaylist.getModel();
 			model.addElement(nombreLista);
@@ -230,8 +244,8 @@ public class Metodos {
 	}
 
 	/**
-	 * Importa una lista de reproducción desde un archivo CSV comprobando que el formato requerido es el correcto
-	 * y la añade al usuarioIniciado y a la lista
+	 * Importa una lista de reproducción desde un archivo CSV comprobando que el
+	 * formato requerido es el correcto y la añade al usuarioIniciado y a la lista
 	 *
 	 * @param usuarioIniciado usuario que está iniciado en el sistema.
 	 * @param listaPlaylist   lista de reproducción.
@@ -252,13 +266,13 @@ public class Metodos {
 				boolean repetido = false;
 				do {
 					if (tituloPlaylist.equals(usuarioIniciado.getPlaylists().get(i).getTitulo())) {
-						repetido = true;//comprueba que la playlist a importar no tenga el mismo nombre que otra
+						repetido = true;// comprueba que la playlist a importar no tenga el mismo nombre que otra
 					}
 					i++;
 				} while (i != usuarioIniciado.getPlaylists().size() && repetido == false);
 				if (!repetido) {
 					int[] numeros = validarSegundaLinea(segundaLinea);
-					if (numeros.length != 0) {//si la segunda linea tiene el formato correcto añadira la playlist
+					if (numeros.length != 0) {// si la segunda linea tiene el formato correcto añadira la playlist
 						DefaultListModel<String> model = (DefaultListModel<String>) listaPlaylist.getModel();
 						model.addElement(tituloPlaylist);
 
@@ -316,7 +330,7 @@ public class Metodos {
 	 */
 	public void exportarCancion(Cancion cancion) {
 		// TODO Auto-generated method stub
-		//crea el fichero con el nombre de la cancion en la carpeta exportaciones
+		// crea el fichero con el nombre de la cancion en la carpeta exportaciones
 		File fichero = new File(Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\"
 				+ cancion.getNombre().replace(" ", "") + ".txt");
 
@@ -343,7 +357,7 @@ public class Metodos {
 	 */
 	public void exportarPodcast(Podcast podcast) {
 		// TODO Auto-generated method stub
-		//crea el fichero con el nombre del podcast en la carpeta exportaciones
+		// crea el fichero con el nombre del podcast en la carpeta exportaciones
 		File fichero = new File(Paths.get("").toAbsolutePath().toString() + "\\exportaciones\\"
 				+ podcast.getNombre().replace(" ", "") + ".txt");
 
@@ -491,7 +505,8 @@ public class Metodos {
 		txtFNombreCrud.setVisible(true);
 		txtFInfo1Crud.setVisible(true);
 		cmbxCrudTipo.setVisible(true);
-		//dependiendo de cual sea el elemento a gestionar rellena algunos elementos y visualiza otros
+		// dependiendo de cual sea el elemento a gestionar rellena algunos elementos y
+		// visualiza otros
 		if (elementoGestionado == 2) {
 			lblNombreCrud.setText("Nombre Album:");
 			lblInfo1Crud.setText("Genero");
@@ -552,9 +567,9 @@ public class Metodos {
 		int anyo = Integer.parseInt(partes[0]);
 		int mes = Integer.parseInt(partes[1]);
 		int dia = Integer.parseInt(partes[2]);
-		//devuelve true si la fecha es valida, false si no
+		// devuelve true si la fecha es valida, false si no
 		if (anyo <= 2024 && anyo >= 1970) {
-			
+
 			if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12) {
 				return dia > 0 && dia <= 31;
 			} else if (mes == 4 || mes == 6 || mes == 9 || mes == 11) {
@@ -566,6 +581,95 @@ public class Metodos {
 			}
 		} else {
 			return false;
+		}
+	}
+
+	public void ocultarComponentesPodcaster(JLabel lblNombrePodcaster, JLabel lblInfo2CrudPodcaster,
+			JLabel lblInfo1CrudPodcaster, JLabel lblInfo3CrudPodcast, JTextField txtFNombrePodcaster,
+			JTextField txtFDescripcionPodcaster, JTextField txtFGeneroPodcaster, JButton btnPodcasterAceptar,
+			JComboBox<String> cmbxCrudPodcast) {
+
+		lblNombrePodcaster.setVisible(false);
+		lblInfo2CrudPodcaster.setVisible(false);
+		lblInfo1CrudPodcaster.setVisible(false);
+		lblInfo3CrudPodcast.setVisible(false);
+		cmbxCrudPodcast.setVisible(false);
+		txtFNombrePodcaster.setVisible(false);
+		txtFGeneroPodcaster.setVisible(false);
+		txtFDescripcionPodcaster.setVisible(false);
+		btnPodcasterAceptar.setVisible(false);
+
+	}
+
+	public void cargarCrudPodcaster(JLabel lblNombreCrudPodcaster, JLabel lblInfo1CrudPodcaster,
+			JLabel lblInfo2CrudPodcaster, JTextField txtFNombreCrudPodcaster, JTextField txtFInfo1CrudPodcaster,
+			JTextField txtFInfo2CrudPodcaster) {
+
+		lblNombreCrudPodcaster.setText("Nombre Podcaster");
+		lblInfo1CrudPodcaster.setText("Genero");
+		lblInfo2CrudPodcaster.setText("Descripcion");
+
+		lblNombreCrudPodcaster.setVisible(true);
+		lblInfo1CrudPodcaster.setVisible(true);
+		lblInfo2CrudPodcaster.setVisible(true);
+
+		txtFNombreCrudPodcaster.setVisible(true);
+		txtFInfo1CrudPodcaster.setVisible(true);
+		txtFInfo2CrudPodcaster.setVisible(true);
+	}
+
+	public void cargarCrudPodcast(JLabel lblNombreCrudPodcaster, JLabel lblInfo1CrudPodcaster,
+			JLabel lblInfo2CrudPodcaster, JTextField txtFNombreCrudPodcaster, JTextField txtFInfo1CrudPodcaster,
+			JTextField txtFInfo2CrudPodcaster, JComboBox<String> cmbxCrudPodcast, JLabel lblInfo3CrudPodcast) {
+
+		lblNombreCrudPodcaster.setText("Titulo Podcast");
+		lblInfo1CrudPodcaster.setText("Duracion");
+		lblInfo2CrudPodcaster.setText("Colaboradores");
+		lblInfo3CrudPodcast.setText("Podcaster");
+
+		lblNombreCrudPodcaster.setVisible(true);
+		lblInfo1CrudPodcaster.setVisible(true);
+		lblInfo2CrudPodcaster.setVisible(true);
+		lblInfo3CrudPodcast.setVisible(true);
+
+		txtFNombreCrudPodcaster.setVisible(true);
+		txtFInfo1CrudPodcaster.setVisible(true);
+		txtFInfo2CrudPodcaster.setVisible(true);
+		cmbxCrudPodcast.setVisible(true);
+
+		// cmbxCrudPodcast.setModel(new DefaultComboBoxModel<String>());
+
+	}
+
+	public void reproducirAnuncio(Clip clip, JButton btnAtrasCancion, JButton btnAdelanteCancion, JButton btnReproducir,
+			JButton btnMeGusta, JButton btnMenu, Random random) throws MiExcepcion {
+		// TODO Auto-generated method stub
+		try {
+
+			int numeroAleatorio = random.nextInt(6) + 1;
+			File file = new File(
+					Paths.get("").toAbsolutePath().toString() + "\\musica\\anuncio" + numeroAleatorio + ".wav");// reproduce
+																												// un
+																												// anuncio
+			// aleatorio
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+			clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+			clip.start();
+			btnAtrasCancion.setEnabled(false);
+			btnAdelanteCancion.setEnabled(false);
+			btnReproducir.setEnabled(false);
+			btnMeGusta.setEnabled(false);
+			btnMenu.setEnabled(false);
+			Thread.sleep(clip.getMicrosecondLength() / 1000);
+			btnAtrasCancion.setEnabled(true);
+			btnAdelanteCancion.setEnabled(true);
+			btnReproducir.setEnabled(true);
+			btnMeGusta.setEnabled(true);
+			btnMenu.setEnabled(true);
+
+		} catch (Exception e1) {
+			throw new MiExcepcion("Audio no encontrado", e1);
 		}
 	}
 
