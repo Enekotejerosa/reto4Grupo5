@@ -125,7 +125,8 @@ public class Metodos {
 			Usuarios nuevo_usuario = new Usuarios(nombre, apellido, usuario, contrasena, fecNac, fecReg, "free");
 			usuarionuevo = nuevo_usuario;
 		}
-		boolean error = basededatos.comprobarUsuarios(usuarionuevo.getUsuario());// da error si ese usuario ya existe
+		boolean error = basededatos.comprobarUsuarios(usuarionuevo.getUsuario());// da error si ese usuario no esta
+																					// repetido
 		if (error) {
 			JOptionPane.showMessageDialog(null, "Usuario repetido, ponga otro");
 		}
@@ -483,6 +484,60 @@ public class Metodos {
 	}
 
 	/**
+	 * Reproduce un anuncio de audio aleatorio y deshabilita ciertos botones durante
+	 * la reproducción.
+	 *
+	 * @param clip               objeto {@link Clip} utilizado para reproducir el
+	 *                           audio.
+	 * @param btnAtrasCancion    botón para retroceder una canción, que se
+	 *                           deshabilitará durante la reproducción del anuncio.
+	 * @param btnAdelanteCancion botón para avanzar una canción, que se
+	 *                           deshabilitará durante la reproducción del anuncio.
+	 * @param btnReproducir      botón para reproducir una canción, que se
+	 *                           deshabilitará durante la reproducción del anuncio.
+	 * @param btnMeGusta         botón para marcar una canción como "me gusta", que
+	 *                           se deshabilitará durante la reproducción del
+	 *                           anuncio.
+	 * @param btnMenu            botón para acceder al menú, que se deshabilitará
+	 *                           durante la reproducción del anuncio.
+	 * @param random             objeto {@link Random} utilizado para seleccionar
+	 *                           aleatoriamente el anuncio que se reproducirá.
+	 * @throws MiExcepcion si ocurre un error al intentar reproducir el archivo de
+	 *                     audio.
+	 */
+	public void reproducirAnuncio(Clip clip, JButton btnAtrasCancion, JButton btnAdelanteCancion, JButton btnReproducir,
+			JButton btnMeGusta, JButton btnMenu, Random random) throws MiExcepcion {
+		// TODO Auto-generated method stub
+		try {
+
+			int numeroAleatorio = random.nextInt(6) + 1;
+			File file = new File(
+					Paths.get("").toAbsolutePath().toString() + "\\musica\\anuncio" + numeroAleatorio + ".wav");// reproduce
+																												// un
+																												// anuncio
+			// aleatorio
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+			clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+			clip.start();
+			btnAtrasCancion.setEnabled(false);
+			btnAdelanteCancion.setEnabled(false);
+			btnReproducir.setEnabled(false);
+			btnMeGusta.setEnabled(false);
+			btnMenu.setEnabled(false);
+			Thread.sleep(clip.getMicrosecondLength() / 1000);
+			btnAtrasCancion.setEnabled(true);
+			btnAdelanteCancion.setEnabled(true);
+			btnReproducir.setEnabled(true);
+			btnMeGusta.setEnabled(true);
+			btnMenu.setEnabled(true);
+
+		} catch (Exception e1) {
+			throw new MiExcepcion("Audio no encontrado", e1);
+		}
+	}
+
+	/**
 	 * rellena el panel de CrudMusica cuando se pulsa en gestionar artistas
 	 * 
 	 * @param lblNombreCrud
@@ -584,6 +639,24 @@ public class Metodos {
 		}
 	}
 
+	/**
+	 * Oculta los componentes relacionados con la interfaz de usuario de podcaster.
+	 *
+	 * @param lblNombrePodcaster       etiqueta para el nombre del podcaster.
+	 * @param lblInfo2CrudPodcaster    etiqueta para información adicional del
+	 *                                 podcaster.
+	 * @param lblInfo1CrudPodcaster    etiqueta para información adicional del
+	 *                                 podcaster.
+	 * @param lblInfo3CrudPodcast      etiqueta para información adicional del
+	 *                                 podcast.
+	 * @param txtFNombrePodcaster      campo de texto para el nombre del podcaster.
+	 * @param txtFDescripcionPodcaster campo de texto para la descripción del
+	 *                                 podcaster.
+	 * @param txtFGeneroPodcaster      campo de texto para el género del podcaster.
+	 * @param btnPodcasterAceptar      botón para aceptar la acción relacionada con
+	 *                                 el podcaster.
+	 * @param cmbxCrudPodcast          cuadro combinado para seleccionar el podcast.
+	 */
 	public void ocultarComponentesPodcaster(JLabel lblNombrePodcaster, JLabel lblInfo2CrudPodcaster,
 			JLabel lblInfo1CrudPodcaster, JLabel lblInfo3CrudPodcast, JTextField txtFNombrePodcaster,
 			JTextField txtFDescripcionPodcaster, JTextField txtFGeneroPodcaster, JButton btnPodcasterAceptar,
@@ -601,6 +674,21 @@ public class Metodos {
 
 	}
 
+	/**
+	 * Configura y muestra los componentes de la interfaz de usuario para gestionar
+	 * información del podcaster.
+	 *
+	 * @param lblNombreCrudPodcaster  etiqueta para el nombre del podcaster.
+	 * @param lblInfo1CrudPodcaster   etiqueta para el primer campo de información
+	 *                                adicional del podcaster.
+	 * @param lblInfo2CrudPodcaster   etiqueta para el segundo campo de información
+	 *                                adicional del podcaster.
+	 * @param txtFNombreCrudPodcaster campo de texto para el nombre del podcaster.
+	 * @param txtFInfo1CrudPodcaster  campo de texto para el primer campo de
+	 *                                información adicional del podcaster.
+	 * @param txtFInfo2CrudPodcaster  campo de texto para el segundo campo de
+	 *                                información adicional del podcaster.
+	 */
 	public void cargarCrudPodcaster(JLabel lblNombreCrudPodcaster, JLabel lblInfo1CrudPodcaster,
 			JLabel lblInfo2CrudPodcaster, JTextField txtFNombreCrudPodcaster, JTextField txtFInfo1CrudPodcaster,
 			JTextField txtFInfo2CrudPodcaster) {
@@ -618,6 +706,22 @@ public class Metodos {
 		txtFInfo2CrudPodcaster.setVisible(true);
 	}
 
+	/**
+	 * Configura y muestra los componentes de la interfaz de usuario para gestionar
+	 * información del podcast.
+	 *
+	 * @param lblNombreCrudPodcaster  etiqueta para el título del podcast.
+	 * @param lblInfo1CrudPodcaster   etiqueta para la duración del podcast.
+	 * @param lblInfo2CrudPodcaster   etiqueta para los colaboradores del podcast.
+	 * @param txtFNombreCrudPodcaster campo de texto para el título del podcast.
+	 * @param txtFInfo1CrudPodcaster  campo de texto para la duración del podcast.
+	 * @param txtFInfo2CrudPodcaster  campo de texto para los colaboradores del
+	 *                                podcast.
+	 * @param cmbxCrudPodcast         cuadro combinado para seleccionar el podcaster
+	 *                                asociado al podcast.
+	 * @param lblInfo3CrudPodcast     etiqueta para el podcaster asociado al
+	 *                                podcast.
+	 */
 	public void cargarCrudPodcast(JLabel lblNombreCrudPodcaster, JLabel lblInfo1CrudPodcaster,
 			JLabel lblInfo2CrudPodcaster, JTextField txtFNombreCrudPodcaster, JTextField txtFInfo1CrudPodcaster,
 			JTextField txtFInfo2CrudPodcaster, JComboBox<String> cmbxCrudPodcast, JLabel lblInfo3CrudPodcast) {
@@ -637,40 +741,5 @@ public class Metodos {
 		txtFInfo2CrudPodcaster.setVisible(true);
 		cmbxCrudPodcast.setVisible(true);
 
-		// cmbxCrudPodcast.setModel(new DefaultComboBoxModel<String>());
-
 	}
-
-	public void reproducirAnuncio(Clip clip, JButton btnAtrasCancion, JButton btnAdelanteCancion, JButton btnReproducir,
-			JButton btnMeGusta, JButton btnMenu, Random random) throws MiExcepcion {
-		// TODO Auto-generated method stub
-		try {
-
-			int numeroAleatorio = random.nextInt(6) + 1;
-			File file = new File(
-					Paths.get("").toAbsolutePath().toString() + "\\musica\\anuncio" + numeroAleatorio + ".wav");// reproduce
-																												// un
-																												// anuncio
-			// aleatorio
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-			clip = AudioSystem.getClip();
-			clip.open(audioInputStream);
-			clip.start();
-			btnAtrasCancion.setEnabled(false);
-			btnAdelanteCancion.setEnabled(false);
-			btnReproducir.setEnabled(false);
-			btnMeGusta.setEnabled(false);
-			btnMenu.setEnabled(false);
-			Thread.sleep(clip.getMicrosecondLength() / 1000);
-			btnAtrasCancion.setEnabled(true);
-			btnAdelanteCancion.setEnabled(true);
-			btnReproducir.setEnabled(true);
-			btnMeGusta.setEnabled(true);
-			btnMenu.setEnabled(true);
-
-		} catch (Exception e1) {
-			throw new MiExcepcion("Audio no encontrado", e1);
-		}
-	}
-
 }

@@ -386,7 +386,8 @@ public class BasedeDatos {
 					podcasts.add(podcast); // Agregar el álbum a la lista de álbumes del músico
 				}
 				Podcaster podcaster = new Podcaster(rs1.getString(podcasterNombre), rs1.getString(podcasterDescripcion),
-						rs1.getString(podcasterImagen), rs1.getString(podcasterGenero), podcasts, rs1.getInt(podcasterId));
+						rs1.getString(podcasterImagen), rs1.getString(podcasterGenero), podcasts,
+						rs1.getInt(podcasterId));
 				podcasters.add(podcaster); // Agregar el músico a la lista de músicos
 			}
 			conexion.close();
@@ -407,6 +408,8 @@ public class BasedeDatos {
 	public void anadirCancionLike(Usuarios usuarioIniciado, int idAudio) {
 		// TODO Auto-generated method stub
 		int idLista = 0;
+		// recorre todas las playlist del usuario iiciado y coje el id de la palylist me
+		// gusta para luego poder hacer la consulta
 		for (int i = 0; i != usuarioIniciado.getPlaylists().size(); i++) {
 			if (usuarioIniciado.getPlaylists().get(i).getTitulo().equals("Me gusta")) {
 				idLista = usuarioIniciado.getPlaylists().get(i).getIdPlayList();
@@ -1337,6 +1340,16 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * Modifica un elemento en la lista de podcasters y actualiza su información en
+	 * la base de datos.
+	 *
+	 * @param nombrePodcasterAntiguo nombre antiguo del podcaster.
+	 * @param nombrePodcasterNuevo   nuevo nombre del podcaster.
+	 * @param descripcionPodcaster   nueva descripción del podcaster.
+	 * @param generoPodcaster        nuevo género del podcaster.
+	 * @param listaPodcast           lista visual de podcasters.
+	 */
 	public void modificarElementoListaPodcaster(String nombrePodcasterAntiguo, String nombrePodcasterNuevo,
 			String descripcionPodcaster, String generoPodcaster, JList<String> listaPodcast) {
 
@@ -1366,6 +1379,19 @@ public class BasedeDatos {
 
 	}
 
+	/**
+	 * Modifica un elemento en la lista de podcasts y actualiza su información en la
+	 * base de datos.
+	 *
+	 * @param nombrePodcasterSeleccionado el nombre del podcaster seleccionado.
+	 * @param txtFNombreCrudPodcaster     el nuevo nombre del podcast.
+	 * @param txtFInfo1CrudPodcaster      la nueva duración del podcast.
+	 * @param txtFInfo2CrudPodcaster      los nuevos colaboradores del podcast.
+	 * @param podcast                     el objeto Podcast a modificar.
+	 * @param listaPodcaster              la lista visual de podcasts.
+	 * @param cmbxCrudPodcast             el combo box de podcasters.
+	 * @param podcasters                  la lista de podcasters.
+	 */
 	public void modificarElementoListaPodcast(String nombrePodcasterSeleccionado, String txtFNombreCrudPodcaster,
 			String txtFInfo1CrudPodcaster, String txtFInfo2CrudPodcaster, Podcast podcast, JList<String> listaPodcaster,
 			JComboBox<String> cmbxCrudPodcast, ArrayList<Podcaster> podcasters) {
@@ -1402,6 +1428,13 @@ public class BasedeDatos {
 
 	}
 
+	/**
+	 * Modifica la información de un podcast en la base de datos.
+	 *
+	 * @param idPodcaster            el ID del podcaster.
+	 * @param idPodcast              el ID del podcast.
+	 * @param txtFInfo2CrudPodcaster los nuevos colaboradores del podcast.
+	 */
 	private void modificarPodcast(int idPodcaster, int idPodcast, String txtFInfo2CrudPodcaster) {
 		// TODO Auto-generated method stub
 		try {
@@ -1424,6 +1457,12 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * Obtiene la información de un podcast a partir de su nombre.
+	 *
+	 * @param nombrePodcast el nombre del podcast.
+	 * @return un objeto Podcast con la información del podcast.
+	 */
 	public Podcast obtenerPodcast(String nombrePodcast) {
 		// TODO Auto-generated method stub
 		Podcast podcast = null;
@@ -1471,6 +1510,14 @@ public class BasedeDatos {
 		return podcast;
 	}
 
+	/**
+	 * Borra un elemento seleccionado de la lista de podcasters y elimina su
+	 * información de la base de datos.
+	 *
+	 * @param listaPodcaster    la lista visual de podcasters.
+	 * @param elementoModificar el tipo de elemento a modificar (4 para podcasters,
+	 *                          5 para audios).
+	 */
 	public void borrarElementosListaPodcaster(JList<String> listaPodcaster, int elementoModificar) {
 		String elementoPodcaster = "";
 		String tablaElementoPodcaster = "";
@@ -1511,6 +1558,12 @@ public class BasedeDatos {
 
 	}
 
+	/**
+	 * Obtiene la información de un podcaster a partir de su nombre.
+	 *
+	 * @param nombrePodcaster el nombre del podcaster.
+	 * @return un objeto Podcaster con la información del podcaster.
+	 */
 	public Podcaster obtenerPodcaster(String nombrePodcaster) {
 		Podcaster podcaster = null;
 		try {
@@ -1535,6 +1588,16 @@ public class BasedeDatos {
 		return podcaster;
 	}
 
+	/**
+	 * Añade un nuevo podcaster a la base de datos y lo muestra en la lista visual
+	 * de podcasters.
+	 *
+	 * @param txtFNombrePodcaster      campo de texto con el nombre del podcaster.
+	 * @param txtFGeneroPodcaster      campo de texto con el género del podcaster.
+	 * @param txtFDescripcionPodcaster campo de texto con la descripción del
+	 *                                 podcaster.
+	 * @param listaPodcaster           lista visual de podcasters.
+	 */
 	public void anadirPodcaster(JTextField txtFNombrePodcaster, JTextField txtFGeneroPodcaster,
 			JTextField txtFDescripcionPodcaster, JList<String> listaPodcaster) {
 
@@ -1566,6 +1629,18 @@ public class BasedeDatos {
 
 	}
 
+	/**
+	 * Añade un nuevo podcast a la base de datos y lo muestra en la lista visual de
+	 * podcasts.
+	 *
+	 * @param txtFNombreCrudPodcaster campo de texto con el nombre del podcast.
+	 * @param txtFInfo1Podcaster      campo de texto con la duración del podcast.
+	 * @param txtFInfo2Podcaster      campo de texto con los colaboradores del
+	 *                                podcast.
+	 * @param listaPodcaster          lista visual de podcasts.
+	 * @param cmbxCrudPodcast         combo box de podcasters.
+	 * @param podcasters              lista de podcasters.
+	 */
 	public void anadirPodcast(JTextField txtFNombreCrudPodcaster, JTextField txtFInfo1Podcaster,
 			JTextField txtFInfo2Podcaster, JList<String> listaPodcaster, JComboBox<String> cmbxCrudPodcast,
 			ArrayList<Podcaster> podcasters) {
@@ -1601,6 +1676,13 @@ public class BasedeDatos {
 
 	}
 
+	/**
+	 * Inserta un nuevo podcast en la tabla de podcasts.
+	 *
+	 * @param idPodcaster        ID del podcaster.
+	 * @param idAudio            ID del audio.
+	 * @param txtFInfo2Podcaster campo de texto con los colaboradores del podcast.
+	 */
 	private void insertarPodcast(int idPodcaster, int idAudio, JTextField txtFInfo2Podcaster) {
 
 		try {
@@ -1621,6 +1703,13 @@ public class BasedeDatos {
 		}
 	}
 
+	/**
+	 * Obtiene y actualiza la lista de podcasters.
+	 *
+	 * @param listaPodcaster    lista visual de podcasters.
+	 * @param elementoModificar tipo de elemento a modificar (4 para podcasters, 5
+	 *                          para descripciones).
+	 */
 	public void obtenerYActualizarListaPodcaster(JList<String> listaPodcaster, int elementoModificar) {
 		DefaultListModel<String> listModel = new DefaultListModel<>();
 		listaPodcaster.setModel(listModel); // Establecer el modelo de lista en el JList

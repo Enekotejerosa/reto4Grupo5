@@ -80,9 +80,7 @@ public class Reto4Grupo5 extends JFrame {
 	private int audioElegido = -1, posicionPodcast = -1, opcionEscogida = -1;
 	private int accion = 0;
 	private JComboBox<String> cmbxArtista;
-	private JTextField txtFNombreCrudPodcaster;
-	private JTextField txtFInfo2CrudPodcaster;
-	private JTextField txtFInfo1CrudPodcaster;
+	private JTextField txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster;
 	private JLabel lblInfo3CrudPodcast;
 	private JComboBox<String> cmbxCrudPodcast;
 
@@ -126,8 +124,9 @@ public class Reto4Grupo5 extends JFrame {
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String diaString = fecha_registro.format(formato);
 		String premiumfinal = fecha_finpremium.format(formato);
-		String admin = "ADMINISTRADOR";
+		String admin = "ADMINISTRADOR", cliente = "CLIENTE";
 		musicos = basededatos.conseguirArtistas();
+		podcasters = basededatos.conseguirPodcasters();
 
 		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -165,7 +164,7 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnAtras = new JButton("Atras");
 		btnAtras.setEnabled(false);
 		/**
-		 * Va hacia el panel anterior dependiendo de en cual estes
+		 * Va hacia el panel anterior dependiendo de en cual este
 		 */
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -315,7 +314,7 @@ public class Reto4Grupo5 extends JFrame {
 				}
 			}
 		});
-		cmbxTipo.setModel(new DefaultComboBoxModel<String>(new String[] { "CLIENTE", "ADMINISTRADOR" }));
+		cmbxTipo.setModel(new DefaultComboBoxModel<String>(new String[] { cliente, admin }));
 		cmbxTipo.setFont(new Font("MS Gothic", Font.BOLD, 13));
 		cmbxTipo.setBounds(406, 278, 227, 22);
 		panelLogin.add(cmbxTipo);
@@ -329,33 +328,30 @@ public class Reto4Grupo5 extends JFrame {
 			 * @param e
 			 */
 			public void actionPerformed(ActionEvent e) {
-
+				// metodo que recoge el usuario introducido y comprueba si este esta en la base
+				// de datos
 				usuarioIniciado = basededatos.inicioSesion(txtFUsuario.getText(), new String(pswFContra.getPassword()));
-
-				if (usuarioIniciado != null
-						|| (cmbxTipo.getSelectedItem().equals(admin) && txtFUsuario.getText().equals("admin")
-								&& new String(pswFContra.getPassword()).equals("123"))) {
+				// si el usuario existe y el combobox es cliente, se inicia sesion correctamente
+				if (usuarioIniciado != null && cmbxTipo.getSelectedItem().equals(cliente)) {
 					JOptionPane.showMessageDialog(null, "Sesión iniciada correctamente");
-
-					if ((!(cmbxTipo.getSelectedItem().toString().equals(admin) && txtFUsuario.getText().equals("admin")
-							&& new String(pswFContra.getPassword()).equals("123"))
-							&& cmbxTipo.getSelectedItem().equals("CLIENTE"))) {
-						System.out.println(cmbxTipo.getSelectedItem().toString().equals(admin));
-						btnPerfil.setText(usuarioIniciado.getUsuario());
-						btnPerfil.setEnabled(true);
-						metodos.cambiardePantalla(layeredPane, idMenu);
-					} else if (cmbxTipo.getSelectedItem().equals(admin)) {
-						metodos.cambiardePantalla(layeredPane, idAdmin);
-					}
-
+					btnPerfil.setText(usuarioIniciado.getUsuario());
+					btnPerfil.setEnabled(true);
+					metodos.cambiardePantalla(layeredPane, idMenu);
 					btnAtras.setEnabled(true);
+					// si las credenciales de admin introducidas por el usuario coinciden entra en
+					// el panel de admin
+				} else if ((cmbxTipo.getSelectedItem().equals(admin) && txtFUsuario.getText().equals("admin")
+						&& new String(pswFContra.getPassword()).equals("123"))) {
+					metodos.cambiardePantalla(layeredPane, idAdmin);
+					btnAtras.setEnabled(true);
+					// salta error en caso de no coincidir
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"No se ha podido iniciar sesión. Usuario o contraseña incorrectos");
 					txtFUsuario.setText("");
 					pswFContra.setText("");
-				}
 
+				}
 			}
 
 		});
@@ -369,7 +365,213 @@ public class Reto4Grupo5 extends JFrame {
 		lblFondoNeon.setIcon(new ImageIcon((Paths.get("").toAbsolutePath().toString() + "\\img\\neon.jpg")));
 		lblFondoNeon.setBounds(339, 0, 337, 428);
 		panelLogin.add(lblFondoNeon);
-//------------------------------------------- Fin Panel Login, Inicio Panel Menu----------------------------------------------------------------
+
+		// ------------------------------------------- Fin Panel Login, Inicio Panel
+		// Registro----------------------------------------------------------------
+		JPanel panelRegistro = new JPanel();
+		panelRegistro.setBackground(new Color(215, 223, 234));
+		layeredPane.add(panelRegistro, idRegistro);
+		panelRegistro.setLayout(null);
+
+		JLabel lblRegistroContra = new JLabel("Contraseña");
+		lblRegistroContra.setForeground(Color.BLACK);
+		lblRegistroContra.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroContra.setBounds(38, 154, 114, 14);
+		panelRegistro.add(lblRegistroContra);
+
+		JLabel lblRegistroApellido = new JLabel("Apellido");
+		lblRegistroApellido.setForeground(Color.BLACK);
+		lblRegistroApellido.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroApellido.setBounds(38, 79, 114, 27);
+		panelRegistro.add(lblRegistroApellido);
+
+		JLabel lblRegistroNombre = new JLabel("Nombre");
+		lblRegistroNombre.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroNombre.setForeground(Color.BLACK);
+		lblRegistroNombre.setBounds(38, 54, 114, 14);
+		panelRegistro.add(lblRegistroNombre);
+
+		JLabel lblRegistroUsuario = new JLabel("Usuario");
+		lblRegistroUsuario.setForeground(Color.BLACK);
+		lblRegistroUsuario.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroUsuario.setBounds(38, 118, 114, 14);
+		panelRegistro.add(lblRegistroUsuario);
+
+		JLabel lblRegistroConfContra = new JLabel("Confirmar Contraseña");
+		lblRegistroConfContra.setForeground(Color.BLACK);
+		lblRegistroConfContra.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroConfContra.setBounds(38, 195, 188, 14);
+		panelRegistro.add(lblRegistroConfContra);
+
+		JLabel lblRegistroFecNac = new JLabel("Fecha de Nacimiento");
+		lblRegistroFecNac.setForeground(Color.BLACK);
+		lblRegistroFecNac.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroFecNac.setBounds(38, 240, 234, 14);
+		panelRegistro.add(lblRegistroFecNac);
+
+		JLabel lblRegistroFecReg = new JLabel("Fecha de Registro");
+		lblRegistroFecReg.setForeground(Color.BLACK);
+		lblRegistroFecReg.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroFecReg.setBounds(38, 278, 234, 27);
+		panelRegistro.add(lblRegistroFecReg);
+
+		JLabel lblRegistroFecLim = new JLabel("Vencimiento del Premium");
+		lblRegistroFecLim.setVisible(false);
+		lblRegistroFecLim.setForeground(Color.BLACK);
+		lblRegistroFecLim.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRegistroFecLim.setBounds(38, 316, 234, 27);
+		panelRegistro.add(lblRegistroFecLim);
+
+		txtFRegistroNombre = new JTextField();
+		txtFRegistroNombre.setEnabled(false);
+		txtFRegistroNombre.setBounds(223, 55, 165, 20);
+		panelRegistro.add(txtFRegistroNombre);
+		txtFRegistroNombre.setColumns(10);
+
+		txtFRegistroUsuario = new JTextField();
+		txtFRegistroUsuario.setEnabled(false);
+		txtFRegistroUsuario.setColumns(10);
+		txtFRegistroUsuario.setBounds(223, 117, 165, 20);
+		panelRegistro.add(txtFRegistroUsuario);
+		try {
+			// aplica un formato a un formated textField para que el usuario no pueda meter
+			// algo que no sea una fecha
+			MaskFormatter formatos = new MaskFormatter("####-##-##");
+			formatos.setPlaceholderCharacter('-');
+			txtFRegistroFecNac = new JFormattedTextField(formatos);
+			txtFRegistroFecNac.setEnabled(false);
+			txtFRegistroFecNac.setColumns(10);
+			txtFRegistroFecNac.setBounds(223, 239, 165, 20);
+			panelRegistro.add(txtFRegistroFecNac);
+		} catch (ParseException ex) {
+			throw new MiExcepcion("Error al crear el formato de fecha", ex.getErrorOffset());
+		}
+
+		JTextField txtFRegistroFecReg = new JTextField();
+		txtFRegistroFecReg.setEditable(false);
+		txtFRegistroFecReg.setColumns(10);
+		txtFRegistroFecReg.setBounds(223, 283, 165, 20);
+		panelRegistro.add(txtFRegistroFecReg);
+		txtFRegistroFecReg.setText(diaString);
+
+		JTextField txtFRegistroFecLim = new JTextField(premiumfinal);
+		txtFRegistroFecLim.setVisible(false);
+		txtFRegistroFecLim.setEditable(false);
+		txtFRegistroFecLim.setColumns(10);
+		txtFRegistroFecLim.setBounds(223, 321, 165, 20);
+		panelRegistro.add(txtFRegistroFecLim);
+
+		txtFRegistroApellido = new JTextField();
+		txtFRegistroApellido.setEnabled(false);
+		txtFRegistroApellido.setColumns(10);
+		txtFRegistroApellido.setBounds(223, 86, 165, 20);
+		panelRegistro.add(txtFRegistroApellido);
+
+		pswFRegistroContra = new JPasswordField();
+		pswFRegistroContra.setEnabled(false);
+		pswFRegistroContra.setBounds(223, 153, 165, 19);
+		panelRegistro.add(pswFRegistroContra);
+
+		pswFRegistroConfContra = new JPasswordField();
+		pswFRegistroConfContra.setEnabled(false);
+		pswFRegistroConfContra.setBounds(223, 194, 165, 19);
+		panelRegistro.add(pswFRegistroConfContra);
+
+		JButton btnConfirmarCambios = new JButton("Confirmar Cambios");
+		btnConfirmarCambios.addActionListener(new ActionListener() {
+			/**
+			 * Modifica los datos del usuario que estaba iniciado y le vuelve al login
+			 * 
+			 * @param e
+			 */
+			public void actionPerformed(ActionEvent e) {
+				basededatos.cambiarDatos(txtFRegistroNombre.getText(), txtFRegistroApellido.getText(),
+						new String(pswFRegistroContra.getPassword()), txtFRegistroFecNac.getText(),
+						usuarioIniciado.getUsuario());
+				JOptionPane.showMessageDialog(null, "Datos Guardados con exito");
+				metodos.cambiardePantalla(layeredPane, idLogin);
+				btnPerfil.setText("Inicia Sesion");
+				btnPerfil.setEnabled(false);
+				btnConfirmarCambios.setVisible(false);
+				txtFRegistroNombre.setEnabled(false);
+				txtFRegistroApellido.setEnabled(false);
+				pswFRegistroContra.setEnabled(false);
+				txtFRegistroFecNac.setEnabled(false);
+			}
+		});
+		btnConfirmarCambios.setVisible(false);
+		btnConfirmarCambios.setBackground(new Color(215, 223, 234));
+		btnConfirmarCambios.setBounds(489, 52, 145, 23);
+		panelRegistro.add(btnConfirmarCambios);
+
+		// editar datos
+		btnRegistroEditar = new JButton("Editar datos");
+		btnRegistroEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtFRegistroNombre.setEnabled(true);
+				txtFRegistroApellido.setEnabled(true);
+				pswFRegistroContra.setEnabled(true);
+				txtFRegistroFecNac.setEnabled(true);
+				btnConfirmarCambios.setVisible(true);
+			}
+		});
+		btnRegistroEditar.setVisible(false);
+		btnRegistroEditar.setBackground(new Color(215, 223, 234));
+		btnRegistroEditar.setBounds(489, 238, 145, 23);
+		panelRegistro.add(btnRegistroEditar);
+
+		btnRegistroGuardar = new JButton("Guardar Datos");
+		btnRegistroGuardar.addActionListener(new ActionListener() {
+			/**
+			 * registra el usuario en la base de datos y cambia al menu sino, saltara un
+			 * error
+			 * 
+			 * @param e
+			 */
+			public void actionPerformed(ActionEvent e) {
+				boolean registrado = false;
+				// metodo para registrarse
+				registrado = metodos.registrarUsuario(txtFRegistroNombre.getText(), txtFRegistroApellido.getText(),
+						txtFRegistroUsuario.getText(), new String(pswFRegistroContra.getPassword()),
+						new String(pswFRegistroConfContra.getPassword()), txtFRegistroFecNac.getText(),
+						txtFRegistroFecReg.getText(), txtFRegistroFecLim.getText(), premium);
+				if (registrado) {
+					btnRegistroGuardar.setEnabled(false);
+					btnRegistroEditar.setVisible(true);
+					txtFRegistroNombre.setEnabled(false);
+					txtFRegistroApellido.setEnabled(false);
+					txtFRegistroUsuario.setEnabled(false);
+					txtFRegistroFecLim.setEnabled(false);
+					pswFRegistroContra.setEnabled(false);
+					pswFRegistroConfContra.setEnabled(false);
+					txtFRegistroFecNac.setEnabled(false);
+					metodos.cambiardePantalla(layeredPane, idLogin);
+
+				}
+			}
+		});
+		btnRegistroGuardar.setBackground(new Color(215, 223, 234));
+		btnRegistroGuardar.setBounds(489, 278, 145, 23);
+		panelRegistro.add(btnRegistroGuardar);
+
+		JButton btnRegistroComprar = new JButton("Comprar Premium");
+		btnRegistroComprar.addActionListener(new ActionListener() {
+			/**
+			 * Activa el premium
+			 */
+			public void actionPerformed(ActionEvent e) {
+				premium = true;
+				JOptionPane.showMessageDialog(null, "Premium Activado");
+				lblRegistroFecLim.setVisible(true);
+				txtFRegistroFecLim.setVisible(true);
+
+			}
+		});
+		btnRegistroComprar.setBackground(new Color(215, 223, 234));
+		btnRegistroComprar.setBounds(489, 320, 145, 23);
+		panelRegistro.add(btnRegistroComprar);
+
+//------------------------------------------- Fin Panel Registro, Inicio Panel Menu----------------------------------------------------------------
 		panelMenu = new JPanel();
 		panelMenu.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelMenu, idMenu);
@@ -394,6 +596,8 @@ public class Reto4Grupo5 extends JFrame {
 				int cambioY = 0;
 				int cont = 0;
 				int cont2 = 0;
+				// ----------------------------------------------------------------- Musica
+				// --------------------------------------------------------------------------------------------
 				// se generan los artistas
 				do {
 
@@ -577,6 +781,8 @@ public class Reto4Grupo5 extends JFrame {
 		lblNuevaMus.setBounds(92, 65, 124, 120);
 		panelMenu.add(lblNuevaMus);
 
+		// ----------------------------------------------------------------- Podcast
+		// --------------------------------------------------------------------------------------------
 		JLabel lblNuevoPod = new JLabel("");
 		lblNuevoPod.addMouseListener(new MouseAdapter() {
 			/**
@@ -660,9 +866,9 @@ public class Reto4Grupo5 extends JFrame {
 								}
 							}
 						});
-						System.out.println(podcasters.get(cont).getImagen());
-						if (new File(Paths.get("").toAbsolutePath().toString() + "/img/"
-								+ podcasterElegido.getNombreArtista().replace(" ", "") + "Desc.jpg").exists()) {
+						if (new File(
+								Paths.get("").toAbsolutePath().toString() + "/img/" + podcasters.get(cont).getImagen())
+								.exists()) {
 							lblFoto.setIcon(new ImageIcon(Paths.get("").toAbsolutePath().toString() + "/img/"
 									+ podcasters.get(cont).getImagen()));
 						} else {
@@ -707,6 +913,8 @@ public class Reto4Grupo5 extends JFrame {
 		lblNuevoPod.setBounds(283, 65, 124, 120);
 		panelMenu.add(lblNuevoPod);
 
+		// ----------------------------------------------------------------- PlayList
+		// --------------------------------------------------------------------------------------------
 		JLabel lblPlayList = new JLabel("");
 		lblPlayList.addMouseListener(new MouseAdapter() {
 			/**
@@ -749,209 +957,8 @@ public class Reto4Grupo5 extends JFrame {
 		lblPlayListtxt.setFont(new Font("Perpetua", Font.PLAIN, 18));
 		lblPlayListtxt.setBounds(448, 183, 162, 63);
 		panelMenu.add(lblPlayListtxt);
-//------------------------------------------- Fin Panel Menu, Inicio Panel Registro----------------------------------------------------------------
-		JPanel panelRegistro = new JPanel();
-		panelRegistro.setBackground(new Color(215, 223, 234));
-		layeredPane.add(panelRegistro, idRegistro);
-		panelRegistro.setLayout(null);
 
-		JLabel lblRegistroContra = new JLabel("Contraseña");
-		lblRegistroContra.setForeground(Color.BLACK);
-		lblRegistroContra.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroContra.setBounds(38, 154, 114, 14);
-		panelRegistro.add(lblRegistroContra);
-
-		JLabel lblRegistroApellido = new JLabel("Apellido");
-		lblRegistroApellido.setForeground(Color.BLACK);
-		lblRegistroApellido.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroApellido.setBounds(38, 79, 114, 27);
-		panelRegistro.add(lblRegistroApellido);
-
-		JLabel lblRegistroNombre = new JLabel("Nombre");
-		lblRegistroNombre.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroNombre.setForeground(Color.BLACK);
-		lblRegistroNombre.setBounds(38, 54, 114, 14);
-		panelRegistro.add(lblRegistroNombre);
-
-		JLabel lblRegistroUsuario = new JLabel("Usuario");
-		lblRegistroUsuario.setForeground(Color.BLACK);
-		lblRegistroUsuario.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroUsuario.setBounds(38, 118, 114, 14);
-		panelRegistro.add(lblRegistroUsuario);
-
-		JLabel lblRegistroConfContra = new JLabel("Confirmar Contraseña");
-		lblRegistroConfContra.setForeground(Color.BLACK);
-		lblRegistroConfContra.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroConfContra.setBounds(38, 195, 188, 14);
-		panelRegistro.add(lblRegistroConfContra);
-
-		JLabel lblRegistroFecNac = new JLabel("Fecha de Nacimiento");
-		lblRegistroFecNac.setForeground(Color.BLACK);
-		lblRegistroFecNac.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroFecNac.setBounds(38, 240, 234, 14);
-		panelRegistro.add(lblRegistroFecNac);
-
-		JLabel lblRegistroFecReg = new JLabel("Fecha de Registro");
-		lblRegistroFecReg.setForeground(Color.BLACK);
-		lblRegistroFecReg.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroFecReg.setBounds(38, 278, 234, 27);
-		panelRegistro.add(lblRegistroFecReg);
-
-		JLabel lblRegistroFecLim = new JLabel("Vencimiento del Premium");
-		lblRegistroFecLim.setVisible(false);
-		lblRegistroFecLim.setForeground(Color.BLACK);
-		lblRegistroFecLim.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRegistroFecLim.setBounds(38, 316, 234, 27);
-		panelRegistro.add(lblRegistroFecLim);
-
-		txtFRegistroNombre = new JTextField();
-		txtFRegistroNombre.setEnabled(false);
-		txtFRegistroNombre.setBounds(223, 55, 165, 20);
-		panelRegistro.add(txtFRegistroNombre);
-		txtFRegistroNombre.setColumns(10);
-
-		txtFRegistroUsuario = new JTextField();
-		txtFRegistroUsuario.setEnabled(false);
-		txtFRegistroUsuario.setColumns(10);
-		txtFRegistroUsuario.setBounds(223, 117, 165, 20);
-		panelRegistro.add(txtFRegistroUsuario);
-		try {
-			// aplica un formato a un formated textField para que el usuario no pueda meter
-			// algo que no sea una fecha
-			MaskFormatter formatos = new MaskFormatter("####-##-##");
-			formatos.setPlaceholderCharacter('-');
-			txtFRegistroFecNac = new JFormattedTextField(formatos);
-			txtFRegistroFecNac.setEnabled(false);
-			txtFRegistroFecNac.setColumns(10);
-			txtFRegistroFecNac.setBounds(223, 239, 165, 20);
-			panelRegistro.add(txtFRegistroFecNac);
-		} catch (ParseException ex) {
-			throw new MiExcepcion("Error al crear el formato de fecha", ex.getErrorOffset());
-		}
-
-		JTextField txtFRegistroFecReg = new JTextField();
-		txtFRegistroFecReg.setEditable(false);
-		txtFRegistroFecReg.setColumns(10);
-		txtFRegistroFecReg.setBounds(223, 283, 165, 20);
-		panelRegistro.add(txtFRegistroFecReg);
-		txtFRegistroFecReg.setText(diaString);
-
-		JTextField txtFRegistroFecLim = new JTextField(premiumfinal);
-		txtFRegistroFecLim.setVisible(false);
-		txtFRegistroFecLim.setEditable(false);
-		txtFRegistroFecLim.setColumns(10);
-		txtFRegistroFecLim.setBounds(223, 321, 165, 20);
-		panelRegistro.add(txtFRegistroFecLim);
-
-		txtFRegistroApellido = new JTextField();
-		txtFRegistroApellido.setEnabled(false);
-		txtFRegistroApellido.setColumns(10);
-		txtFRegistroApellido.setBounds(223, 86, 165, 20);
-		panelRegistro.add(txtFRegistroApellido);
-
-		pswFRegistroContra = new JPasswordField();
-		pswFRegistroContra.setEnabled(false);
-		pswFRegistroContra.setBounds(223, 153, 165, 19);
-		panelRegistro.add(pswFRegistroContra);
-
-		pswFRegistroConfContra = new JPasswordField();
-		pswFRegistroConfContra.setEnabled(false);
-		pswFRegistroConfContra.setBounds(223, 194, 165, 19);
-		panelRegistro.add(pswFRegistroConfContra);
-
-		JButton btnConfirmarCambios = new JButton("Confirmar Cambios");
-		btnConfirmarCambios.addActionListener(new ActionListener() {
-			/**
-			 * Modifica los datos del usuario que estaba iniciado y le vuelve al login
-			 * 
-			 * @param e
-			 */
-			public void actionPerformed(ActionEvent e) {
-				basededatos.cambiarDatos(txtFRegistroNombre.getText(), txtFRegistroApellido.getText(),
-						new String(pswFRegistroContra.getPassword()), txtFRegistroFecNac.getText(),
-						usuarioIniciado.getUsuario());
-				JOptionPane.showMessageDialog(null, "Datos Guardados con exito");
-				metodos.cambiardePantalla(layeredPane, idLogin);
-				btnPerfil.setText("Inicia Sesion");
-				btnPerfil.setEnabled(false);
-				btnConfirmarCambios.setVisible(false);
-				txtFRegistroNombre.setEnabled(false);
-				txtFRegistroApellido.setEnabled(false);
-				pswFRegistroContra.setEnabled(false);
-				txtFRegistroFecNac.setEnabled(false);
-			}
-		});
-		btnConfirmarCambios.setVisible(false);
-		btnConfirmarCambios.setBackground(new Color(215, 223, 234));
-		btnConfirmarCambios.setBounds(489, 52, 145, 23);
-		panelRegistro.add(btnConfirmarCambios);
-
-		btnRegistroEditar = new JButton("Editar datos");
-		btnRegistroEditar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				txtFRegistroNombre.setEnabled(true);
-				txtFRegistroApellido.setEnabled(true);
-				pswFRegistroContra.setEnabled(true);
-				txtFRegistroFecNac.setEnabled(true);
-				btnConfirmarCambios.setVisible(true);
-			}
-		});
-		btnRegistroEditar.setVisible(false);
-		btnRegistroEditar.setBackground(new Color(215, 223, 234));
-		btnRegistroEditar.setBounds(489, 238, 145, 23);
-		panelRegistro.add(btnRegistroEditar);
-
-		btnRegistroGuardar = new JButton("Guardar Datos");
-		btnRegistroGuardar.addActionListener(new ActionListener() {
-			/**
-			 * registra el usuario en la base de datos y cambia al menu sino, saltara un
-			 * error
-			 * 
-			 * @param e
-			 */
-			public void actionPerformed(ActionEvent e) {
-				boolean registrado = false;
-				registrado = metodos.registrarUsuario(txtFRegistroNombre.getText(), txtFRegistroApellido.getText(),
-						txtFRegistroUsuario.getText(), new String(pswFRegistroContra.getPassword()),
-						new String(pswFRegistroConfContra.getPassword()), txtFRegistroFecNac.getText(),
-						txtFRegistroFecReg.getText(), txtFRegistroFecLim.getText(), premium);
-				if (registrado) {
-					btnRegistroGuardar.setEnabled(false);
-					btnRegistroEditar.setVisible(true);
-					txtFRegistroNombre.setEnabled(false);
-					txtFRegistroApellido.setEnabled(false);
-					txtFRegistroUsuario.setEnabled(false);
-					txtFRegistroFecLim.setEnabled(false);
-					pswFRegistroContra.setEnabled(false);
-					pswFRegistroConfContra.setEnabled(false);
-					txtFRegistroFecNac.setEnabled(false);
-					metodos.cambiardePantalla(layeredPane, idLogin);
-
-				}
-			}
-		});
-		btnRegistroGuardar.setBackground(new Color(215, 223, 234));
-		btnRegistroGuardar.setBounds(489, 278, 145, 23);
-		panelRegistro.add(btnRegistroGuardar);
-
-		JButton btnRegistroComprar = new JButton("Comprar Premium");
-		btnRegistroComprar.addActionListener(new ActionListener() {
-			/**
-			 * Activa el premium
-			 */
-			public void actionPerformed(ActionEvent e) {
-				premium = true;
-				JOptionPane.showMessageDialog(null, "Premium Activado");
-				lblRegistroFecLim.setVisible(true);
-				txtFRegistroFecLim.setVisible(true);
-
-			}
-		});
-		btnRegistroComprar.setBackground(new Color(215, 223, 234));
-		btnRegistroComprar.setBounds(489, 320, 145, 23);
-		panelRegistro.add(btnRegistroComprar);
-
-//------------------------------------------- Fin Panel Registro, Inicio Panel Artistas----------------------------------------------------------------
+//------------------------------------------- Fin Panel Menu, Inicio Panel Artistas----------------------------------------------------------------
 		panelArtistas = new JPanel();
 		panelArtistas.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelArtistas, idArtistas);
@@ -971,6 +978,8 @@ public class Reto4Grupo5 extends JFrame {
 		layeredPane.add(panelReproduccion, idReproducir);
 		panelReproduccion.setLayout(null);
 
+		// -------------------------------------------------------------- Menu
+		// reproducion -------------------------------------------------------
 		JButton btnMenu = new JButton("Menu");
 		btnMenu.addActionListener(new ActionListener() {
 			/**
@@ -997,6 +1006,62 @@ public class Reto4Grupo5 extends JFrame {
 		btnMenu.setBounds(34, 350, 139, 23);
 		panelReproduccion.add(btnMenu);
 
+////////////////////////////////////////Panel Boton Menu
+//////////////////////////////////////// //////////////////////////////////////////////////////////
+		panelBtnMenu = new JPanel();
+		panelBtnMenu.setBackground(new Color(215, 223, 234));
+		layeredPane.add(panelBtnMenu, "btnMenu");
+		panelBtnMenu.setLayout(null);
+
+		JScrollPane scrollPaneBtnMenu = new JScrollPane();
+		scrollPaneBtnMenu.setBounds(230, 130, 220, 220);
+		panelBtnMenu.add(scrollPaneBtnMenu);
+
+		listaMenu = new JList<String>();
+		scrollPaneBtnMenu.setViewportView(listaMenu);
+
+		txtFNombreCancionMenu = new JTextField();
+		txtFNombreCancionMenu.setHorizontalAlignment(SwingConstants.CENTER);
+		txtFNombreCancionMenu.setEditable(false);
+		txtFNombreCancionMenu.setBounds(230, 99, 220, 20);
+		panelBtnMenu.add(txtFNombreCancionMenu);
+		txtFNombreCancionMenu.setColumns(10);
+
+		JButton btnAnadirPlayList = new JButton("Añadir");
+		btnAnadirPlayList.addActionListener(new ActionListener() {
+			/**
+			 * Inserta una cancion a una playlist
+			 * 
+			 * @param e
+			 */
+			public void actionPerformed(ActionEvent e) {
+				metodos.comprobarInsertarCancionPlaylist(albumElegido.getCanciones().get(audioElegido).getIdAudio(),
+						listaMenu, usuarioIniciado);
+			}
+		});
+		btnAnadirPlayList.setBounds(120, 374, 220, 27);
+		panelBtnMenu.add(btnAnadirPlayList);
+
+		JButton btnExportarCancion = new JButton("Exportar");
+		btnExportarCancion.addActionListener(new ActionListener() {
+			/**
+			 * Crea un archivo txt con los datos de la cancion
+			 * 
+			 * @param e
+			 */
+			public void actionPerformed(ActionEvent e) {
+				if (opcionEscogida == 0) {
+					metodos.exportarCancion(albumElegido.getCanciones().get(audioElegido));
+				} else {
+					metodos.exportarPodcast(podcasterElegido.getPodcasts().get(audioElegido));
+				}
+			}
+		});
+		btnExportarCancion.setBounds(342, 374, 220, 27);
+		panelBtnMenu.add(btnExportarCancion);
+
+		// -------------------------------------------------------------- Me gusta
+		// -------------------------------------------------------
 		JButton btnMeGusta = new JButton("Me Gusta");
 		btnMeGusta.addActionListener(new ActionListener() {
 			/**
@@ -1008,6 +1073,9 @@ public class Reto4Grupo5 extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (clip != null && clip.isRunning()) {// comprueba que el audio se este reproduciendo
 					boolean repetido = false;
+					// busca en la playlist de me gusta el titulo de todas las canciones que estan
+					// metidas y si esta intendando añadir una cancion que ya esta esta añadida le
+					// salta error
 					for (int i = 0; i != usuarioIniciado.getPlaylists().get(0).getCanciones().size(); i++) {
 						if (usuarioIniciado.getPlaylists().get(0).getCanciones().get(i).getIdAudio() == albumElegido
 								.getCanciones().get(audioElegido).getIdAudio()) {
@@ -1040,6 +1108,8 @@ public class Reto4Grupo5 extends JFrame {
 		btnMeGusta.setBounds(468, 350, 139, 23);
 		panelReproduccion.add(btnMeGusta);
 
+		// -------------------------------------------------------------- Reproducir
+				// -------------------------------------------------------
 		btnAtrasCancion = new JButton("<");
 		btnAtrasCancion.addActionListener(new ActionListener() {
 			/**
@@ -1202,9 +1272,13 @@ public class Reto4Grupo5 extends JFrame {
 									.getImage();
 							ImageIcon img2 = new ImageIcon(img.getScaledInstance(275, 210, Image.SCALE_SMOOTH));
 							lblAlbum.setText("Album:");
+							// dentro de el file en el .reproducir se encuentra toda la informacion de la
+							// cancion
 							file = albumElegido.getCanciones().get(audioElegido).reproducir(lblDuracionSelec,
 									lblReproduciendoSelec, btnX05, btnX1, btnX15);
 							lblAlbumSelec.setText(albumElegido.getTitulo().toUpperCase());
+							// si el file existe se le asigna la foto y sino se le establece una
+							// predeterminada
 							if (new File(
 									Paths.get("").toAbsolutePath().toString() + "\\img\\" + albumElegido.getImagen())
 									.exists()) {
@@ -1216,6 +1290,8 @@ public class Reto4Grupo5 extends JFrame {
 							}
 						} else {// genera el podcast y inserta sus datos
 							lblAlbum.setText("Podcast:");
+							// dentro de el file en el .reproducir se encuentra toda la informacion de el
+							// podcast
 							file = podcasterElegido.getPodcasts().get(audioElegido).reproducir(lblDuracionSelec,
 									lblReproduciendoSelec, btnX05, btnX1, btnX15);
 
@@ -1246,14 +1322,12 @@ public class Reto4Grupo5 extends JFrame {
 					if (clip != null && clip.isRunning()) {
 						clipTimePosition = clip.getMicrosecondPosition();
 						clip.stop();
-						System.out.println("Canción detenida.");
 						btnReproducir.setText("Reanudar");
 					}
 				} else if (btnReproducir.getText().equals("Reanudar")) {// Reanuda el clip en la posicion que se paro
 					btnReproducir.setText("Parar");
 					clip.setMicrosecondPosition(clipTimePosition);
 					clip.start();
-					System.out.println("Canción reanudada.");
 				}
 			}
 		});
@@ -1262,59 +1336,6 @@ public class Reto4Grupo5 extends JFrame {
 		panelReproduccion.add(btnReproducir);
 
 		// ------------------------------------------- Fin Panel Reproduccion, Inicio
-		// Panel
-		// Gestion----------------------------------------------------------------
-
-		panelAdmin = new JPanel();
-		panelAdmin.setBackground(new Color(215, 223, 234));
-		layeredPane.add(panelAdmin, idAdmin);
-		panelAdmin.setLayout(null);
-
-		JButton btnGestMusica = new JButton("Gestionar musica");
-		btnGestMusica.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
-				btnGestPodcasts.setVisible(false);
-				btnGestPodcaster.setVisible(false);
-				btnGestArtistas.setVisible(true);
-				btnGestAlbumes.setVisible(true);
-				btnGestCanciones.setVisible(true);
-			}
-		});
-		btnGestMusica.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnGestMusica.setBounds(263, 153, 167, 23);
-		panelAdmin.add(btnGestMusica);
-
-		JButton btnGestPodcats = new JButton("Gestionar podcast");
-		btnGestPodcats.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
-				btnGestPodcasts.setVisible(true);
-				btnGestPodcaster.setVisible(true);
-				btnGestArtistas.setVisible(false);
-				btnGestAlbumes.setVisible(false);
-				btnGestCanciones.setVisible(false);
-			}
-		});
-		btnGestPodcats.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnGestPodcats.setBounds(263, 199, 167, 23);
-		panelAdmin.add(btnGestPodcats);
-
-		JButton btnGestEstadisticas = new JButton("Estadisticas");
-		btnGestEstadisticas.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metodos.cambiardePantalla(layeredPane, idEstadisticas);
-			}
-		});
-		btnGestEstadisticas.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnGestEstadisticas.setBounds(263, 241, 167, 23);
-		panelAdmin.add(btnGestEstadisticas);
-
-		JLabel lblAdmin = new JLabel("Menu Gestión");
-		lblAdmin.setFont(new Font("Cambria", Font.BOLD, 25));
-		lblAdmin.setBounds(266, 86, 180, 56);
-		panelAdmin.add(lblAdmin);
-		// ------------------------------------------- Fin Panel Gestion, Inicio
 		// Canciones ----------------------------------------------------------------
 		panelCanciones = new JPanel();
 		panelCanciones.setBackground(new Color(215, 223, 234));
@@ -1394,6 +1415,7 @@ public class Reto4Grupo5 extends JFrame {
 		scrollPaneTablaPlaylist.setBounds(354, 198, 302, 200);
 		panelPlaylist.add(scrollPaneTablaPlaylist);
 
+		// muestra todos los datos de la playlist en la que click-a
 		JTable tablaInfoPlaylist = new JTable();
 		scrollPaneTablaPlaylist.setViewportView(tablaInfoPlaylist);
 		listaPlaylist = new JList<String>();
@@ -1411,7 +1433,61 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		listaPlaylist.setBounds(61, 44, 250, 354);
 		panelPlaylist.add(listaPlaylist);
-		// Panel Menu GestionarMusica
+
+		// Panel
+		// Admin----------------------------------------------------------------
+		panelAdmin = new JPanel();
+		panelAdmin.setBackground(new Color(215, 223, 234));
+		layeredPane.add(panelAdmin, idAdmin);
+		panelAdmin.setLayout(null);
+
+		JButton btnGestMusica = new JButton("Gestionar musica");
+		btnGestMusica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
+				btnGestPodcasts.setVisible(false);
+				btnGestPodcaster.setVisible(false);
+				btnGestArtistas.setVisible(true);
+				btnGestAlbumes.setVisible(true);
+				btnGestCanciones.setVisible(true);
+			}
+		});
+		btnGestMusica.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnGestMusica.setBounds(263, 153, 167, 23);
+		panelAdmin.add(btnGestMusica);
+
+		JButton btnGestPodcats = new JButton("Gestionar podcast");
+		btnGestPodcats.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiardePantalla(layeredPane, idMenuGestMusica);
+				btnGestPodcasts.setVisible(true);
+				btnGestPodcaster.setVisible(true);
+				btnGestArtistas.setVisible(false);
+				btnGestAlbumes.setVisible(false);
+				btnGestCanciones.setVisible(false);
+			}
+		});
+		btnGestPodcats.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnGestPodcats.setBounds(263, 199, 167, 23);
+		panelAdmin.add(btnGestPodcats);
+
+		JButton btnGestEstadisticas = new JButton("Estadisticas");
+		btnGestEstadisticas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiardePantalla(layeredPane, idEstadisticas);
+			}
+		});
+		btnGestEstadisticas.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnGestEstadisticas.setBounds(263, 241, 167, 23);
+		panelAdmin.add(btnGestEstadisticas);
+
+		JLabel lblAdmin = new JLabel("Menu Gestión");
+		lblAdmin.setFont(new Font("Cambria", Font.BOLD, 25));
+		lblAdmin.setBounds(266, 86, 180, 56);
+		panelAdmin.add(lblAdmin);
+
+		// --------------------------------------------- Panel Menu GestionarMusica
+		// ------------------------------------------------------------------------------
 		panelMenuGestMusica = new JPanel();
 		panelMenuGestMusica.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelMenuGestMusica, idMenuGestMusica);
@@ -1426,11 +1502,11 @@ public class Reto4Grupo5 extends JFrame {
 				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
 				elementoGestionado = 1;
 				basededatos.obtenerYActualizarLista(listaCrudMusica, elementoGestionado);
+				// crea un array de artistas para establezerlos en el combobox
 				String[] artistas = new String[musicos.size()];
 				for (int i = 0; i != musicos.size(); i++) {
 					artistas[i] = musicos.get(i).getNombreArtista();
 				}
-
 				cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
 			}
 		});
@@ -1446,11 +1522,11 @@ public class Reto4Grupo5 extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				elementoGestionado = 2;
 				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
+				// crea un array de artistas para establezerlos en el combobox
 				String[] artistas = new String[musicos.size()];
 				for (int i = 0; i != musicos.size(); i++) {
 					artistas[i] = musicos.get(i).getNombreArtista();
 				}
-
 				cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
 			}
 		});
@@ -1466,6 +1542,7 @@ public class Reto4Grupo5 extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
 				elementoGestionado = 3;
+				// crea un array de artistas para establezerlos en el combobox
 				String[] artistas = new String[musicos.size()];
 				for (int i = 0; i != musicos.size(); i++) {
 					artistas[i] = musicos.get(i).getNombreArtista();
@@ -1506,60 +1583,6 @@ public class Reto4Grupo5 extends JFrame {
 		btnGestPodcasts.setFont(new Font("Tahoma", Font.BOLD, 14));
 		btnGestPodcasts.setBounds(342, 246, 178, 94);
 		panelMenuGestMusica.add(btnGestPodcasts);
-
-		//////////////////////////////////////// Panel Boton Menu
-		//////////////////////////////////////// //////////////////////////////////////////////////////////
-		panelBtnMenu = new JPanel();
-		panelBtnMenu.setBackground(new Color(215, 223, 234));
-		layeredPane.add(panelBtnMenu, "btnMenu");
-		panelBtnMenu.setLayout(null);
-
-		JScrollPane scrollPaneBtnMenu = new JScrollPane();
-		scrollPaneBtnMenu.setBounds(230, 130, 220, 220);
-		panelBtnMenu.add(scrollPaneBtnMenu);
-
-		listaMenu = new JList<String>();
-		scrollPaneBtnMenu.setViewportView(listaMenu);
-
-		txtFNombreCancionMenu = new JTextField();
-		txtFNombreCancionMenu.setHorizontalAlignment(SwingConstants.CENTER);
-		txtFNombreCancionMenu.setEditable(false);
-		txtFNombreCancionMenu.setBounds(230, 99, 220, 20);
-		panelBtnMenu.add(txtFNombreCancionMenu);
-		txtFNombreCancionMenu.setColumns(10);
-
-		JButton btnAnadirPlayList = new JButton("Añadir");
-		btnAnadirPlayList.addActionListener(new ActionListener() {
-			/**
-			 * Inserta una cancion a una playlist
-			 * 
-			 * @param e
-			 */
-			public void actionPerformed(ActionEvent e) {
-				metodos.comprobarInsertarCancionPlaylist(albumElegido.getCanciones().get(audioElegido).getIdAudio(),
-						listaMenu, usuarioIniciado);
-			}
-		});
-		btnAnadirPlayList.setBounds(120, 374, 220, 27);
-		panelBtnMenu.add(btnAnadirPlayList);
-
-		JButton btnExportarCancion = new JButton("Exportar");
-		btnExportarCancion.addActionListener(new ActionListener() {
-			/**
-			 * Crea un archivo txt con los datos de la cancion
-			 * 
-			 * @param e
-			 */
-			public void actionPerformed(ActionEvent e) {
-				if (opcionEscogida == 0) {
-					metodos.exportarCancion(albumElegido.getCanciones().get(audioElegido));
-				} else {
-					metodos.exportarPodcast(podcasterElegido.getPodcasts().get(audioElegido));
-				}
-			}
-		});
-		btnExportarCancion.setBounds(342, 374, 220, 27);
-		panelBtnMenu.add(btnExportarCancion);
 
 ////////////////////////////////////////////Panel Estadisticas////////////////////////////////////////////////////
 		panelEstadisticas = new JPanel();
@@ -1714,7 +1737,7 @@ public class Reto4Grupo5 extends JFrame {
 						albumes[i] = musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(i).getTitulo();
 					}
 					cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(albumes));
-					// Establece todos los albumes en la lista si gestionamos albumes.
+				// Establece todos los albumes en la lista si gestionamos albumes.
 				} else {
 					DefaultListModel<String> listModel = new DefaultListModel<>();
 					listaCrudMusica.setModel(listModel);
@@ -1745,10 +1768,11 @@ public class Reto4Grupo5 extends JFrame {
 			 */
 			public void actionPerformed(ActionEvent e) {
 				if (!txtFNombreCrud.getText().equals("") && !txtFInfo1Crud.getText().equals("")) {
+					// ----------------------------------- añadir ---------------------------------------
 					if (accion == 1) {
 						boolean artistaRepetido = false;
 						if (elementoGestionado == 1) {
-
+                            // recorre toda la lista para haber si hay algun artista repetido, en caso de no haber, lo añade
 							for (int i = 0; i < listaCrudMusica.getModel().getSize(); i++) {
 								if (listaCrudMusica.getModel().getElementAt(i).equals(txtFNombreCrud.getText())) {
 									artistaRepetido = true;
@@ -1794,10 +1818,12 @@ public class Reto4Grupo5 extends JFrame {
 
 							}
 						}
+					// ----------------------------------- modificar ---------------------------------------
 					} else if (accion == 2) {
 						if (elementoGestionado == 1) {
 							if (listaCrudMusica.isSelectionEmpty()) {
 								JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
+							// recoge el elemento seleccionado en la lista para modificar su informacion
 							} else {
 								String nombreArtistaSeleccionado = listaCrudMusica.getSelectedValue();
 								basededatos.modificarElementoLista(nombreArtistaSeleccionado, txtFNombreCrud.getText(),
@@ -1838,10 +1864,8 @@ public class Reto4Grupo5 extends JFrame {
 			 */
 			public void actionPerformed(ActionEvent e) {
 				accion = 1;
-
 				metodos.cargarCrudMusica(lblNombreCrud, lblInfo1Crud, lblInfo2Crud, txtFNombreCrud, txtFInfo1Crud,
 						cmbxCrudTipo, lblCrudArtista, cmbxArtista, elementoGestionado);
-
 				btnAceptarCrudMusica.setVisible(true);
 			}
 		});
@@ -1857,14 +1881,13 @@ public class Reto4Grupo5 extends JFrame {
 			 * @param e
 			 */
 			public void actionPerformed(ActionEvent e) {
-
 				if (elementoGestionado == 1) {
+					// se recoge el indice de el musico seleccionado para despues poder sacar su informacion
 					if (listaCrudMusica.getSelectedIndex() != -1) {
 						Musico musicoSeleccionado = musicos.get(listaCrudMusica.getSelectedIndex());
 						txtFNombreCrud.setText(musicoSeleccionado.getNombreArtista());
 						txtFInfo1Crud.setText(musicoSeleccionado.getDescripcion());
 						cmbxCrudTipo.setSelectedItem(musicoSeleccionado.getCaracteristica());
-
 					} else {
 						JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
 					}
@@ -1920,6 +1943,7 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		scrollPane.setViewportView(listaCrudMusica);
 
+		// ---------------------------------------------------------- Gestionar podcast -----------------------------------------------------------------------------
 		panelGestPodcaster = new JPanel();
 		panelGestPodcaster.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelGestPodcaster, idGestionPodcaster);
@@ -1982,7 +2006,7 @@ public class Reto4Grupo5 extends JFrame {
 		btnAceptarPodcaster.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// En el caso de gestionar los podcasters con su genero y descripcion
+				// En el caso de gestionar los podcasters 
 				if (elementoGestionado == 4) {
 					if (accion == 1) {
 						if (!txtFNombreCrudPodcaster.getText().isEmpty() || !txtFInfo1CrudPodcaster.getText().isEmpty()
@@ -2011,7 +2035,7 @@ public class Reto4Grupo5 extends JFrame {
 
 					}
 				}
-				// En el caso de gestionar los podcasts nuevos con su duracion y colaboradores
+				// En el caso de gestionar los podcasts 
 				else {
 					if (metodos.formatoDuracion(txtFInfo1CrudPodcaster.getText())) {
 						if (accion == 1) {
@@ -2062,12 +2086,10 @@ public class Reto4Grupo5 extends JFrame {
 		btnAñadirPodcaster.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				accion = 1;
-
+				// carga la lista con su informacion correspondiente
 				if (elementoGestionado == 4) {
-
 					metodos.cargarCrudPodcaster(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
 							txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster);
-
 				} else {
 
 					metodos.cargarCrudPodcast(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
@@ -2083,7 +2105,8 @@ public class Reto4Grupo5 extends JFrame {
 		JButton btnModificarPodcaster = new JButton("Modificar");
 		btnModificarPodcaster.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				accion = 2;
+				// si gestiona podcasters y la lista no esta vacia, dependiendo el podcaster elegido por el usuario saca su informacion
 				if (elementoGestionado == 4) {
 					int i = listaPodcaster.getSelectedIndex();
 					if (i != -1) {
@@ -2100,14 +2123,12 @@ public class Reto4Grupo5 extends JFrame {
 					metodos.cargarCrudPodcaster(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
 							txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster);
 				}
-
+				// si gestiona podcasts y la lista no esta vacia, dependiendo el podcast elegido por el usuario saca su informacion
 				else if (elementoGestionado == 5) {
 					int i = listaPodcaster.getSelectedIndex();
 					if (i != -1) {
-
 						String nombrePodcast = listaPodcaster.getSelectedValue();
 						Podcast podcastSeleccionado = basededatos.obtenerPodcast(nombrePodcast);
-
 						txtFNombreCrudPodcaster.setText(nombrePodcast);
 						txtFInfo1CrudPodcaster.setText(podcastSeleccionado.getDuracion());
 						txtFInfo2CrudPodcaster.setText(podcastSeleccionado.getColaboradores());
@@ -2119,7 +2140,6 @@ public class Reto4Grupo5 extends JFrame {
 				}
 
 				btnAceptarPodcaster.setVisible(true);
-				accion = 2;
 			}
 
 		});
@@ -2141,7 +2161,6 @@ public class Reto4Grupo5 extends JFrame {
 		txtFInfo1CrudPodcaster.setBounds(364, 158, 244, 20);
 		panelGestPodcaster.add(txtFInfo1CrudPodcaster);
 
-		podcasters = basededatos.conseguirPodcasters();
 		podcasterTotales = new String[podcasters.size()];
 		// Almacenamiento de los podcasters que aparecene en el comboBox
 		for (int i = 0; i != podcasters.size(); i++) {
@@ -2154,7 +2173,6 @@ public class Reto4Grupo5 extends JFrame {
 				listaPodcaster.setModel(listModel);
 
 				for (int i = 0; i != podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getPodcasts().size(); i++) {
-
 					listModel.addElement(
 							podcasters.get(cmbxCrudPodcast.getSelectedIndex()).getPodcasts().get(i).getNombre());
 				}
