@@ -63,7 +63,7 @@ public class Reto4Grupo5 extends JFrame {
 	private JButton btnRegistroGuardar, btnRegistroEditar, btnReproducir, btnAdelanteCancion, btnAtrasCancion,
 			btnGestArtistas, btnGestAlbumes, btnGestCanciones, btnGestPodcasts, btnGestPodcaster, btnAceptarPodcaster;
 	private JPanel panelArtistas, panelAlbumes, panelCanciones, panelReproduccion, panelPlaylist, panelMenu,
-			panelCrudMusica, panelBtnMenu, panelAdmin, panelGestPodcaster, panelMenuGestMusica, panelEstadisticas;
+			panelCrudMusica, panelBtnMenu, panelAdmin, panelGestPodcaster, panelMenuGestMusica, panelEstadisticas, panelRegistro;
 	private JLabel lblReproduciendoSelec, lblAlbumSelec, lblNombreCrudPodcaster, lblInfo1CrudPodcaster,
 			lblInfo2CrudPodcaster;
 	private JList<String> listaPlaylist, listaMenu, listaCrudMusica, listaPodcaster;
@@ -186,7 +186,7 @@ public class Reto4Grupo5 extends JFrame {
 					if (!(clip == null) && clip.isRunning()) {
 						clip.stop();
 					}
-				} else if (panelMenu.isVisible() || panelAdmin.isVisible()) {
+				} else if (panelMenu.isVisible() || panelAdmin.isVisible() || panelRegistro.isVisible()) {
 					metodos.cambiardePantalla(layeredPane, idLogin);
 					btnAtras.setEnabled(false);
 					btnPerfil.setEnabled(false);
@@ -368,7 +368,7 @@ public class Reto4Grupo5 extends JFrame {
 
 		// ------------------------------------------- Fin Panel Login, Inicio Panel
 		// Registro----------------------------------------------------------------
-		JPanel panelRegistro = new JPanel();
+		panelRegistro = new JPanel();
 		panelRegistro.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelRegistro, idRegistro);
 		panelRegistro.setLayout(null);
