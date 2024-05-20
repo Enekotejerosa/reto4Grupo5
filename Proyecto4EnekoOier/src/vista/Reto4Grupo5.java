@@ -1109,7 +1109,7 @@ public class Reto4Grupo5 extends JFrame {
 		panelReproduccion.add(btnMeGusta);
 
 		// -------------------------------------------------------------- Reproducir
-				// -------------------------------------------------------
+		// -------------------------------------------------------
 		btnAtrasCancion = new JButton("<");
 		btnAtrasCancion.addActionListener(new ActionListener() {
 			/**
@@ -1501,11 +1501,13 @@ public class Reto4Grupo5 extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiardePantalla(layeredPane, idPanelCrudMusica);
 				elementoGestionado = 1;
-				basededatos.obtenerYActualizarLista(listaCrudMusica, elementoGestionado);
+				DefaultListModel<String> listModel = new DefaultListModel<>();
+				listaCrudMusica.setModel(listModel);
 				// crea un array de artistas para establezerlos en el combobox
 				String[] artistas = new String[musicos.size()];
 				for (int i = 0; i != musicos.size(); i++) {
 					artistas[i] = musicos.get(i).getNombreArtista();
+				listModel.addElement(musicos.get(i).getNombreArtista());
 				}
 				cmbxArtista.setModel(new DefaultComboBoxModel<String>(artistas));
 			}
@@ -1737,7 +1739,7 @@ public class Reto4Grupo5 extends JFrame {
 						albumes[i] = musicos.get(cmbxArtista.getSelectedIndex()).getAlbumes().get(i).getTitulo();
 					}
 					cmbxCrudTipo.setModel(new DefaultComboBoxModel<String>(albumes));
-				// Establece todos los albumes en la lista si gestionamos albumes.
+					// Establece todos los albumes en la lista si gestionamos albumes.
 				} else {
 					DefaultListModel<String> listModel = new DefaultListModel<>();
 					listaCrudMusica.setModel(listModel);
@@ -1768,11 +1770,13 @@ public class Reto4Grupo5 extends JFrame {
 			 */
 			public void actionPerformed(ActionEvent e) {
 				if (!txtFNombreCrud.getText().equals("") && !txtFInfo1Crud.getText().equals("")) {
-					// ----------------------------------- añadir ---------------------------------------
+					// ----------------------------------- añadir
+					// ---------------------------------------
 					if (accion == 1) {
 						boolean artistaRepetido = false;
 						if (elementoGestionado == 1) {
-                            // recorre toda la lista para haber si hay algun artista repetido, en caso de no haber, lo añade
+							// recorre toda la lista para haber si hay algun artista repetido, en caso de no
+							// haber, lo añade
 							for (int i = 0; i < listaCrudMusica.getModel().getSize(); i++) {
 								if (listaCrudMusica.getModel().getElementAt(i).equals(txtFNombreCrud.getText())) {
 									artistaRepetido = true;
@@ -1818,12 +1822,13 @@ public class Reto4Grupo5 extends JFrame {
 
 							}
 						}
-					// ----------------------------------- modificar ---------------------------------------
+						// ----------------------------------- modificar
+						// ---------------------------------------
 					} else if (accion == 2) {
 						if (elementoGestionado == 1) {
 							if (listaCrudMusica.isSelectionEmpty()) {
 								JOptionPane.showMessageDialog(null, "Debes seleccionar un artista para modificar");
-							// recoge el elemento seleccionado en la lista para modificar su informacion
+								// recoge el elemento seleccionado en la lista para modificar su informacion
 							} else {
 								String nombreArtistaSeleccionado = listaCrudMusica.getSelectedValue();
 								basededatos.modificarElementoLista(nombreArtistaSeleccionado, txtFNombreCrud.getText(),
@@ -1882,7 +1887,8 @@ public class Reto4Grupo5 extends JFrame {
 			 */
 			public void actionPerformed(ActionEvent e) {
 				if (elementoGestionado == 1) {
-					// se recoge el indice de el musico seleccionado para despues poder sacar su informacion
+					// se recoge el indice de el musico seleccionado para despues poder sacar su
+					// informacion
 					if (listaCrudMusica.getSelectedIndex() != -1) {
 						Musico musicoSeleccionado = musicos.get(listaCrudMusica.getSelectedIndex());
 						txtFNombreCrud.setText(musicoSeleccionado.getNombreArtista());
@@ -1943,7 +1949,8 @@ public class Reto4Grupo5 extends JFrame {
 		});
 		scrollPane.setViewportView(listaCrudMusica);
 
-		// ---------------------------------------------------------- Gestionar podcast -----------------------------------------------------------------------------
+		// ---------------------------------------------------------- Gestionar podcast
+		// -----------------------------------------------------------------------------
 		panelGestPodcaster = new JPanel();
 		panelGestPodcaster.setBackground(new Color(215, 223, 234));
 		layeredPane.add(panelGestPodcaster, idGestionPodcaster);
@@ -2006,7 +2013,7 @@ public class Reto4Grupo5 extends JFrame {
 		btnAceptarPodcaster.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// En el caso de gestionar los podcasters 
+				// En el caso de gestionar los podcasters
 				if (elementoGestionado == 4) {
 					if (accion == 1) {
 						if (!txtFNombreCrudPodcaster.getText().isEmpty() || !txtFInfo1CrudPodcaster.getText().isEmpty()
@@ -2035,7 +2042,7 @@ public class Reto4Grupo5 extends JFrame {
 
 					}
 				}
-				// En el caso de gestionar los podcasts 
+				// En el caso de gestionar los podcasts
 				else {
 					if (metodos.formatoDuracion(txtFInfo1CrudPodcaster.getText())) {
 						if (accion == 1) {
@@ -2106,7 +2113,8 @@ public class Reto4Grupo5 extends JFrame {
 		btnModificarPodcaster.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				accion = 2;
-				// si gestiona podcasters y la lista no esta vacia, dependiendo el podcaster elegido por el usuario saca su informacion
+				// si gestiona podcasters y la lista no esta vacia, dependiendo el podcaster
+				// elegido por el usuario saca su informacion
 				if (elementoGestionado == 4) {
 					int i = listaPodcaster.getSelectedIndex();
 					if (i != -1) {
@@ -2123,7 +2131,8 @@ public class Reto4Grupo5 extends JFrame {
 					metodos.cargarCrudPodcaster(lblNombreCrudPodcaster, lblInfo1CrudPodcaster, lblInfo2CrudPodcaster,
 							txtFNombreCrudPodcaster, txtFInfo1CrudPodcaster, txtFInfo2CrudPodcaster);
 				}
-				// si gestiona podcasts y la lista no esta vacia, dependiendo el podcast elegido por el usuario saca su informacion
+				// si gestiona podcasts y la lista no esta vacia, dependiendo el podcast elegido
+				// por el usuario saca su informacion
 				else if (elementoGestionado == 5) {
 					int i = listaPodcaster.getSelectedIndex();
 					if (i != -1) {
