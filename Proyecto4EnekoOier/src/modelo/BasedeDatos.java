@@ -701,8 +701,8 @@ public class BasedeDatos {
 			String consulta = "INSERT INTO " + tablaPlaylistCanciones + " (" + playlistId + ", " + audioId + ", "
 					+ playlistCancionFecha + ") VALUES (" + idLista + ", " + idAudio + ", CURRENT_DATE())";
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
-			System.out.println("se ha metiu");
 			preparedStatement.executeUpdate();
+			audioIntoducidoPlaylist(idAudio);
 			conexion.close();
 		} catch (
 
@@ -710,6 +710,7 @@ public class BasedeDatos {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
+
 		}
 
 	}
@@ -1611,7 +1612,7 @@ public class BasedeDatos {
 					+ ".jpg".toLowerCase() + "'" + "," + "'" + txtFGeneroPodcaster.getText() + "'" + "," + "'"
 					+ txtFDescripcionPodcaster.getText() + "'" + ");";
 
-			System.out.println(consulta);
+	
 			// Crea el PreparedStatement
 			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
 			// Ejecutar la consulta y obtener el resultado
@@ -1743,6 +1744,27 @@ public class BasedeDatos {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 
+	}
+
+	/**
+	 * Método para registrar que un audio ha sido añadido a una playlist
+	 *
+	 * @param idAudio ID del audio que ha sido añadido a una playlist.
+	 */
+	public void audioIntoducidoPlaylist(int idAudio) {
+		// TODO Auto-generated method stub
+		try {
+			Connection conexion = DriverManager.getConnection(url, usuariobdd, contrasenabdd);
+			String consulta = "UPDATE " + tablaEstadisticas + " SET " + estadisticasTopPlaylist + " = "
+					+ estadisticasTopPlaylist + " + 1 WHERE " + audioId + " =" + idAudio + ";";
+			PreparedStatement preparedStatement = conexion.prepareStatement(consulta);
+			preparedStatement.executeUpdate();
+			conexion.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
 	}
 
 }

@@ -191,7 +191,6 @@ public class Metodos {
 	public Usuarios crearPlayList(Usuarios usuarioIniciado, JList<String> listaPlaylist) {
 		// TODO Auto-generated method stub
 		String nombreLista = JOptionPane.showInputDialog("Por favor, introduce un texto:");
-		System.out.println(nombreLista);
 		boolean error = false;
 		// comprueba que no exista ya la playlist
 		for (int i = 0; (i != usuarioIniciado.getPlaylists().size()) && error == false; i++) {
@@ -238,7 +237,7 @@ public class Metodos {
 				fic.write(playlist.getCanciones().get(i).getIdAudio() + ";");
 			}
 
-			System.out.println("Se ha creado el archivo exitosamente: " + playlist.getTitulo());
+			JOptionPane.showMessageDialog(null, "Se ha creado el archivo exitosamente: " + playlist.getTitulo());
 		} catch (IOException e) {
 			System.err.println("Error al escribir en el archivo: " + e.getMessage());
 		}
@@ -345,7 +344,7 @@ public class Metodos {
 
 			// Escribir los ID de las canciones en la playlist
 
-			System.out.println("Se ha creado el archivo exitosamente: " + cancion.getNombre());
+			JOptionPane.showMessageDialog(null, "Se ha creado el archivo exitosamente: " + cancion.getNombre());
 		} catch (IOException e) {
 			System.err.println("Error al escribir en el archivo: " + e.getMessage());
 		}
@@ -373,7 +372,8 @@ public class Metodos {
 
 			// Escribir los ID de las canciones en la playlist
 
-			System.out.println("Se ha creado el archivo exitosamente: " + podcast.getNombre());
+			JOptionPane.showMessageDialog(null, "Se ha creado el archivo exitosamente: " + podcast.getNombre());
+
 		} catch (IOException e) {
 			System.err.println("Error al escribir en el archivo: " + e.getMessage());
 		}
